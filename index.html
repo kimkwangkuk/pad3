@@ -9,24 +9,31 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       background: #b0b0b0;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      min-height: 100vh;
       padding: 24px;
       font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     .ipad-frame {
       width: 1366px;
+      height: calc(100vh - 48px);
       background: #e0e0e0;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       flex-shrink: 0;
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Status Bar ── */
@@ -858,6 +865,77 @@
       flex-shrink: 0;
     }
     .page-add-btn:hover { background: rgba(0,0,0,0.09); color: rgba(0,0,0,0.8); }
+    /* 첫 페이지 범위 헤더 */
+    /* 헤더 버튼 (선택/설정/완료) */
+    .pp-hdr-btn {
+      font-size: 13px; font-weight: 500; color: rgba(0,0,0,0.5);
+      cursor: pointer; padding: 2px 0; min-width: 28px;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    /* 페이지 타이틀 드롭다운 */
+    .pp-title-dropdown {
+      display: flex; align-items: center; gap: 4px;
+      cursor: pointer; user-select: none;
+    }
+    .pp-title-dropdown span {
+      font-size: 15px; font-weight: 700; color: #111;
+      font-family: 'Noto Sans KR', sans-serif;
+      letter-spacing: -0.3px;
+    }
+    .pp-title-dropdown svg { color: rgba(0,0,0,0.45); flex-shrink:0; }
+    /* 범위 pill 버튼 (시작/마지막 페이지) */
+    .pp-range-pill-row {
+      display: flex; align-items: center; gap: 0;
+      grid-column: 1 / -1; padding: 8px 12px;
+    }
+    .pp-range-pill-line {
+      flex: 1; height: 1px; background: rgba(0,0,0,0.1);
+    }
+    .pp-range-pill {
+      display: flex; align-items: center; gap: 4px;
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 20px; padding: 5px 11px;
+      font-size: 11px; font-weight: 500; color: rgba(0,0,0,0.6);
+      cursor: pointer; white-space: nowrap;
+      font-family: 'Noto Sans KR', sans-serif;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: background 0.1s;
+    }
+    .pp-range-pill:hover { background: rgba(0,0,0,0.03); }
+    .pp-range-pill svg { color: rgba(0,0,0,0.35); }
+    /* 설정 달력 */
+    .pps-cal-hdr { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+    .pps-cal-nav { width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,0,0,0.4); }
+    .pps-cal-nav:hover { background:rgba(0,0,0,0.06); }
+    .pps-cal-month { font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif; }
+    .pps-day-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:2px; }
+    .pps-day-hdr { text-align:center;font-size:10px;font-weight:500;padding:4px 0;color:rgba(0,0,0,0.35); }
+    .pps-day-cell {
+      aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+      border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;
+      color:#111;font-family:'Noto Sans KR',sans-serif;
+      transition:background 0.1s;
+    }
+    .pps-day-cell:hover:not(.pps-in-range):not(.pps-sel) { background:rgba(0,0,0,0.06); }
+    .pps-day-cell.pps-sel { background:#ff6b35;color:#fff;border-radius:8px; }
+    .pps-day-cell.pps-in-range { background:rgba(255,107,53,0.12);border-radius:0; }
+    .pps-day-cell.pps-range-start { background:#ff6b35;color:#fff;border-radius:8px 0 0 8px; }
+    .pps-day-cell.pps-range-end { background:#ff6b35;color:#fff;border-radius:0 8px 8px 0; }
+    .pps-day-cell.pps-other { color:rgba(0,0,0,0.2); }
+    /* 선택 모드 */
+    .page-panel.select-mode .page-week-card,
+    .page-panel.select-mode .page-day-card { position: relative; cursor: pointer; }
+    .pp-radio {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.28);
+      background: #fff; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .pp-radio.checked { border-color: #111; background: #111; }
+    .pp-radio.checked::after { content:''; width:5px; height:5px; border-radius:50%; background:#fff; }
+    .pp-card-row { display:flex; align-items:center; gap:8px; }
+    .pp-card-row .pp-radio { margin-bottom: 0; }
     .page-list {
       flex: 1;
       overflow-y: auto;
@@ -934,25 +1012,25 @@
     }
     /* 카드 푸터: 레이블 + 삭제 버튼 */
     .page-week-footer {
-      display: flex; align-items: center;
+      display: flex; align-items: center; justify-content: center;
       padding: 6px 10px 7px;
       border-top: 1px solid rgba(0,0,0,0.06);
+      position: relative;
     }
     .page-week-lbl {
-      flex: 1;
       font-size: 11px; font-weight: 500;
       color: rgba(0,0,0,0.6);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       font-family: 'Noto Sans KR', sans-serif;
+      text-align: center;
+    }
+    /* 선택/숨긴페이지 모드: 라디오를 absolute로 띄워 레이블 중앙 유지 */
+    .page-panel.select-mode .pp-radio,
+    .page-panel.hidden-filter-mode .pp-radio {
+      position: absolute;
+      left: 8px;
     }
     .page-week-card.active .page-week-lbl { color: rgba(0,0,0,0.85); font-weight: 600; }
-    .page-week-del-btn {
-      width: 22px; height: 22px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: rgba(0,0,0,0.35);
-      border-radius: 5px; transition: background 0.1s, color 0.1s;
-    }
-    .page-week-del-btn:hover { background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.65); }
     /* 데일리 카드 푸터: 2열에서 compact */
     .page-day-card .page-week-footer {
       padding: 3px 4px 4px;
@@ -960,9 +1038,6 @@
     }
     .page-day-card .page-week-lbl {
       font-size: 9.5px;
-    }
-    .page-day-card .page-week-del-btn {
-      width: 18px; height: 18px;
     }
     /* 오늘 뱃지 */
     .page-today-badge {
@@ -1624,7 +1699,8 @@
     /* ── Content Area ── */
     .content-area {
       background: #ebebeb;
-      height: 920px; /* 툴바(50) + 콘텐츠(870) 통합 */
+      flex: 1;
+      min-height: 0;
       position: relative;
       border-radius: 12px 12px 0 0;
       overflow: hidden;
@@ -3760,20 +3836,64 @@
       <!-- 페이지 패널 -->
       <div class="page-panel" id="pagePanel">
         <div class="page-panel-header">
-          <span class="page-panel-title">페이지</span>
-          <div style="display:flex;gap:4px;">
-            <div class="page-add-btn" id="pageRemoveBtn" title="페이지 제거">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <!-- 기본 모드 -->
+          <div id="ppNormalHeader" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div id="ppSelectBtn" class="pp-hdr-btn">선택</div>
+            <div id="ppTitleDropdown" class="pp-title-dropdown">
+              <span id="ppTitleText">페이지</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <div class="page-add-btn" id="pageAddBtn">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div id="ppSettingsBtn" class="pp-hdr-btn">설정</div>
+          </div>
+          <!-- 선택/편집 모드 -->
+          <div id="ppSelectHeader" style="display:none;align-items:center;justify-content:space-between;width:100%;">
+            <div style="width:36px;"></div>
+            <span class="page-panel-title">편집</span>
+            <div id="ppDoneBtn" class="pp-hdr-btn">완료</div>
+          </div>
+        </div>
+        <!-- 페이지 설정 오버레이 -->
+        <div id="ppSettingsOverlay" style="display:none;position:absolute;inset:0;z-index:100;background:#f2f2f7;flex-direction:column;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;">
+            <div id="ppsCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <span style="font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
+            <div id="ppsConfirmBtn" style="width:32px;height:32px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
           </div>
+          <div style="padding:4px 16px 16px;flex-shrink:0;">
+            <p style="font-size:12px;color:rgba(0,0,0,0.45);font-family:'Noto Sans KR',sans-serif;margin:0 0 14px;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 16px;">
+              <div style="text-align:center;">
+                <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">시작 페이지</div>
+                <div id="ppsStartLbl" style="font-size:14px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+              </div>
+              <div style="font-size:13px;color:rgba(0,0,0,0.3);">~</div>
+              <div style="text-align:center;">
+                <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">마지막 페이지</div>
+                <div id="ppsEndLbl" style="font-size:14px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+              </div>
+            </div>
+          </div>
+          <div id="ppsCalendarWrap" style="flex:1;overflow-y:auto;padding:0 16px 24px;"></div>
         </div>
         <div class="page-list" id="pageList"></div>
         <div class="page-thumbnails" id="pageThumbnails" style="display:none;"></div>
         <div class="page-panel-footer" id="pagePanelFooter" style="display:none;">
           <div class="page-today-jump-btn" id="pageTodayBtn">오늘</div>
+        </div>
+        <!-- 숨기기 하단 바 -->
+        <div id="ppHideBar" style="display:none;flex-shrink:0;padding:10px 12px 14px;">
+          <button id="ppHideBtn" style="width:100%;padding:13px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.01em;">숨기기</button>
+        </div>
+        <!-- 복원 하단 바 -->
+        <div id="ppRestoreBar" style="display:none;flex-shrink:0;padding:10px 12px 14px;">
+          <div style="display:flex;gap:8px;">
+            <button id="ppRestoreAllBtn" style="flex:1;padding:13px;background:rgba(0,0,0,0.08);color:rgba(0,0,0,0.75);border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.01em;">모두 복원</button>
+            <button id="ppRestoreSelBtn" style="flex:1;padding:13px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.01em;opacity:0.35;">복원</button>
+          </div>
         </div>
       </div>
       <div id="contentPages" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative;overflow:hidden;">
@@ -6776,6 +6896,25 @@
       const canShow = tabType === 'note';
       panel.style.display = (window.pagePanelVisible && canShow) ? '' : 'none';
       toggleBtn.classList.toggle('active', window.pagePanelVisible && canShow);
+      // 패널 닫힐 때 선택 모드 초기화 + 설정 오버레이 닫기 + 필터 초기화
+      if (!window.pagePanelVisible || !canShow) {
+        if (typeof window.exitPageSelectMode === 'function') window.exitPageSelectMode();
+        const settingsOv = document.getElementById('ppSettingsOverlay');
+        if (settingsOv) settingsOv.style.display = 'none';
+        // 필터가 hidden이었으면 all로 되돌리기
+        if (window._ppFilter === 'hidden') {
+          window._ppFilter = 'all';
+          const titleTxt = document.getElementById('ppTitleText');
+          if (titleTxt) titleTxt.textContent = '페이지';
+          const pnl = document.getElementById('pagePanel');
+          if (pnl) pnl.classList.remove('hidden-filter-mode');
+          const selectB = document.getElementById('ppSelectBtn');
+          if (selectB) selectB.style.visibility = '';
+          const restoreB = document.getElementById('ppRestoreBar');
+          if (restoreB) restoreB.style.display = 'none';
+          window._hiddenSelectedMs && window._hiddenSelectedMs.clear();
+        }
+      }
     });
   })();
 
@@ -7467,9 +7606,69 @@
       list.style.alignContent = '';
       if (list._todayObserver) { list._todayObserver.disconnect(); list._todayObserver = null; }
       const todayMs = (() => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
-      window.weekPages.forEach((p, i) => {
+      const isHiddenFilter = window._ppFilter === 'hidden';
+      // 숨긴 필터일 때 오늘 버튼 즉시 숨김 (비동기 observer 콜백 방지)
+      const _footerEl = document.getElementById('pagePanelFooter');
+      if (isHiddenFilter && _footerEl) _footerEl.style.display = 'none';
+      const pagesSource = isHiddenFilter ? (window.hiddenWeekPages || []) : window.weekPages;
+      // 숨긴 페이지 필터일 때 빈 메시지
+      if (isHiddenFilter && pagesSource.length === 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'padding:24px 12px;text-align:center;color:rgba(0,0,0,0.3);font-size:13px;';
+        msg.textContent = '숨긴 페이지가 없습니다';
+        list.appendChild(msg);
+        const _rb = document.getElementById('ppRestoreBar');
+        if (_rb) _rb.style.display = 'none';
+        return;
+      }
+
+      // 전체 모드일 때 "첫 페이지" 범위 헤더
+      if (!isHiddenFilter && pagesSource.length > 0) {
+        const firstStart = getWeekStart(pagesSource[0].start);
+        const fmtBtn = d => {
+          const yy = d.getFullYear();
+          const mm = d.getMonth() + 1;
+          const dd = d.getDate();
+          return `${yy}년 ${mm}월 ${dd}일`;
+        };
+        const pillRow = document.createElement('div');
+        pillRow.className = 'pp-range-pill-row';
+        const line1 = document.createElement('div'); line1.className = 'pp-range-pill-line';
+        const pill = document.createElement('div');
+        pill.className = 'pp-range-pill';
+        pill.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">시작</span><span>${fmtBtn(firstStart)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const line2 = document.createElement('div'); line2.className = 'pp-range-pill-line';
+        pill.addEventListener('click', e => {
+          e.stopPropagation();
+          window.openSimpleDatePicker({
+            anchor: pill,
+            initialDate: firstStart,
+            onConfirm: (picked) => {
+              const newStart = getWeekStart(picked);
+              const curFirst = getWeekStart(pagesSource[0].start);
+              if (newStart.getTime() < curFirst.getTime()) {
+                const d = new Date(newStart);
+                while (d.getTime() < curFirst.getTime()) {
+                  addWeekPage(new Date(d));
+                  d.setDate(d.getDate() + 7);
+                }
+              } else if (newStart.getTime() > curFirst.getTime()) {
+                window.weekPages = window.weekPages.filter(p => getWeekStart(p.start).getTime() >= newStart.getTime());
+                if (activePageIdx >= window.weekPages.length) activePageIdx = Math.max(0, window.weekPages.length - 1);
+              }
+              renderPageList();
+              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            }
+          });
+        });
+        pillRow.append(line1, pill, line2);
+        list.appendChild(pillRow);
+      }
+
+      pagesSource.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'page-week-card' + (i === activePageIdx ? ' active' : '');
+        card.dataset.weekMon = p.start.getTime();
 
         // 미니 주 플래너 썸네일 + 오늘 뱃지
         const thumb = buildMiniWkThumb();
@@ -7482,57 +7681,97 @@
         }
         card.appendChild(thumb);
 
-        // 푸터: 레이블(좌) + arrow-down 버튼(우)
+        // 푸터: 레이블만
         const footer = document.createElement('div');
         footer.className = 'page-week-footer';
-
         const lbl = document.createElement('div');
         lbl.className = 'page-week-lbl';
         lbl.textContent = formatWeekLabel(p.start);
-
-        const delBtn = document.createElement('div');
-        delBtn.className = 'page-week-del-btn';
-        delBtn.title = '옵션';
-        delBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <path d="M2.5 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-
-        footer.append(lbl, delBtn);
+        footer.append(lbl);
         card.appendChild(footer);
 
-        // 카드 클릭 → 페이지 선택 + 주 플래너 날짜 업데이트
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('.page-week-del-btn')) return;
-          activePageIdx = i;
-          renderPageList();
-          if (typeof window.setWeeklyPlannerDate === 'function') {
-            window.setWeeklyPlannerDate(p.start);
-          }
-        });
-
-        // arrow-down 버튼 → 미니 팝업 표시
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (typeof window._showPageMiniPopup === 'function') {
-            window._showPageMiniPopup(delBtn, () => {
-              _pendingDeleteIdx = i;
-              window._pendingDeleteCallback = null;
-              document.getElementById('pageDelOverlay').classList.add('show');
-            });
-          }
-        });
+        if (isHiddenFilter) {
+          // 숨긴 페이지: 카드 클릭 → 선택 토글 (라디오는 refreshHiddenRadios에서 삽입)
+          card.style.opacity = '0.72';
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            const ms = card.dataset.weekMon || null;
+            if (!ms) return;
+            if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms);
+            else window._hiddenSelectedMs.add(ms);
+            if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+            const restoreBar = document.getElementById('ppRestoreBar');
+            const btn = document.getElementById('ppRestoreSelBtn');
+            if (btn) {
+              const cnt = window._hiddenSelectedMs.size;
+              btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원';
+              btn.style.opacity = cnt > 0 ? '1' : '0.35';
+            }
+          });
+        } else {
+          // 카드 클릭 → 페이지 선택 + 주 플래너 날짜 업데이트
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            activePageIdx = i;
+            renderPageList();
+            if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            if (typeof window.setWeeklyPlannerDate === 'function') {
+              window.setWeeklyPlannerDate(p.start);
+            }
+          });
+        }
 
         list.appendChild(card);
       });
 
-      // 오늘 주 카드 가시성 감지 → 버튼 토글
+      // "마지막 페이지" 범위 헤더
+      if (!isHiddenFilter && pagesSource.length > 0) {
+        const lastStart = getWeekStart(pagesSource[pagesSource.length - 1].start);
+        const lastEnd = new Date(lastStart); lastEnd.setDate(lastEnd.getDate() + 6);
+        const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+        const pillRow2 = document.createElement('div');
+        pillRow2.className = 'pp-range-pill-row';
+        const lineA = document.createElement('div'); lineA.className = 'pp-range-pill-line';
+        const pill2 = document.createElement('div');
+        pill2.className = 'pp-range-pill';
+        pill2.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">종료</span><span>${fmtBtn(lastEnd)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const lineB = document.createElement('div'); lineB.className = 'pp-range-pill-line';
+        pill2.addEventListener('click', e => {
+          e.stopPropagation();
+          window.openSimpleDatePicker({
+            anchor: pill2,
+            initialDate: lastEnd,
+            onConfirm: (picked) => {
+              const newLast = getWeekStart(picked);
+              const curLast = getWeekStart(pagesSource[pagesSource.length - 1].start);
+              if (newLast.getTime() > curLast.getTime()) {
+                const d = new Date(curLast); d.setDate(d.getDate() + 7);
+                while (d.getTime() <= newLast.getTime()) {
+                  addWeekPage(new Date(d));
+                  d.setDate(d.getDate() + 7);
+                }
+              } else if (newLast.getTime() < curLast.getTime()) {
+                window.weekPages = window.weekPages.filter(p => getWeekStart(p.start).getTime() <= newLast.getTime());
+                if (activePageIdx >= window.weekPages.length) activePageIdx = Math.max(0, window.weekPages.length - 1);
+              }
+              renderPageList();
+              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            }
+          });
+        });
+        pillRow2.append(lineA, pill2, lineB);
+        list.appendChild(pillRow2);
+      }
+
+      // 오늘 주 카드 가시성 감지 → 버튼 토글 (숨긴 페이지 필터일 때는 숨김)
       const footer2 = document.getElementById('pagePanelFooter');
       const todayBtn2 = document.getElementById('pageTodayBtn');
       if (footer2 && todayBtn2) {
         if (list._todayObserver) { list._todayObserver.disconnect(); list._todayObserver = null; }
+        if (isHiddenFilter) { footer2.style.display = 'none'; return; }
 
         const todayCard = Array.from(list.children).find((_, i) => {
-          const p = window.weekPages[i];
+          const p = pagesSource[i];
           return p && todayMs >= p.start.getTime() && todayMs <= p.end.getTime();
         });
 
@@ -7971,13 +8210,19 @@
     }
 
     // 전역 노출 (탭 전환 시 패널 갱신용)
-    window.renderWeekPageList = renderPageList;
+    window.renderWeekPageList = function() {
+      renderPageList();
+      if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+      if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+    };
 
     // 탭별 페이지 패널 갱신 dispatcher
     window.refreshPagePanel = function(tab) {
       const activeTab = tab || document.querySelector('.tab.active');
       const tabId = activeTab ? activeTab.dataset.tabId : '';
-      if (tabId === 'tab-2') {
+      // 스토어 생성 탭은 tabReusePage로 원본 탭 ID 확인
+      const effectiveId = activeTab?.dataset.tabReusePage || tabId;
+      if (effectiveId === 'tab-2') {
         // 주 플래너 → 주간 페이지 리스트
         renderPageList();
       } else {
@@ -7985,6 +8230,125 @@
         if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
       }
     };
+
+    // ── 심플 단일 날짜 선택 팝업 ──
+    (function initSimpleDatePicker() {
+      const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+      const DAYS   = ['월','화','수','목','금','토','일'];
+      let curY, curM, onPickCb, popEl;
+
+      function close() {
+        if (popEl) { popEl.remove(); popEl = null; }
+        document.removeEventListener('mousedown', onOutside);
+      }
+
+      function onOutside(e) {
+        if (popEl && !popEl.contains(e.target)) close();
+      }
+
+      function build() {
+        if (popEl) popEl.remove();
+        const pop = document.createElement('div');
+        pop.style.cssText = [
+          'position:fixed;z-index:10000;background:#fff;border-radius:16px;',
+          'box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:14px 12px 12px;width:228px;',
+          'font-family:\'Noto Sans KR\',sans-serif;'
+        ].join('');
+
+        // 헤더 (이전/다음 월)
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;';
+        const prev = document.createElement('div');
+        prev.style.cssText = 'width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;color:rgba(0,0,0,0.5);';
+        prev.innerHTML = '<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        prev.onmouseover = () => prev.style.background = 'rgba(0,0,0,0.06)';
+        prev.onmouseout  = () => prev.style.background = '';
+        const next = document.createElement('div');
+        next.style.cssText = prev.style.cssText;
+        next.innerHTML = '<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        next.onmouseover = () => next.style.background = 'rgba(0,0,0,0.06)';
+        next.onmouseout  = () => next.style.background = '';
+        const mLbl = document.createElement('div');
+        mLbl.style.cssText = 'font-size:14px;font-weight:600;color:#111;';
+        mLbl.textContent = `${curY}년 ${MONTHS[curM]}`;
+        prev.addEventListener('click', () => { curM--; if (curM < 0) { curM = 11; curY--; } build(); position(); });
+        next.addEventListener('click', () => { curM++; if (curM > 11) { curM = 0; curY++; } build(); position(); });
+        hdr.append(prev, mLbl, next);
+        pop.appendChild(hdr);
+
+        // 요일 헤더
+        const dayHdr = document.createElement('div');
+        dayHdr.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;';
+        DAYS.forEach((d, i) => {
+          const c = document.createElement('div');
+          c.style.cssText = `text-align:center;font-size:10px;font-weight:500;padding:2px 0;color:${i===5?'#3b8bff':i===6?'#e03030':'rgba(0,0,0,0.35)'};`;
+          c.textContent = d;
+          dayHdr.appendChild(c);
+        });
+        pop.appendChild(dayHdr);
+
+        // 날짜 그리드
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:1px;';
+        const first = new Date(curY, curM, 1);
+        const startDow = first.getDay(); // 0=sun
+        const offset = startDow === 0 ? 6 : startDow - 1; // mon-based
+        const daysInMonth = new Date(curY, curM + 1, 0).getDate();
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        for (let i = 0; i < offset; i++) {
+          grid.appendChild(document.createElement('div'));
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+          const cell = document.createElement('div');
+          const dt = new Date(curY, curM, d);
+          const isToday = dt.getTime() === today.getTime();
+          const dow = dt.getDay(); // 0=sun,6=sat
+          const isSat = dow === 6, isSun = dow === 0;
+          cell.style.cssText = [
+            'text-align:center;padding:5px 2px;border-radius:8px;cursor:pointer;',
+            'font-size:12px;font-weight:500;',
+            `color:${isToday?'#fff':isSat?'#3b8bff':isSun?'#e03030':'#111'};`,
+            `background:${isToday?'#111':'transparent'};`
+          ].join('');
+          cell.textContent = d;
+          cell.onmouseover = () => { if (!isToday) cell.style.background='rgba(0,0,0,0.07)'; };
+          cell.onmouseout  = () => { if (!isToday) cell.style.background='transparent'; };
+          cell.addEventListener('click', () => {
+            close();
+            if (onPickCb) onPickCb(dt);
+          });
+          grid.appendChild(cell);
+        }
+        pop.appendChild(grid);
+        popEl = pop;
+        document.body.appendChild(pop);
+      }
+
+      function position(anchor) {
+        if (!popEl) return;
+        const rect = (anchor || popEl._anchor)?.getBoundingClientRect();
+        if (!rect) return;
+        popEl._anchor = anchor || popEl._anchor;
+        let left = rect.left;
+        let top  = rect.bottom + 4;
+        const pw = 228;
+        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+        if (top + 280 > window.innerHeight - 8) top = rect.top - 280 - 4;
+        popEl.style.left = left + 'px';
+        popEl.style.top  = top  + 'px';
+      }
+
+      window.openSimpleDatePicker = function({ anchor, initialDate, onConfirm }) {
+        close();
+        const d = initialDate || new Date();
+        curY = d.getFullYear(); curM = d.getMonth();
+        onPickCb = onConfirm;
+        build();
+        position(anchor);
+        setTimeout(() => document.addEventListener('mousedown', onOutside), 0);
+      };
+    })();
 
     // ── page date picker ──
     (function initPageDatePicker() {
@@ -8186,7 +8550,7 @@
       e.stopPropagation();
       const activeTab = document.querySelector('.tab.active');
       const tabId = activeTab ? activeTab.dataset.tabId : '';
-      const isWeek = tabId === 'tab-2';
+      const isWeek = (activeTab?.dataset.tabReusePage || tabId) === 'tab-2';
       const existingDates = isWeek
         ? (window.weekPages || []).map(p => { const r = new Date(p.start); const day = (r.getDay()+6)%7; r.setDate(r.getDate()-day); r.setHours(0,0,0,0); return r.getTime(); })
         : (window.dayPages || []).map(p => { const r = new Date(p.date); r.setHours(0,0,0,0); return r.getTime(); });
@@ -8217,7 +8581,7 @@
       removeBtn.addEventListener('click', e => {
         e.stopPropagation();
         const activeTab = document.querySelector('.tab.active');
-        const isWeek = activeTab && activeTab.dataset.tabId === 'tab-2';
+        const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
         const existingDates = isWeek
           ? (window.weekPages || []).map(p => { const r = new Date(p.start); const day=(r.getDay()+6)%7; r.setDate(r.getDate()-day); r.setHours(0,0,0,0); return r.getTime(); })
           : (window.dayPages  || []).map(p => { const r = new Date(p.date); r.setHours(0,0,0,0); return r.getTime(); });
@@ -8471,9 +8835,66 @@
       list.style.gap = '4px';
       list.style.alignContent = 'start';
       const todayMs = (() => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
-      (window.dayPages || []).forEach((p, i) => {
+      const isDayHiddenFilter = window._ppFilter === 'hidden';
+      // 숨긴 필터일 때 오늘 버튼 즉시 숨김 (비동기 observer 콜백 방지)
+      const _dayFooterEl = document.getElementById('pagePanelFooter');
+      if (isDayHiddenFilter && _dayFooterEl) _dayFooterEl.style.display = 'none';
+      const dayPagesSource = isDayHiddenFilter ? (window.hiddenDayPages || []) : (window.dayPages || []);
+      if (isDayHiddenFilter && dayPagesSource.length === 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'padding:24px 12px;text-align:center;color:rgba(0,0,0,0.3);font-size:13px;grid-column:1/-1;';
+        msg.textContent = '숨긴 페이지가 없습니다';
+        list.appendChild(msg);
+        const _rb = document.getElementById('ppRestoreBar');
+        if (_rb) _rb.style.display = 'none';
+        return;
+      }
+
+      // 전체 모드일 때 "첫 페이지" 범위 헤더
+      if (!isDayHiddenFilter && dayPagesSource.length > 0) {
+        const firstDate = dayPagesSource[0].date;
+        const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+        const pillRowD = document.createElement('div');
+        pillRowD.className = 'pp-range-pill-row';
+        const lineD1 = document.createElement('div'); lineD1.className = 'pp-range-pill-line';
+        const pillD = document.createElement('div');
+        pillD.className = 'pp-range-pill';
+        pillD.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">시작</span><span>${fmtBtn(firstDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const lineD2 = document.createElement('div'); lineD2.className = 'pp-range-pill-line';
+        const dateBtn = pillD;
+        dateBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          window.openSimpleDatePicker({
+            anchor: dateBtn,
+            initialDate: firstDate,
+            onConfirm: (picked) => {
+              const newFirst = new Date(picked); newFirst.setHours(0,0,0,0);
+              const curFirst = new Date(dayPagesSource[0].date); curFirst.setHours(0,0,0,0);
+              if (newFirst.getTime() < curFirst.getTime()) {
+                // 범위 늘리기: 앞에 일 추가
+                const d = new Date(newFirst);
+                while (d.getTime() < curFirst.getTime()) {
+                  addDayPage(new Date(d));
+                  d.setDate(d.getDate() + 1);
+                }
+              } else if (newFirst.getTime() > curFirst.getTime()) {
+                // 범위 줄이기: 앞 페이지들 제거
+                window.dayPages = window.dayPages.filter(p => { const t = new Date(p.date); t.setHours(0,0,0,0); return t.getTime() >= newFirst.getTime(); });
+                if (activeDayPageIdx >= window.dayPages.length) activeDayPageIdx = Math.max(0, window.dayPages.length - 1);
+              }
+              renderDayPageList();
+              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            }
+          });
+        });
+        pillRowD.append(lineD1, pillD, lineD2);
+        list.appendChild(pillRowD);
+      }
+
+      dayPagesSource.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
+        card.dataset.dateMs = p.date.getTime();
 
         // 썸네일 + 오늘 뱃지
         const thumb = buildMiniDayThumb(p.date);
@@ -8490,52 +8911,88 @@
         const lbl = document.createElement('div');
         lbl.className = 'page-week-lbl';
         lbl.textContent = formatDayLabel(p.date);
-        const delBtn = document.createElement('div');
-        delBtn.className = 'page-week-del-btn';
-        delBtn.title = '옵션';
-        delBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <path d="M2.5 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-        footer.append(lbl, delBtn);
+        footer.append(lbl);
         card.appendChild(footer);
 
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('.page-week-del-btn')) return;
-          activeDayPageIdx = i;
-          renderDayPageList();
-          if (typeof window.setPlannerDate === 'function') {
-            window.setPlannerDate(p.date);
-          }
-        });
-
-        // arrow-down → 미니 팝업
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (typeof window._showPageMiniPopup === 'function') {
-            window._showPageMiniPopup(delBtn, () => {
-              window._pendingDeleteCallback = () => {
-                window.dayPages.splice(i, 1);
-                if (activeDayPageIdx >= window.dayPages.length) activeDayPageIdx = Math.max(0, window.dayPages.length - 1);
-                renderDayPageList();
-              };
-              _pendingDeleteIdx = -1;
-              document.getElementById('pageDelOverlay').classList.add('show');
-            });
-          }
-        });
+        if (isDayHiddenFilter) {
+          // 숨긴 페이지: 카드 클릭 → 선택 토글
+          card.style.opacity = '0.72';
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            const ms = card.dataset.dateMs || null;
+            if (!ms) return;
+            if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms);
+            else window._hiddenSelectedMs.add(ms);
+            if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+            const btn = document.getElementById('ppRestoreSelBtn');
+            if (btn) {
+              const cnt = window._hiddenSelectedMs.size;
+              btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원';
+              btn.style.opacity = cnt > 0 ? '1' : '0.35';
+            }
+          });
+        } else {
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            activeDayPageIdx = i;
+            renderDayPageList();
+            if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            if (typeof window.setPlannerDate === 'function') {
+              window.setPlannerDate(p.date);
+            }
+          });
+        }
 
         list.appendChild(card);
       });
 
-      // 오늘 카드 가시성 감지 → 버튼 토글
+      // "마지막 페이지" 범위 헤더
+      if (!isDayHiddenFilter && dayPagesSource.length > 0) {
+        const lastDate = dayPagesSource[dayPagesSource.length - 1].date;
+        const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+        const pillRowD2 = document.createElement('div');
+        pillRowD2.className = 'pp-range-pill-row';
+        const lineDa = document.createElement('div'); lineDa.className = 'pp-range-pill-line';
+        const pillD2 = document.createElement('div');
+        pillD2.className = 'pp-range-pill';
+        pillD2.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">종료</span><span>${fmtBtn(lastDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const lineDb = document.createElement('div'); lineDb.className = 'pp-range-pill-line';
+        pillD2.addEventListener('click', e => {
+          e.stopPropagation();
+          window.openSimpleDatePicker({
+            anchor: pillD2,
+            initialDate: lastDate,
+            onConfirm: (picked) => {
+              const newLast = new Date(picked); newLast.setHours(0,0,0,0);
+              const curLast = new Date(dayPagesSource[dayPagesSource.length - 1].date); curLast.setHours(0,0,0,0);
+              if (newLast.getTime() > curLast.getTime()) {
+                const d = new Date(curLast); d.setDate(d.getDate() + 1);
+                while (d.getTime() <= newLast.getTime()) {
+                  addDayPage(new Date(d));
+                  d.setDate(d.getDate() + 1);
+                }
+              } else if (newLast.getTime() < curLast.getTime()) {
+                window.dayPages = window.dayPages.filter(p => { const t = new Date(p.date); t.setHours(0,0,0,0); return t.getTime() <= newLast.getTime(); });
+                if (activeDayPageIdx >= window.dayPages.length) activeDayPageIdx = Math.max(0, window.dayPages.length - 1);
+              }
+              renderDayPageList();
+              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            }
+          });
+        });
+        pillRowD2.append(lineDa, pillD2, lineDb);
+        list.appendChild(pillRowD2);
+      }
+
+      // 오늘 카드 가시성 감지 → 버튼 토글 (숨긴 페이지 필터일 때는 숨김)
       const footer = document.getElementById('pagePanelFooter');
       const todayBtn = document.getElementById('pageTodayBtn');
       if (footer && todayBtn) {
-        // 이전 observer 정리
         if (list._todayObserver) { list._todayObserver.disconnect(); list._todayObserver = null; }
+        if (isDayHiddenFilter) { footer.style.display = 'none'; return; }
 
         const todayCard = Array.from(list.children).find((_, i) => {
-          const p = window.dayPages[i];
+          const p = dayPagesSource[i];
           return p && p.date.getTime() === todayMs;
         });
 
@@ -8581,8 +9038,529 @@
     activeDayPageIdx = window.dayPages.length - 1;
 
     // 전역 노출
-    window.renderDayPageList = renderDayPageList;
+    window.renderDayPageList = function() {
+      renderDayPageList();
+      if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+      if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+    };
     window.addDayPage = addDayPage;
+  })();
+
+  // ── 페이지 필터 버튼 ──
+  (function initPageFilter() {
+    const titleDropdown  = document.getElementById('ppTitleDropdown');
+    const titleText      = document.getElementById('ppTitleText');
+    const panel          = document.getElementById('pagePanel');
+    const restoreBar     = document.getElementById('ppRestoreBar');
+    const restoreAllBtn  = document.getElementById('ppRestoreAllBtn');
+    const restoreSelBtn  = document.getElementById('ppRestoreSelBtn');
+
+    // 현재 필터 상태: 'all' | 'hidden'
+    window._ppFilter = window._ppFilter || 'all';
+    window._hiddenSelectedMs = new Set();
+
+    let popup = null;
+
+    function closePopup() {
+      if (popup) { popup.remove(); popup = null; }
+      document.removeEventListener('click', onOutside);
+    }
+
+    function onOutside(e) {
+      if (popup && !popup.contains(e.target) && !titleDropdown.contains(e.target)) closePopup();
+    }
+
+    function updateRestoreBar() {
+      const cnt = window._hiddenSelectedMs.size;
+      restoreSelBtn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원';
+      restoreSelBtn.style.opacity = cnt > 0 ? '1' : '0.35';
+      restoreSelBtn.style.cursor = cnt > 0 ? 'pointer' : 'default';
+    }
+
+    // 숨긴 페이지 카드에 라디오 삽입 및 갱신
+    window.refreshHiddenRadios = function() {
+      if (window._ppFilter !== 'hidden') return;
+      const cards = document.querySelectorAll('#pageList .page-week-card, #pageList .page-day-card');
+      cards.forEach(card => {
+        let radio = card.querySelector('.pp-radio');
+        if (!radio) {
+          const footer = card.querySelector('.page-week-footer');
+          if (!footer) return;
+          radio = document.createElement('div');
+          radio.className = 'pp-radio';
+          footer.insertBefore(radio, footer.firstChild);
+          radio.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ms = card.dataset.weekMon || card.dataset.dateMs || null;
+            if (!ms) return;
+            if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms);
+            else window._hiddenSelectedMs.add(ms);
+            updateRestoreBar();
+            window.refreshHiddenRadios();
+          });
+        }
+        radio.style.display = 'flex';
+        const ms = card.dataset.weekMon || card.dataset.dateMs || null;
+        radio.classList.toggle('checked', !!(ms && window._hiddenSelectedMs.has(ms)));
+      });
+    };
+
+    function doRestoreAll() {
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+      if (isWeek) {
+        (window.hiddenWeekPages || []).forEach(p => {
+          if (!(window.weekPages||[]).some(w => w.start.getTime()===p.start.getTime())) {
+            window.weekPages = window.weekPages || [];
+            window.weekPages.push(p);
+          }
+        });
+        window.hiddenWeekPages = [];
+        window.weekPages.sort((a,b) => a.start-b.start);
+        if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+      } else {
+        (window.hiddenDayPages || []).forEach(p => {
+          if (!(window.dayPages||[]).some(d => d.date.getTime()===p.date.getTime())) {
+            window.dayPages = window.dayPages || [];
+            window.dayPages.push(p);
+          }
+        });
+        window.hiddenDayPages = [];
+        window.dayPages.sort((a,b) => a.date-b.date);
+        if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+      }
+      window._hiddenSelectedMs.clear();
+      updateRestoreBar();
+      applyFilter('all');
+    }
+
+    function doRestoreSel() {
+      if (window._hiddenSelectedMs.size === 0) return;
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+      if (isWeek) {
+        const toRestore = (window.hiddenWeekPages||[]).filter(p => window._hiddenSelectedMs.has(String(p.start.getTime())));
+        toRestore.forEach(p => {
+          if (!(window.weekPages||[]).some(w => w.start.getTime()===p.start.getTime())) {
+            window.weekPages = window.weekPages || [];
+            window.weekPages.push(p);
+          }
+        });
+        window.hiddenWeekPages = (window.hiddenWeekPages||[]).filter(p => !window._hiddenSelectedMs.has(String(p.start.getTime())));
+        window.weekPages.sort((a,b) => a.start-b.start);
+        if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+      } else {
+        const toRestore = (window.hiddenDayPages||[]).filter(p => window._hiddenSelectedMs.has(String(p.date.getTime())));
+        toRestore.forEach(p => {
+          if (!(window.dayPages||[]).some(d => d.date.getTime()===p.date.getTime())) {
+            window.dayPages = window.dayPages || [];
+            window.dayPages.push(p);
+          }
+        });
+        window.hiddenDayPages = (window.hiddenDayPages||[]).filter(p => !window._hiddenSelectedMs.has(String(p.date.getTime())));
+        window.dayPages.sort((a,b) => a.date-b.date);
+        if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+      }
+      window._hiddenSelectedMs.clear();
+      updateRestoreBar();
+      applyFilter('all');
+    }
+
+    restoreAllBtn.addEventListener('click', doRestoreAll);
+    restoreSelBtn.addEventListener('click', doRestoreSel);
+
+    function applyFilter(f) {
+      window._ppFilter = f;
+      window._hiddenSelectedMs.clear();
+      // 타이틀 텍스트 업데이트
+      if (titleText) titleText.textContent = f === 'hidden' ? '숨긴 페이지' : '페이지';
+      // 패널 모드 클래스
+      if (panel) panel.classList.toggle('hidden-filter-mode', f === 'hidden');
+      // 편집 버튼 숨김/표시
+      const selectBtn = document.getElementById('ppSelectBtn');
+      if (selectBtn) selectBtn.style.visibility = f === 'hidden' ? 'hidden' : '';
+      // 복원 바 표시/숨김
+      if (restoreBar) restoreBar.style.display = f === 'hidden' ? 'block' : 'none';
+      updateRestoreBar();
+      // 리스트 재렌더 → 숨긴 페이지 진입 시 모두 선택
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+      if (isWeek) { if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList(); }
+      else        { if (typeof window.renderDayPageList  === 'function') window.renderDayPageList();  }
+      // 숨긴 페이지 모드 진입 시 모든 카드 선택
+      if (f === 'hidden') {
+        window._hiddenSelectedMs = new Set();
+        const hiddenArr = isWeek ? (window.hiddenWeekPages || []) : (window.hiddenDayPages || []);
+        hiddenArr.forEach(p => {
+          const ms = isWeek ? String(p.start.getTime()) : String(p.date.getTime());
+          window._hiddenSelectedMs.add(ms);
+        });
+        updateRestoreBar();
+        if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+      }
+    }
+
+    if (titleDropdown) titleDropdown.addEventListener('click', e => {
+      e.stopPropagation();
+      if (popup) { closePopup(); return; }
+
+      popup = document.createElement('div');
+      popup.style.cssText = 'position:fixed;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.14);padding:6px;min-width:130px;display:flex;flex-direction:column;gap:2px;';
+
+      const items = [
+        { key: 'all',    label: '페이지' },
+        { key: 'hidden', label: '숨긴 페이지' },
+      ];
+      items.forEach(({ key, label }) => {
+        const row = document.createElement('div');
+        const active = window._ppFilter === key;
+        row.style.cssText = `padding:9px 12px;border-radius:8px;font-size:13px;font-weight:${active?'600':'400'};color:${active?'#111':'rgba(0,0,0,0.7)'};cursor:pointer;background:${active?'rgba(0,0,0,0.05)':'transparent'};font-family:'Noto Sans KR',sans-serif;white-space:nowrap;`;
+        row.textContent = label;
+        if (active) {
+          const check = document.createElement('span');
+          check.style.cssText = 'float:right;color:#ff6b35;font-size:13px;';
+          check.textContent = ' ✓';
+          row.appendChild(check);
+        }
+        row.addEventListener('mouseenter', () => { if (!active) row.style.background='rgba(0,0,0,0.04)'; });
+        row.addEventListener('mouseleave', () => { if (!active) row.style.background='transparent'; });
+        row.addEventListener('click', () => { applyFilter(key); closePopup(); });
+        popup.appendChild(row);
+      });
+
+      document.body.appendChild(popup);
+      const rect = titleDropdown.getBoundingClientRect();
+      let left = rect.left + rect.width/2 - popup.offsetWidth/2;
+      if (left < 8) left = 8;
+      popup.style.left = left + 'px';
+      popup.style.top  = (rect.bottom + 6) + 'px';
+
+      setTimeout(() => document.addEventListener('click', onOutside), 0);
+    });
+  })();
+
+  // ── 페이지 설정 ──
+  (function initPageSettings() {
+    const settingsBtn  = document.getElementById('ppSettingsBtn');
+    const overlay      = document.getElementById('ppSettingsOverlay');
+    const cancelBtn    = document.getElementById('ppsCancelBtn');
+    const confirmBtn   = document.getElementById('ppsConfirmBtn');
+    const startLbl     = document.getElementById('ppsStartLbl');
+    const endLbl       = document.getElementById('ppsEndLbl');
+    const calWrap      = document.getElementById('ppsCalendarWrap');
+    if (!settingsBtn || !overlay) return;
+
+    let selStart = null, selEnd = null;   // Date objects
+    let calViewYear, calViewMonth;
+
+    const MONTHS_KR = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const DAYS_KR   = ['일','월','화','수','목','금','토'];
+
+    function fmtDate(d) {
+      if (!d) return '--';
+      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function updateLabels() {
+      startLbl.textContent = fmtDate(selStart);
+      endLbl.textContent   = fmtDate(selEnd);
+    }
+
+    function renderCalendar() {
+      calWrap.innerHTML = '';
+      // Render 3 months: previous, current, next
+      for (let mo = -1; mo <= 1; mo++) {
+        let y = calViewYear, m = calViewMonth + mo;
+        if (m < 0)  { m += 12; y -= 1; }
+        if (m > 11) { m -= 12; y += 1; }
+        renderMonth(y, m);
+      }
+    }
+
+    function renderMonth(y, m) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin-bottom:28px;';
+
+      // header
+      const hdr = document.createElement('div');
+      hdr.className = 'pps-cal-hdr';
+      const title = document.createElement('div');
+      title.className = 'pps-cal-month';
+      title.textContent = `${y}년 ${MONTHS_KR[m]}`;
+      hdr.appendChild(title);
+      wrap.appendChild(hdr);
+
+      // day-of-week header
+      const grid = document.createElement('div');
+      grid.className = 'pps-day-grid';
+      DAYS_KR.forEach((d, i) => {
+        const dh = document.createElement('div');
+        dh.className = 'pps-day-hdr';
+        dh.textContent = d;
+        if (i === 0) dh.style.color = '#ff5f57';
+        if (i === 6) dh.style.color = '#5b8ff9';
+        grid.appendChild(dh);
+      });
+
+      // first day of month
+      const first = new Date(y, m, 1);
+      const startDow = first.getDay(); // 0=Sun
+      // blank cells
+      for (let i = 0; i < startDow; i++) {
+        const blank = document.createElement('div'); grid.appendChild(blank);
+      }
+      // days
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'pps-day-cell';
+        cell.textContent = d;
+        const cellDate = new Date(y, m, d);
+        const cellMs = cellDate.getTime();
+        const startMs = selStart ? selStart.getTime() : null;
+        const endMs   = selEnd   ? selEnd.getTime()   : null;
+
+        if (startMs && endMs) {
+          if (cellMs === startMs && cellMs === endMs) cell.classList.add('pps-sel');
+          else if (cellMs === startMs) cell.classList.add('pps-range-start');
+          else if (cellMs === endMs)   cell.classList.add('pps-range-end');
+          else if (cellMs > startMs && cellMs < endMs) cell.classList.add('pps-in-range');
+        } else if (startMs && cellMs === startMs) {
+          cell.classList.add('pps-sel');
+        }
+        // color sun/sat
+        const dow = (startDow + d - 1) % 7;
+        if (dow === 0) cell.style.color = cell.classList.contains('pps-sel') || cell.classList.contains('pps-range-start') || cell.classList.contains('pps-range-end') ? '#fff' : '#ff5f57';
+        if (dow === 6) cell.style.color = cell.classList.contains('pps-sel') || cell.classList.contains('pps-range-start') || cell.classList.contains('pps-range-end') ? '#fff' : '#5b8ff9';
+
+        cell.addEventListener('click', () => {
+          const clicked = new Date(y, m, d);
+          if (!selStart || (selStart && selEnd)) {
+            selStart = clicked; selEnd = null;
+          } else {
+            // second tap
+            if (clicked.getTime() < selStart.getTime()) {
+              selEnd = new Date(selStart); selStart = clicked;
+            } else if (clicked.getTime() === selStart.getTime()) {
+              selEnd = clicked;
+            } else {
+              selEnd = clicked;
+            }
+          }
+          updateLabels();
+          renderCalendar();
+        });
+
+        grid.appendChild(cell);
+      }
+      wrap.appendChild(grid);
+      calWrap.appendChild(wrap);
+    }
+
+    function openSettings() {
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+
+      // Load current range
+      if (isWeek && window.weekPages && window.weekPages.length > 0) {
+        selStart = new Date(window.weekPages[0].start);
+        selStart.setHours(0,0,0,0);
+        const lastW = window.weekPages[window.weekPages.length - 1];
+        selEnd = new Date(lastW.end || lastW.start);
+        selEnd.setDate(selEnd.getDate() + 6);
+        selEnd.setHours(0,0,0,0);
+      } else if (!isWeek && window.dayPages && window.dayPages.length > 0) {
+        selStart = new Date(window.dayPages[0].date); selStart.setHours(0,0,0,0);
+        selEnd = new Date(window.dayPages[window.dayPages.length - 1].date); selEnd.setHours(0,0,0,0);
+      } else {
+        selStart = null; selEnd = null;
+      }
+
+      const now = selStart || new Date();
+      calViewYear  = now.getFullYear();
+      calViewMonth = now.getMonth();
+
+      updateLabels();
+      renderCalendar();
+      overlay.style.display = 'flex';
+    }
+
+    function applySettings() {
+      if (!selStart) { overlay.style.display = 'none'; return; }
+      const rangeEnd = selEnd || selStart;
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+
+      if (isWeek) {
+        // Rebuild weekPages from selStart to rangeEnd (week-by-week)
+        function getWeekStartLocal(d) {
+          const r = new Date(d); r.setHours(0,0,0,0);
+          r.setDate(r.getDate() - r.getDay() + 1); // Mon
+          return r;
+        }
+        const ws = getWeekStartLocal(selStart);
+        const we = getWeekStartLocal(rangeEnd);
+        const newPages = [];
+        const d = new Date(ws);
+        while (d.getTime() <= we.getTime()) {
+          const end = new Date(d); end.setDate(end.getDate() + 6);
+          // preserve existing page data if it matches
+          const existing = (window.weekPages || []).find(p => getWeekStartLocal(p.start).getTime() === d.getTime());
+          if (existing) newPages.push(existing);
+          else newPages.push({ start: new Date(d), end });
+          d.setDate(d.getDate() + 7);
+        }
+        window.weekPages = newPages;
+        if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+      } else {
+        const s = new Date(selStart); s.setHours(0,0,0,0);
+        const e = new Date(rangeEnd); e.setHours(0,0,0,0);
+        const newPages = [];
+        const d = new Date(s);
+        while (d.getTime() <= e.getTime()) {
+          const existing = (window.dayPages || []).find(p => { const t = new Date(p.date); t.setHours(0,0,0,0); return t.getTime() === d.getTime(); });
+          if (existing) newPages.push(existing);
+          else newPages.push({ date: new Date(d) });
+          d.setDate(d.getDate() + 1);
+        }
+        window.dayPages = newPages;
+        if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+      }
+      overlay.style.display = 'none';
+    }
+
+    settingsBtn.addEventListener('click', openSettings);
+    cancelBtn.addEventListener('click',  () => { overlay.style.display = 'none'; });
+    confirmBtn.addEventListener('click', applySettings);
+  })();
+
+  // ── 페이지 선택 모드 ──
+  (function initPageSelectMode() {
+    const panel       = document.getElementById('pagePanel');
+    const normalHdr   = document.getElementById('ppNormalHeader');
+    const selectHdr   = document.getElementById('ppSelectHeader');
+    const selectBtn   = document.getElementById('ppSelectBtn');
+    const doneBtn     = document.getElementById('ppDoneBtn');
+    const hideBar     = document.getElementById('ppHideBar');
+    const hideBtn     = document.getElementById('ppHideBtn');
+    const todayFooter = document.getElementById('pagePanelFooter');
+
+    let selectedMs = new Set(); // 선택된 페이지 timestamps
+
+    function isSelectMode() { return panel.classList.contains('select-mode'); }
+
+    function enterSelectMode() {
+      panel.classList.add('select-mode');
+      normalHdr.style.display = 'none';
+      selectHdr.style.display = 'flex';
+      if (todayFooter) todayFooter.style.display = 'none';
+      selectedMs.clear();
+      updateHideBar();
+      refreshCardRadios();
+    }
+
+    function exitSelectMode() {
+      panel.classList.remove('select-mode');
+      normalHdr.style.display = 'flex';
+      selectHdr.style.display = 'none';
+      hideBar.style.display = 'none';
+      selectedMs.clear();
+      refreshCardRadios();
+    }
+
+    function updateHideBar() {
+      const cnt = selectedMs.size;
+      hideBar.style.display = isSelectMode() ? 'block' : 'none';
+      hideBtn.textContent = cnt > 0 ? `숨기기 (${cnt})` : '숨기기';
+      hideBtn.style.opacity = cnt > 0 ? '1' : '0.35';
+    }
+
+    function getCardMs(card) {
+      // week card: data-week-mon / day card: data-date-ms
+      return card.dataset.weekMon || card.dataset.dateMs || null;
+    }
+
+    function refreshCardRadios() {
+      const cards = document.querySelectorAll('#pageList .page-week-card, #pageList .page-day-card');
+      cards.forEach(card => {
+        let radio = card.querySelector('.pp-radio');
+        if (!isSelectMode()) {
+          if (radio) radio.parentElement.replaceWith(...radio.parentElement.childNodes); // unwrap
+          // simpler: just hide
+          if (radio) radio.style.display = 'none';
+          return;
+        }
+        if (!radio) {
+          // wrap footer in a row with radio
+          const footer = card.querySelector('.page-week-footer');
+          if (!footer) return;
+          radio = document.createElement('div');
+          radio.className = 'pp-radio';
+          footer.insertBefore(radio, footer.firstChild);
+        }
+        radio.style.display = 'flex';
+        const ms = getCardMs(card);
+        const checked = ms && selectedMs.has(ms);
+        radio.classList.toggle('checked', !!checked);
+      });
+    }
+
+    function toggleCard(card) {
+      const ms = getCardMs(card);
+      if (!ms) return;
+      if (selectedMs.has(ms)) selectedMs.delete(ms);
+      else selectedMs.add(ms);
+      updateHideBar();
+      refreshCardRadios();
+    }
+
+    // 라디오 버튼 클릭 위임 (select mode일 때만 체크 토글)
+    document.getElementById('pageList').addEventListener('click', e => {
+      if (!isSelectMode()) return;
+      // 라디오 버튼 클릭 → 체크 토글
+      const radio = e.target.closest('.pp-radio');
+      if (radio) {
+        const card = radio.closest('.page-week-card, .page-day-card');
+        if (card) { e.stopPropagation(); toggleCard(card); }
+        return;
+      }
+      // 카드 본체 클릭 → 페이지 이동 (기본 동작 허용, 아무것도 막지 않음)
+    });
+
+    // 전역 노출
+    window.refreshCardRadios = refreshCardRadios;
+    window.exitPageSelectMode = exitSelectMode;
+
+    selectBtn.addEventListener('click', enterSelectMode);
+    doneBtn.addEventListener('click', exitSelectMode);
+
+    hideBtn.addEventListener('click', () => {
+      if (selectedMs.size === 0) return;
+      const activeTab = document.querySelector('.tab.active');
+      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+      if (isWeek) {
+        const getWm = d => { const r=new Date(d); r.setHours(0,0,0,0); const dy=(r.getDay()+6)%7; r.setDate(r.getDate()-dy); return r; };
+        window.hiddenWeekPages = window.hiddenWeekPages || [];
+        const toHide = (window.weekPages||[]).filter(p => selectedMs.has(String(getWm(p.start).getTime())));
+        toHide.forEach(p => { if (!window.hiddenWeekPages.some(h => h.start.getTime()===p.start.getTime())) window.hiddenWeekPages.push(p); });
+        window.weekPages = (window.weekPages||[]).filter(p => !selectedMs.has(String(getWm(p.start).getTime())));
+        if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+      } else {
+        window.hiddenDayPages = window.hiddenDayPages || [];
+        const toHide = (window.dayPages||[]).filter(p => selectedMs.has(String(p.date.getTime())));
+        toHide.forEach(p => { if (!window.hiddenDayPages.some(h => h.date.getTime()===p.date.getTime())) window.hiddenDayPages.push(p); });
+        window.dayPages = (window.dayPages||[]).filter(p => !selectedMs.has(String(p.date.getTime())));
+        if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+      }
+      exitSelectMode();
+    });
+
+    // renderDayPageList / renderWeekPageList 후 라디오 갱신
+    const _origRefresh = window.refreshPagePanel;
+    window.refreshPagePanel = function(tab) {
+      if (typeof _origRefresh === 'function') _origRefresh(tab);
+      setTimeout(refreshCardRadios, 0);
+    };
   })();
 
   // 툴 버튼 active
