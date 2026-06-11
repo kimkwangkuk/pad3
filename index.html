@@ -5219,7 +5219,7 @@
 
         const daysEl = document.createElement('div');
         daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (isDisabled ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned && !isDisabled ? '600' : '400') + ';';
-        daysEl.textContent = owned ? '구매 완료' : `${days}일`;
+        daysEl.textContent = owned ? (isDisabled ? '이미 추가됨' : '구매 완료') : `${days}일`;
 
         front.append(chk, yearEl, monthEl, daysEl);
         wrap.append(s2, s1, front);
