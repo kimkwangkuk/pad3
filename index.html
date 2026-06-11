@@ -3882,9 +3882,9 @@
           <button class="picker-save-btn" id="pickerSaveBtn">저장</button>
         </div>
         <div class="planner-header">
-          <div class="planner-date-block">
+          <div class="planner-date-block" style="cursor:pointer;" id="plannerDateBlock">
             <div class="planner-label">Date</div>
-            <div class="planner-date-num" id="plannerDateNum"></div>
+            <div class="planner-date-num" id="plannerDateNum" style="min-width:60px;"></div>
             <div class="planner-sub" id="plannerSub" contenteditable="true"></div>
           </div>
           <div class="planner-meta">
@@ -4218,6 +4218,34 @@
         <div class="pdp-days" id="pdpDaysGrid"></div>
       </div>
       <button class="pdp-add-btn" id="pdpConfirmBtn" disabled>날짜를 선택하세요</button>
+    </div>
+  </div>
+
+  <!-- 장 단위 구매 팝업 -->
+  <div id="pageCountPickerOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3200;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:24px;width:300px;box-shadow:0 12px 48px rgba(0,0,0,0.26);font-family:'Noto Sans KR',sans-serif;overflow:hidden;">
+      <div style="display:flex;align-items:center;padding:16px 20px 14px;position:relative;">
+        <button id="pcpCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;" id="pcpTitle">페이지 추가</div>
+      </div>
+      <div style="padding:8px 24px 24px;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 0 20px;">
+          <button id="pcpMinus" style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;font-size:22px;font-weight:300;color:rgba(0,0,0,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">−</button>
+          <div style="text-align:center;min-width:80px;">
+            <div id="pcpCount" style="font-size:48px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.04em;line-height:1;">1</div>
+            <div style="font-size:13px;color:rgba(0,0,0,0.4);margin-top:4px;letter-spacing:-0.01em;">장</div>
+          </div>
+          <button id="pcpPlus" style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;font-size:22px;font-weight:300;color:rgba(0,0,0,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">+</button>
+        </div>
+        <div id="pcpPriceRow" style="display:flex;justify-content:space-between;align-items:center;background:#f5f5f7;border-radius:12px;padding:10px 14px;margin-bottom:14px;">
+          <span style="font-size:12px;color:rgba(0,0,0,0.45);" id="pcpPriceLabel">1장 × 10원</span>
+          <span style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);" id="pcpPriceTotal">10원</span>
+        </div>
+        <button id="pcpConfirmBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.82);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;">10원 결제</button>
+        <div style="text-align:center;font-size:11px;color:rgba(0,0,0,0.3);margin-top:6px;letter-spacing:-0.01em;">장당 10원</div>
+      </div>
     </div>
   </div>
 
@@ -5026,42 +5054,20 @@
       addBtn.onclick = () => {
         const needsPeriod = (tmpl.title === '텐미닛 플래너' || tmpl.title === '주간 플래너');
         if (needsPeriod) {
-          window.openPeriodPicker({
-            title: '노트 설정',
-            noteName: '나의 ' + tmpl.title,
-            onConfirm: ({ noteName, months } = {}) => {
-              const label = (noteName && noteName.trim()) ? noteName.trim() : tmpl.title;
+          window.openPageCountPicker({
+            title: '페이지 추가',
+            onConfirm: (count) => {
+              const label = tmpl.title;
               const reusePageId = tmpl.title === '텐미닛 플래너' ? 'tab-planner' : tmpl.title === '주간 플래너' ? 'tab-2' : null;
               const newTabId = createTabFromHome(label, { reusePageId, color: tmpl.color, icon: STORE_ICONS[tmpl.title], activate: false });
-              if (months && months.length > 0) {
-                const isWeekTmpl = tmpl.title === '주간 플래너';
-                months.forEach(({ startDate, endDate }) => {
-                  if (isWeekTmpl) {
-                    const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
-                    const ws = gwsl2(startDate), we = gwsl2(endDate);
-                    const d = new Date(ws);
-                    while (d.getTime() <= we.getTime()) {
-                      const end = new Date(d); end.setDate(end.getDate()+6);
-                      const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
-                      if (!ex) (window.weekPages = window.weekPages||[]).push({ start:new Date(d), end });
-                      d.setDate(d.getDate()+7);
-                    }
-                  } else {
-                    const s = new Date(startDate); s.setHours(0,0,0,0);
-                    const e = new Date(endDate); e.setHours(0,0,0,0);
-                    const d = new Date(s);
-                    while (d.getTime() <= e.getTime()) {
-                      const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
-                      if (!ex) (window.dayPages = window.dayPages||[]).push({ date:new Date(d) });
-                      d.setDate(d.getDate()+1);
-                    }
-                  }
-                });
+              const isWeekTmpl = tmpl.title === '주간 플래너';
+              for (let i = 0; i < count; i++) {
+                const id = 'page-' + Date.now() + '-' + i;
                 if (isWeekTmpl) {
-                  window.weekPages.sort((a,b)=>a.start-b.start);
+                  (window.weekPages = window.weekPages||[]).push({ id, date: null, subjects: [] });
                   if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
                 } else {
-                  window.dayPages.sort((a,b)=>a.date-b.date);
+                  (window.dayPages = window.dayPages||[]).push({ id, date: null, subjects: [] });
                   if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
                 }
               }
@@ -5322,6 +5328,48 @@
           }));
           _onConfirm({ months, noteName: enteredName });
         }
+      };
+    };
+  })();
+
+  // ── 장 단위 구매 팝업 ──
+  window.openPageCountPicker = (function() {
+    const PRICE = 10;
+    let _count = 1;
+    let _onConfirm = null;
+    let _purchased = 0; // 총 구매한 장 수
+
+    function render() {
+      const countEl = document.getElementById('pcpCount');
+      const labelEl = document.getElementById('pcpPriceLabel');
+      const totalEl = document.getElementById('pcpPriceTotal');
+      const btn     = document.getElementById('pcpConfirmBtn');
+      const minus   = document.getElementById('pcpMinus');
+      if (countEl) countEl.textContent = _count;
+      if (labelEl) labelEl.textContent = `${_count}장 × ${PRICE}원`;
+      const price = _count * PRICE;
+      if (totalEl) totalEl.textContent = `${price.toLocaleString()}원`;
+      if (btn)     btn.textContent     = `${price.toLocaleString()}원 결제`;
+      if (minus)   minus.style.opacity = _count <= 1 ? '0.3' : '1';
+    }
+
+    return function({ onConfirm, title } = {}) {
+      _count = 1;
+      _onConfirm = onConfirm;
+      const overlay = document.getElementById('pageCountPickerOverlay');
+      if (!overlay) return;
+      const titleEl = document.getElementById('pcpTitle');
+      if (titleEl) titleEl.textContent = title || '페이지 추가';
+      render();
+      overlay.style.display = 'flex';
+
+      document.getElementById('pcpCancelBtn').onclick = () => { overlay.style.display = 'none'; };
+      document.getElementById('pcpMinus').onclick = () => { if (_count > 1) { _count--; render(); } };
+      document.getElementById('pcpPlus').onclick  = () => { _count++; render(); };
+      document.getElementById('pcpConfirmBtn').onclick = () => {
+        _purchased += _count;
+        overlay.style.display = 'none';
+        if (typeof _onConfirm === 'function') _onConfirm(_count);
       };
     };
   })();
@@ -5834,27 +5882,114 @@
 
   // ── 플래너 초기화 ──
   (function initPlanner() {
-    // 날짜 표시 업데이트 함수 (외부에서 호출 가능)
+    const COLORS = ['#FF8A80','#CE93D8','#80D8FF','#A5D6A7','#FFD180'];
+    let _activePageId = null; // 현재 표시 중인 페이지 id
+
+    // 날짜 표시 업데이트
     function setPlannerDate(date) {
-      const yy = String(date.getFullYear()).slice(2);
-      const mm = String(date.getMonth() + 1).padStart(2, '0');
-      const dd = String(date.getDate()).padStart(2, '0');
-      document.getElementById('plannerDateNum').textContent = `${yy}.${mm}.${dd}`;
+      const el = document.getElementById('plannerDateNum');
+      if (!el) return;
+      if (!date) {
+        el.textContent = '날짜 선택';
+        el.style.color = 'rgba(0,0,0,0.25)';
+      } else {
+        const yy = String(date.getFullYear()).slice(2);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        el.textContent = `${yy}.${mm}.${dd}`;
+        el.style.color = '';
+      }
     }
     window.setPlannerDate = setPlannerDate;
 
-    // 오늘 날짜로 초기화
-    const now = new Date();
-    setPlannerDate(now);
+    // 날짜 블록 클릭 → 인라인 날짜 피커
+    (function setupDatePicker() {
+      const block = document.getElementById('plannerDateBlock');
+      if (!block) return;
+      // 미니 달력 팝업 생성
+      const picker = document.createElement('div');
+      picker.id = 'plannerDatePicker';
+      picker.style.cssText = 'display:none;position:absolute;z-index:500;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:12px;font-family:\'Noto Sans KR\',sans-serif;min-width:220px;';
+      block.style.position = 'relative';
+      block.appendChild(picker);
 
-    // 과목 데이터
-    const COLORS = ['#FF8A80','#CE93D8','#80D8FF','#A5D6A7','#FFD180'];
-    const subjects = [
-      { name: '국어',  color: COLORS[0], todos: [], checked: [], timerSecs: 0 },
-      { name: '수학',  color: COLORS[1], todos: [], checked: [], timerSecs: 0 },
-      { name: '과학',  color: COLORS[2], todos: [], checked: [], timerSecs: 0 },
-    ];
-    window.studySubjects = subjects; // 타이머 탭에서 접근용
+      let pickerYear, pickerMonth;
+      function renderPicker() {
+        picker.innerHTML = '';
+        const nav = document.createElement('div');
+        nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;';
+        const prev = document.createElement('button');
+        prev.textContent = '‹'; prev.style.cssText = 'border:none;background:none;font-size:18px;cursor:pointer;color:rgba(0,0,0,0.5);padding:2px 6px;';
+        const lbl = document.createElement('span');
+        lbl.style.cssText = 'font-size:12px;font-weight:600;color:rgba(0,0,0,0.7);';
+        lbl.textContent = `${pickerYear}년 ${pickerMonth+1}월`;
+        const next = document.createElement('button');
+        next.textContent = '›'; next.style.cssText = prev.style.cssText;
+        prev.onclick = (e) => { e.stopPropagation(); pickerMonth--; if(pickerMonth<0){pickerMonth=11;pickerYear--;} renderPicker(); };
+        next.onclick = (e) => { e.stopPropagation(); pickerMonth++; if(pickerMonth>11){pickerMonth=0;pickerYear++;} renderPicker(); };
+        nav.append(prev, lbl, next);
+        picker.appendChild(nav);
+
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:2px;';
+        ['월','화','수','목','금','토','일'].forEach(d => {
+          const h = document.createElement('div');
+          h.style.cssText = 'text-align:center;font-size:9px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;';
+          h.textContent = d; grid.appendChild(h);
+        });
+        const firstDay = (new Date(pickerYear, pickerMonth, 1).getDay() + 6) % 7;
+        const days = new Date(pickerYear, pickerMonth+1, 0).getDate();
+        const todayMs = (() => { const d=new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+        for (let d = 1; d <= days; d++) {
+          const ms = new Date(pickerYear, pickerMonth, d).setHours(0,0,0,0);
+          const cell = document.createElement('div');
+          cell.textContent = d;
+          const isToday = ms === todayMs;
+          cell.style.cssText = 'text-align:center;font-size:11px;padding:4px 2px;border-radius:50%;cursor:pointer;color:' + (isToday ? '#007aff' : 'rgba(0,0,0,0.78)') + ';font-weight:' + (isToday ? '700' : '400') + ';';
+          cell.onclick = (e) => {
+            e.stopPropagation();
+            const chosen = new Date(pickerYear, pickerMonth, d);
+            // 현재 활성 페이지에 날짜 저장
+            const pages = window.dayPages || [];
+            const pg = pages.find(p => p.id === _activePageId);
+            if (pg) { pg.date = chosen; if (typeof window.renderDayPageList === 'function') window.renderDayPageList(); }
+            setPlannerDate(chosen);
+            picker.style.display = 'none';
+          };
+          grid.appendChild(cell);
+        }
+        picker.appendChild(grid);
+      }
+
+      block.addEventListener('click', (e) => {
+        if (picker.style.display !== 'none') { picker.style.display = 'none'; return; }
+        const now = new Date();
+        pickerYear = now.getFullYear(); pickerMonth = now.getMonth();
+        renderPicker();
+        picker.style.display = 'block';
+        e.stopPropagation();
+      });
+      document.addEventListener('click', () => { picker.style.display = 'none'; });
+    })();
+
+    // 빈 날짜로 초기화
+    setPlannerDate(null);
+
+    // 과목 데이터 (빈 상태로 시작)
+    let subjects = [];
+    window.studySubjects = subjects;
+
+    // 페이지 데이터 로드 (페이지 패널에서 카드 클릭 시 호출)
+    window.loadPageData = function(page) {
+      if (!page) return;
+      _activePageId = page.id || null;
+      setPlannerDate(page.date || null);
+      subjects.length = 0;
+      (page.subjects || []).forEach(s => subjects.push({...s}));
+      window.studySubjects = subjects;
+      if (typeof renderAll === 'function') renderAll();
+    };
 
     const rowsEl = document.getElementById('plannerRows');
     const EMPTY_COUNT = 14;
@@ -5864,6 +5999,23 @@
     // ── 렌더 ──
     function renderAll() {
       rowsEl.innerHTML = '';
+
+      // 과목 추가 버튼
+      const addSubjBtn = document.createElement('div');
+      addSubjBtn.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 4px;cursor:pointer;color:rgba(0,0,0,0.35);font-size:12px;letter-spacing:-0.01em;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:4px;';
+      addSubjBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> 과목 추가';
+      addSubjBtn.addEventListener('click', () => {
+        const color = COLORS[subjects.length % COLORS.length];
+        subjects.push({ name: '과목', color, todos: [], checked: [], timerSecs: 0 });
+        // 현재 활성 페이지에 저장
+        const pages = window.dayPages || [];
+        const pg = pages.find(p => p.id === _activePageId);
+        if (pg) pg.subjects = subjects.map(s => ({...s}));
+        renderAll();
+        if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+      });
+      rowsEl.appendChild(addSubjBtn);
+
       subjects.forEach((subj, si) => {
         // 과목 헤더 행
         const hRow = document.createElement('div');
@@ -8849,58 +9001,46 @@
       return `${m}월 ${d}일 (${dow})`;
     }
 
-    // 세로형 일간 썸네일 (텐미닛 플래너 레이아웃)
-    function buildMiniDayThumb(date) {
+    // 세로형 일간 썸네일 — v3: 빈 프레임, 날짜 버튼 표시
+    function buildMiniDayThumb(page) {
       const thumb = document.createElement('div');
       thumb.className = 'page-day-thumb';
 
-      // 상단 타이틀
       const title = document.createElement('div');
       title.className = 'pdt-title';
       title.textContent = 'DAILY PLANNER';
       thumb.appendChild(title);
 
-      // 날짜 라벨
+      // 날짜 버튼 — 설정된 날짜가 있으면 표시, 없으면 플레이스홀더
       const dateLbl = document.createElement('div');
       dateLbl.className = 'pdt-date-lbl';
-      dateLbl.textContent = date ? formatDayLabel(date) : '';
+      const pageDate = page && page.date;
+      dateLbl.textContent = pageDate ? formatDayLabel(pageDate) : '날짜 없음';
+      dateLbl.style.cssText += ';color:' + (pageDate ? '' : 'rgba(0,0,0,0.25)') + ';';
       thumb.appendChild(dateLbl);
 
       const divider = document.createElement('div');
       divider.className = 'pdt-divider';
       thumb.appendChild(divider);
 
-      // 시간 블록 (6~12시)
-      [6,7,8,9,10,11,12].forEach(h => {
-        const row = document.createElement('div');
-        row.className = 'pdt-time-row';
-        const lbl = document.createElement('span');
-        lbl.className = 'pdt-time-lbl';
-        lbl.textContent = `${h}`;
-        const bar = document.createElement('div');
-        bar.className = 'pdt-time-bar';
-        // 일부 시간대에 색블록 표시
-        if (h === 8 || h === 10) {
-          bar.style.cssText = 'flex:1;height:4px;border-radius:2px;background:rgba(255,100,80,0.25);';
+      // 과목 표시 (있으면) 또는 빈 줄
+      const subjs = (page && page.subjects) || [];
+      if (subjs.length > 0) {
+        subjs.slice(0, 3).forEach(s => {
+          const row = document.createElement('div');
+          row.className = 'pdt-time-row';
+          const lbl = document.createElement('span');
+          lbl.className = 'pdt-time-lbl';
+          lbl.textContent = s.name || '';
+          row.appendChild(lbl);
+          thumb.appendChild(row);
+        });
+      } else {
+        for (let i = 0; i < 4; i++) {
+          const row = document.createElement('div');
+          row.className = 'pdt-time-row';
+          thumb.appendChild(row);
         }
-        row.append(lbl, bar);
-        thumb.appendChild(row);
-      });
-
-      const div2 = document.createElement('div');
-      div2.className = 'pdt-divider';
-      thumb.appendChild(div2);
-
-      // TO DO 섹션
-      const todoLbl = document.createElement('div');
-      todoLbl.className = 'pdt-section-lbl';
-      todoLbl.textContent = 'TO DO';
-      thumb.appendChild(todoLbl);
-
-      for (let i = 0; i < 3; i++) {
-        const row = document.createElement('div');
-        row.className = 'pdt-todo-row';
-        thumb.appendChild(row);
       }
 
       return thumb;
@@ -8932,184 +9072,57 @@
         return;
       }
 
-      // ── 월별 그룹화 ──
-      function makeDayGroups(pages) {
-        if (!pages.length) return [];
-        const sorted = [...pages].sort((a,b)=>a.date-b.date);
-        const map = new Map();
-        sorted.forEach(p => {
-          const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
-          if (!map.has(key)) map.set(key, []);
-          map.get(key).push(p);
-        });
-        return [...map.values()];
-      }
-
+      // ── v3: 장 단위 — 그룹 없이 순서대로 표시 ──
       if (!isDayHiddenFilter && dayPagesSource.length > 0) {
-        const dayGroups = makeDayGroups(dayPagesSource);
-        dayGroups.forEach(grp => {
-          const y = grp[0].date.getFullYear();
-          const m = grp[0].date.getMonth();
-          const groupKey = `${y}-${m}`;
-          const isCollapsed = !!window._ppGroupCollapsed[groupKey];
-          const grpMsList = grp.map(p => String(p.date.getTime()));
-          const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
-          const hLeft = document.createElement('div');
-          hLeft.style.cssText = 'display:flex;align-items:center;gap:7px;';
-          const grpCheck = document.createElement('div');
-          grpCheck.className = 'pp-radio pp-group-check';
-          grpCheck.dataset.msList = JSON.stringify(grpMsList);
-          grpCheck.style.display = isDaySelectMode ? 'flex' : 'none';
-          grpCheck.style.flexShrink = '0';
-          grpCheck.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (!window._ppSelectedMs) return;
-            const allSel = grpMsList.every(ms => window._ppSelectedMs.has(ms));
-            grpMsList.forEach(ms => { if (allSel) window._ppSelectedMs.delete(ms); else window._ppSelectedMs.add(ms); });
-            if (window._ppUpdateHideBar) window._ppUpdateHideBar();
-            if (window.refreshCardRadios) window.refreshCardRadios();
+        dayPagesSource.forEach((p, i) => {
+          const card = document.createElement('div');
+          card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
+          card.dataset.pageId = p.id || i;
+          const thumb = buildMiniDayThumb(p);
+          card.appendChild(thumb);
+          const footer = document.createElement('div');
+          footer.className = 'page-week-footer';
+          const lbl = document.createElement('div');
+          lbl.className = 'page-week-lbl';
+          lbl.textContent = p.date ? formatDayLabel(p.date) : `${i + 1}장`;
+          footer.appendChild(lbl);
+          card.appendChild(footer);
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            activeDayPageIdx = i;
+            renderDayPageList();
+            if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
+            if (typeof window.loadPageData === 'function') window.loadPageData(p);
           });
-          const hLbl = document.createElement('span');
-          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
-          hLbl.textContent = `${y}년 ${m + 1}월`;
-          hLeft.append(grpCheck, hLbl);
-          const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
-          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hdrRow.append(hLeft, hBtn);
-          hdrRow.style.cursor = 'pointer';
-          list.appendChild(hdrRow);
-
-          const cardsWrap = document.createElement('div');
-          cardsWrap.style.cssText = `display:${isCollapsed ? 'none' : 'grid'};grid-template-columns:1fr 1fr;gap:4px;grid-column:1/-1;`;
-          hdrRow.addEventListener('click', (e) => {
-            if (e.target.closest('.pp-group-check')) return;
-            window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey];
-            if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
-          });
-          list.appendChild(cardsWrap);
-
-          grp.forEach((p) => {
-            const i = dayPagesSource.indexOf(p);
-            const card = document.createElement('div');
-            card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
-            card.dataset.dateMs = p.date.getTime();
-
-            const thumb = buildMiniDayThumb(p.date);
-            if (p.date.getTime() === todayMs) {
-              const badge = document.createElement('div');
-              badge.className = 'page-today-badge';
-              badge.textContent = '오늘';
-              thumb.appendChild(badge);
-            }
-            card.appendChild(thumb);
-
-            const footer = document.createElement('div');
-            footer.className = 'page-week-footer';
-            const lbl = document.createElement('div');
-            lbl.className = 'page-week-lbl';
-            lbl.textContent = formatDayLabel(p.date);
-            footer.append(lbl);
-            card.appendChild(footer);
-
-            card.addEventListener('click', (e) => {
-              if (e.target.closest('.pp-radio')) return;
-              activeDayPageIdx = i;
-              renderDayPageList();
-              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
-              if (typeof window.setPlannerDate === 'function') {
-                window.setPlannerDate(p.date);
-              }
-            });
-
-            cardsWrap.appendChild(card);
-          });
+          list.appendChild(card);
         });
       } else if (isDayHiddenFilter && dayPagesSource.length > 0) {
-        makeDayGroups(dayPagesSource).forEach(grp => {
-          const y = grp[0].date.getFullYear(), m = grp[0].date.getMonth();
-          const groupKey = `hidden-${y}-${m}`;
-          const isCollapsed = !!window._ppGroupCollapsed[groupKey];
-          const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;cursor:pointer;';
-          const hLbl = document.createElement('span');
-          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
-          hLbl.textContent = `${y}년 ${m + 1}월`;
-          const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
-          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hdrRow.append(hLbl, hBtn);
-          list.appendChild(hdrRow);
-          const cardsWrap = document.createElement('div');
-          cardsWrap.style.cssText = `display:${isCollapsed ? 'none' : 'grid'};grid-template-columns:1fr 1fr;gap:4px;grid-column:1/-1;`;
-          hdrRow.addEventListener('click', () => { window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderDayPageList === 'function') window.renderDayPageList(); });
-          list.appendChild(cardsWrap);
-          grp.forEach(p => {
-            const i = dayPagesSource.indexOf(p);
-            const card = document.createElement('div');
-            card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
-            card.dataset.dateMs = p.date.getTime();
-            const thumb = buildMiniDayThumb(p.date);
-            if (p.date.getTime() === todayMs) { const badge = document.createElement('div'); badge.className = 'page-today-badge'; badge.textContent = '오늘'; thumb.appendChild(badge); }
-            card.appendChild(thumb);
-            const footer = document.createElement('div'); footer.className = 'page-week-footer';
-            const lbl = document.createElement('div'); lbl.className = 'page-week-lbl'; lbl.textContent = formatDayLabel(p.date);
-            footer.append(lbl); card.appendChild(footer);
-            card.style.opacity = '0.72';
-            card.addEventListener('click', (e) => {
-              if (e.target.closest('.pp-radio')) return;
-              const ms = card.dataset.dateMs || null; if (!ms) return;
-              if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms); else window._hiddenSelectedMs.add(ms);
-              if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
-              const btn = document.getElementById('ppRestoreSelBtn');
-              if (btn) { const cnt = window._hiddenSelectedMs.size; btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원'; btn.style.opacity = cnt > 0 ? '1' : '0.35'; }
-            });
-            cardsWrap.appendChild(card);
+        dayPagesSource.forEach((p, i) => {
+          const card = document.createElement('div');
+          card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
+          card.dataset.pageId = p.id || i;
+          const thumb = buildMiniDayThumb(p);
+          card.appendChild(thumb);
+          const footer = document.createElement('div'); footer.className = 'page-week-footer';
+          const lbl = document.createElement('div'); lbl.className = 'page-week-lbl';
+          lbl.textContent = p.date ? formatDayLabel(p.date) : `${i + 1}장`;
+          footer.appendChild(lbl); card.appendChild(footer);
+          card.style.opacity = '0.72';
+          const pid = p.id || String(i);
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-radio')) return;
+            if (window._hiddenSelectedMs.has(pid)) window._hiddenSelectedMs.delete(pid); else window._hiddenSelectedMs.add(pid);
+            if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
+            const btn = document.getElementById('ppRestoreSelBtn');
+            if (btn) { const cnt = window._hiddenSelectedMs.size; btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원'; btn.style.opacity = cnt > 0 ? '1' : '0.35'; }
           });
+          list.appendChild(card);
         });
       }
 
-      // 오늘 카드 가시성 감지 → 버튼 토글 (숨긴 페이지 필터일 때는 숨김)
+      // v3: 오늘 버튼 숨김 (날짜 개념 없음)
       const footer = document.getElementById('pagePanelFooter');
-      const todayBtn = document.getElementById('pageTodayBtn');
-      if (footer && todayBtn) {
-        if (list._todayObserver) { list._todayObserver.disconnect(); list._todayObserver = null; }
-        if (isDayHiddenFilter) { footer.style.display = 'none'; return; }
-
-        const todayCard = list.querySelector(`[data-date-ms="${todayMs}"]`);
-
-        if (!todayCard) {
-          // 오늘 페이지 자체가 없으면 버튼 숨김
-          footer.style.display = 'none';
-        } else {
-          const obs = new IntersectionObserver(entries => {
-            const visible = entries[0].isIntersecting;
-            footer.style.display = visible ? 'none' : '';
-          }, { root: list, threshold: 0.1 });
-          obs.observe(todayCard);
-          list._todayObserver = obs;
-        }
-
-        // 버튼 클릭 → 오늘 카드로 스크롤
-        todayBtn.onclick = () => {
-          if (todayCard) todayCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        };
-      }
-    }
-
-    function addDayPage(date) {
-      const d = new Date(date);
-      d.setHours(0, 0, 0, 0);
-      const already = window.dayPages.some(p => p.date.getTime() === d.getTime());
-      if (already) return;
-      window.dayPages.push({ date: d });
-      window.dayPages.sort((a, b) => a.date - b.date);
-      activeDayPageIdx = window.dayPages.findIndex(p => p.date.getTime() === d.getTime());
-      renderDayPageList();
-      if (typeof window.setPlannerDate === 'function') {
-        window.setPlannerDate(d);
-      }
+      if (footer) footer.style.display = 'none';
     }
 
     activeDayPageIdx = window.dayPages.length - 1;
@@ -9558,38 +9571,20 @@
     if (settingsBtn) settingsBtn.addEventListener('click', () => {
       const activeTab = document.querySelector('.tab.active');
       const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
-      window.openPeriodPicker({
-        noteName: isWeek ? '주간 플래너' : '텐미닛 플래너',
-        disableOwned: true,
-        onConfirm: ({ months }) => {
-          if (!months || months.length === 0) return;
-          months.forEach(({ startDate, endDate }) => {
+      window.openPageCountPicker({
+        title: '페이지 추가',
+        onConfirm: (count) => {
+          for (let i = 0; i < count; i++) {
+            const id = 'page-' + Date.now() + '-' + i;
             if (isWeek) {
-              const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
-              const ws = gwsl2(startDate), we = gwsl2(endDate);
-              const d = new Date(ws);
-              while (d.getTime() <= we.getTime()) {
-                const end = new Date(d); end.setDate(end.getDate()+6);
-                const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
-                if (!ex) window.weekPages.push({ start:new Date(d), end });
-                d.setDate(d.getDate()+7);
-              }
+              (window.weekPages = window.weekPages||[]).push({ id, date: null, subjects: [] });
             } else {
-              const s = new Date(startDate); s.setHours(0,0,0,0);
-              const e = new Date(endDate); e.setHours(0,0,0,0);
-              const d = new Date(s);
-              while (d.getTime() <= e.getTime()) {
-                const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
-                if (!ex) window.dayPages.push({ date:new Date(d) });
-                d.setDate(d.getDate()+1);
-              }
+              (window.dayPages = window.dayPages||[]).push({ id, date: null, subjects: [] });
             }
-          });
+          }
           if (isWeek) {
-            window.weekPages.sort((a,b)=>a.start-b.start);
             if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
           } else {
-            window.dayPages.sort((a,b)=>a.date-b.date);
             if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
           }
         }
