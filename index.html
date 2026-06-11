@@ -5060,6 +5060,8 @@
               const reusePageId = tmpl.title === '텐미닛 플래너' ? 'tab-planner' : tmpl.title === '주간 플래너' ? 'tab-2' : null;
               const newTabId = createTabFromHome(label, { reusePageId, color: tmpl.color, icon: STORE_ICONS[tmpl.title], activate: false });
               window.showNoteCreatedDialog({
+                title: '구매 완료',
+                subtitle: '홈에 추가되었습니다.',
                 onConfirm: () => { hideDetail(); },
                 onUse: () => {
                   hideDetail();
@@ -5126,8 +5128,8 @@
       overlay.style.cssText = 'display:none;position:absolute;inset:0;background:rgba(0,0,0,0.55);z-index:450;align-items:center;justify-content:center;font-family:\'Noto Sans KR\',sans-serif;';
       overlay.innerHTML = `
         <div style="background:#e5e5ea;border-radius:22px;width:340px;padding:26px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,0.28);">
-          <div style="font-size:17px;font-weight:700;color:rgba(0,0,0,0.86);margin-bottom:7px;letter-spacing:-0.02em;">노트 생성 완료</div>
-          <div style="font-size:14px;color:rgba(0,0,0,0.55);margin-bottom:22px;">내 라이브러리에 추가되었습니다.</div>
+          <div id="noteCreatedTitle" style="font-size:17px;font-weight:700;color:rgba(0,0,0,0.86);margin-bottom:7px;letter-spacing:-0.02em;"></div>
+          <div id="noteCreatedSubtitle" style="font-size:14px;color:rgba(0,0,0,0.55);margin-bottom:22px;"></div>
           <div style="display:flex;gap:8px;">
             <button id="noteCreatedConfirmBtn" style="flex:1;padding:12px;border:none;border-radius:13px;background:rgba(0,0,0,0.1);font-size:15px;font-weight:600;font-family:'Noto Sans KR',sans-serif;color:rgba(0,0,0,0.75);cursor:pointer;">확인</button>
             <button id="noteCreatedUseBtn" style="flex:1;padding:12px;border:none;border-radius:13px;background:rgba(0,0,0,0.14);font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;color:rgba(0,0,0,0.82);cursor:pointer;">지금 사용</button>
@@ -5135,8 +5137,12 @@
         </div>`;
       document.querySelector('.ipad-frame').appendChild(overlay);
     }
-    return function({ onConfirm, onUse } = {}) {
+    return function({ onConfirm, onUse, title, subtitle } = {}) {
       build();
+      const titleEl    = document.getElementById('noteCreatedTitle');
+      const subtitleEl = document.getElementById('noteCreatedSubtitle');
+      if (titleEl)    titleEl.textContent    = title    || '노트 생성 완료';
+      if (subtitleEl) subtitleEl.textContent = subtitle || '내 라이브러리에 추가되었습니다.';
       overlay.style.display = 'flex';
       document.getElementById('noteCreatedConfirmBtn').onclick = () => {
         overlay.style.display = 'none';
