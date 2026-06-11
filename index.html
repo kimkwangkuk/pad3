@@ -9343,19 +9343,10 @@
     }
 
     function positionPopup() {
-      // 먼저 위치를 잡은 후 display:flex (offsetHeight 0 문제 방지)
-      const panel = document.getElementById('pagePanel');
-      if (!panel) { overlay.style.display = 'flex'; return; }
-      const panelRect = panel.getBoundingClientRect();
-      const popW = 540;
-      // 패널 헤더 바로 아래, 수평 중앙
-      const hdrEl = document.getElementById('ppNormalHeader') || document.getElementById('ppSelectHeader');
-      const hdrBottom = hdrEl ? hdrEl.getBoundingClientRect().bottom : panelRect.top + 48;
-      let left = panelRect.left + (panelRect.width - popW) / 2;
-      if (left < 8) left = 8;
-      if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
-      overlay.style.left = left + 'px';
-      overlay.style.top  = (hdrBottom + 8) + 'px';
+      // 화면 정중앙
+      overlay.style.left = '50%';
+      overlay.style.top  = '50%';
+      overlay.style.transform = 'translate(-50%, -50%)';
       overlay.style.display = 'flex';
     }
 
