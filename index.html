@@ -5195,30 +5195,30 @@
 
         const wrap = document.createElement('div');
         const isDisabled = owned && _disableOwned;
-        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (isDisabled ? 'default' : 'pointer') + ';' + (isDisabled ? 'opacity:0.4;' : '');
+        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (isDisabled ? 'default' : 'pointer') + ';';
 
         const s2 = document.createElement('div');
-        s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
+        s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (isDisabled ? '#eaeaea' : selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
         const s1 = document.createElement('div');
-        s1.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(1.2deg);background:' + (selected ? 'rgba(0,0,0,0.7)' : '#e8e8ed') + ';';
+        s1.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(1.2deg);background:' + (isDisabled ? '#f0f0f0' : selected ? 'rgba(0,0,0,0.7)' : '#e8e8ed') + ';';
 
         const front = document.createElement('div');
-        front.style.cssText = 'position:relative;border-radius:12px;padding:10px 10px 8px;background:' + (selected ? 'rgba(0,0,0,0.86)' : '#fff') + ';box-shadow:0 2px 6px rgba(0,0,0,0.1);';
+        front.style.cssText = 'position:relative;border-radius:12px;padding:10px 10px 8px;background:' + (isDisabled ? '#f5f5f5' : selected ? 'rgba(0,0,0,0.86)' : '#fff') + ';box-shadow:0 1px 3px rgba(0,0,0,0.07);';
 
         const chk = document.createElement('div');
-        chk.style.cssText = 'width:16px;height:16px;border-radius:50%;border:1.8px solid ' + (selected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.22)') + ';background:' + (selected ? 'rgba(255,255,255,0.9)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;margin-bottom:10px;';
-        if (selected) chk.innerHTML = '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="rgba(0,0,0,0.82)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        chk.style.cssText = 'width:16px;height:16px;border-radius:50%;border:1.8px solid ' + (isDisabled ? 'rgba(0,0,0,0.12)' : selected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.22)') + ';background:' + (selected && !isDisabled ? 'rgba(255,255,255,0.9)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;margin-bottom:10px;';
+        if (selected && !isDisabled) chk.innerHTML = '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="rgba(0,0,0,0.82)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
         const yearEl = document.createElement('div');
-        yearEl.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:0.02em;color:' + (selected ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.38)') + ';';
+        yearEl.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:0.02em;color:' + (isDisabled ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.38)') + ';';
         yearEl.textContent = `${y}`;
 
         const monthEl = document.createElement('div');
-        monthEl.style.cssText = 'font-size:17px;font-weight:700;letter-spacing:-0.03em;margin-top:1px;color:' + (selected ? '#fff' : 'rgba(0,0,0,0.86)') + ';';
+        monthEl.style.cssText = 'font-size:17px;font-weight:700;letter-spacing:-0.03em;margin-top:1px;color:' + (isDisabled ? 'rgba(0,0,0,0.28)' : selected ? '#fff' : 'rgba(0,0,0,0.86)') + ';';
         monthEl.textContent = `${m + 1}월`;
 
         const daysEl = document.createElement('div');
-        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned ? '600' : '400') + ';';
+        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (isDisabled ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned && !isDisabled ? '600' : '400') + ';';
         daysEl.textContent = owned ? '구매 완료' : `${days}일`;
 
         front.append(chk, yearEl, monthEl, daysEl);
