@@ -4227,34 +4227,24 @@
       <div style="position:relative;display:flex;align-items:center;justify-content:center;padding:18px 20px 16px;">
         <button id="periodCancelBtn" style="position:absolute;left:20px;border:none;background:none;font-size:15px;font-weight:400;color:rgba(0,0,0,0.45);cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:4px 0;letter-spacing:-0.02em;">취소</button>
         <div style="font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;" id="periodPickerTitle">노트 설정</div>
-        <button id="periodConfirmBtn" style="position:absolute;right:20px;border:none;background:none;font-size:15px;font-weight:700;color:rgba(0,0,0,0.82);cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:4px 0;letter-spacing:-0.02em;">생성</button>
       </div>
       <!-- 노트 이름 행 -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
         <span style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);flex-shrink:0;">노트 이름</span>
         <input id="ppNoteName" type="text" style="font-size:14px;color:rgba(0,0,0,0.6);border:none;outline:none;text-align:right;background:transparent;flex:1;min-width:0;margin-left:12px;font-family:'Noto Sans KR',sans-serif;">
       </div>
-      <!-- 플래너 시작/종료일 행 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
-        <div>
-          <div style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);">플래너 시작/종료일</div>
-          <div style="font-size:11px;color:rgba(0,0,0,0.38);margin-top:2px;">언제든 수정 가능</div>
-        </div>
-        <div id="ppRangeLabel" style="font-size:13px;font-weight:500;color:rgba(0,0,0,0.5);white-space:nowrap;"></div>
+      <!-- 날짜 레이블 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px;">
+        <span style="font-size:12px;color:rgba(0,0,0,0.38);font-family:'Noto Sans KR',sans-serif;">기간 선택</span>
+        <div id="ppRangeLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);white-space:nowrap;letter-spacing:-0.02em;"></div>
       </div>
-      <!-- 프리셋 선택 영역 -->
-      <div id="ppPresetArea" style="padding:2px 16px 16px;">
-        <div id="ppPresetGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
-      </div>
-      <!-- 직접 설정 캘린더 영역 (기본 hidden) -->
-      <div id="ppCalendarArea" style="display:none;background:#f2f2f7;margin:0 12px 16px;border-radius:16px;padding:14px 12px;">
-        <!-- 월 네비게이션 -->
+      <!-- 캘린더 -->
+      <div id="ppCalendarArea" style="background:#f2f2f7;margin:0 12px 0;border-radius:16px;padding:14px 12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <button id="ppPrevMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">‹</button>
           <div id="ppMonthLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.75);letter-spacing:-0.01em;"></div>
           <button id="ppNextMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">›</button>
         </div>
-        <!-- 요일 헤더 -->
         <div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;">
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">일</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">월</div>
@@ -4264,10 +4254,19 @@
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">금</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">토</div>
         </div>
-        <!-- 날짜 그리드 -->
         <div id="ppGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
       </div>
-      <div style="padding-bottom:2px;"></div>
+      <!-- 가격 정보 -->
+      <div id="ppPriceInfo" style="display:none;margin:10px 12px 0;padding:12px 14px;background:#f2f2f7;border-radius:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <span id="ppPriceDays" style="font-size:12px;color:rgba(0,0,0,0.45);font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;"></span>
+          <span id="ppPriceTotal" style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;white-space:nowrap;"></span>
+        </div>
+      </div>
+      <!-- 결제 버튼 -->
+      <div style="padding:12px 12px 16px;">
+        <button id="ppPayBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.82);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;">날짜를 선택하세요</button>
+      </div>
     </div>
   </div>
 
@@ -5119,10 +5118,12 @@
     };
   })();
 
-  // ── 기간 설정 캘린더 팝업 컴포넌트 ──
-  // openPeriodPicker({ title, onConfirm })
+  // ── 기간 설정 / 결제 팝업 컴포넌트 ──
+  // openPeriodPicker({ title, noteName, onConfirm })
   window.openPeriodPicker = (function() {
-    let ppYear, ppMonth, ppStart, ppEnd, ppActivePreset;
+    let ppYear, ppMonth, ppStart, ppEnd;
+    const PRICE_PER_DAY = 10;
+    const STORAGE_KEY = 'pad3_purchased_ranges';
 
     const toMs = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
     const fmtDate = d => {
@@ -5133,153 +5134,129 @@
       return `${yy}.${mm}.${dd}`;
     };
 
-    // 프리셋 동적 생성 (오늘 날짜 기준)
-    function makePresets(today) {
-      const y  = today.getFullYear();
-      const m  = today.getMonth(); // 0-indexed
-      // 월 표시: 연도 걸치면 "12~1월" 같은 형태로
-      const mLabel = (m0) => ((m0 % 12) + 12) % 12 + 1;
-      // n개월 뒤 말일
-      const endOfMonth = (base, addM) => new Date(base.getFullYear(), base.getMonth() + addM + 1, 0);
-      const startOfMonth = (base) => new Date(base.getFullYear(), base.getMonth(), 1);
-      return [
-        {
-          key: 'thisYear',
-          label: `${y}년`,
-          calc: (t) => ({
-            s: new Date(t.getFullYear(), 0, 1),
-            e: new Date(t.getFullYear(), 11, 31)
-          })
-        },
-        {
-          key: 'thisMonth',
-          label: `${m + 1}월`,
-          calc: (t) => ({
-            s: startOfMonth(t),
-            e: endOfMonth(t, 0)
-          })
-        },
-        {
-          key: '2mo',
-          label: `${mLabel(m)}~${mLabel(m + 1)}월`,
-          calc: (t) => ({
-            s: startOfMonth(t),
-            e: endOfMonth(t, 1)
-          })
-        },
-        {
-          key: '3mo',
-          label: `${mLabel(m)}~${mLabel(m + 2)}월`,
-          calc: (t) => ({
-            s: startOfMonth(t),
-            e: endOfMonth(t, 2)
-          })
-        },
-        { key: 'custom', label: '직접 설정', calc: null }
-      ];
+    // ── 구매 기록 (localStorage) ──
+    function getPurchased() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      catch(e) { return []; }
+    }
+    function addPurchased(start, end) {
+      const list = getPurchased();
+      list.push({ s: toMs(start), e: toMs(end) });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+    function isDayOwned(ms) {
+      return getPurchased().some(r => ms >= r.s && ms <= r.e);
     }
 
-    function updateRangeLabel() {
+    // ── 가격 계산 ──
+    function calcPrice(start, end) {
+      if (!start || !end) return { total: 0, owned: 0, price: 0 };
+      let total = 0, owned = 0;
+      for (let ms = toMs(start); ms <= toMs(end); ms += 86400000) {
+        total++;
+        if (isDayOwned(ms)) owned++;
+      }
+      return { total, owned, price: (total - owned) * PRICE_PER_DAY };
+    }
+
+    // ── UI 업데이트 ──
+    function updateUI() {
       const rangeLabel = document.getElementById('ppRangeLabel');
-      if (!rangeLabel) return;
-      if (ppStart && ppEnd) {
-        rangeLabel.textContent = `${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)}`;
-      } else if (ppStart) {
-        rangeLabel.textContent = `${fmtDate(ppStart)} ~`;
-      } else {
-        rangeLabel.textContent = '';
+      const priceInfo  = document.getElementById('ppPriceInfo');
+      const priceDays  = document.getElementById('ppPriceDays');
+      const priceTotal = document.getElementById('ppPriceTotal');
+      const payBtn     = document.getElementById('ppPayBtn');
+
+      // 날짜 레이블
+      if (rangeLabel) {
+        if (ppStart && ppEnd)      rangeLabel.textContent = `${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)}`;
+        else if (ppStart)          rangeLabel.textContent = `${fmtDate(ppStart)} ~`;
+        else                       rangeLabel.textContent = '';
+      }
+
+      // 가격 정보 + 버튼
+      if (!ppStart || !ppEnd) {
+        if (priceInfo) priceInfo.style.display = 'none';
+        if (payBtn)    payBtn.textContent = '날짜를 선택하세요';
+        if (payBtn)    payBtn.disabled = true;
+        return;
+      }
+      const { total, owned, price } = calcPrice(ppStart, ppEnd);
+      const newDays = total - owned;
+      if (priceInfo) priceInfo.style.display = 'block';
+      if (priceDays) {
+        priceDays.textContent = owned > 0
+          ? `${total}일 선택 · 이미 소유 ${owned}일`
+          : `${total}일 선택`;
+      }
+      if (priceTotal) {
+        priceTotal.textContent = price > 0
+          ? `${newDays}일 × ${PRICE_PER_DAY}원 = ${price.toLocaleString()}원`
+          : `전체 소유 (0원)`;
+      }
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.textContent = price > 0 ? `${price.toLocaleString()}원 결제` : '무료로 추가';
       }
     }
 
-    function renderPresets(today) {
-      const grid = document.getElementById('ppPresetGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-      const presets = makePresets(today);
-      presets.forEach(p => {
-        const btn = document.createElement('button');
-        const isActive = ppActivePreset === p.key;
-        const isCustom = p.key === 'custom';
-        btn.style.cssText = `border:none;border-radius:12px;padding:12px 8px;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;letter-spacing:-0.02em;transition:background 0.12s,color 0.12s;outline:none;
-          background:${isActive ? 'rgba(0,0,0,0.82)' : '#f2f2f7'};
-          color:${isActive ? '#fff' : 'rgba(0,0,0,0.75)'};
-          ${isCustom ? 'grid-column: 1 / -1;' : ''}`;
-        btn.textContent = p.label;
-        btn.addEventListener('click', () => {
-          ppActivePreset = p.key;
-          if (p.calc) {
-            const { s, e } = p.calc(today);
-            ppStart = s; ppEnd = e;
-            ppYear = s.getFullYear(); ppMonth = s.getMonth();
-            document.getElementById('ppCalendarArea').style.display = 'none';
-            updateRangeLabel();
-          } else {
-            // 직접 설정
-            ppStart = null; ppEnd = null;
-            const calArea = document.getElementById('ppCalendarArea');
-            calArea.style.display = 'block';
-            ppYear = today.getFullYear(); ppMonth = today.getMonth();
-            renderGrid();
-            updateRangeLabel();
-          }
-          renderPresets(today);
-        });
-        grid.appendChild(btn);
-      });
-    }
-
+    // ── 캘린더 렌더 ──
     function renderGrid() {
-      const grid = document.getElementById('ppGrid');
-      const monthLabel = document.getElementById('ppMonthLabel');
+      const grid      = document.getElementById('ppGrid');
+      const monthLbl  = document.getElementById('ppMonthLabel');
       if (!grid) return;
+      monthLbl.textContent = `${ppYear}년 ${ppMonth+1}월`;
 
-      monthLabel.textContent = `${ppYear}년 ${ppMonth+1}월`;
-
-      const firstDay = new Date(ppYear, ppMonth, 1).getDay();
+      const firstDay    = new Date(ppYear, ppMonth, 1).getDay();
       const daysInMonth = new Date(ppYear, ppMonth+1, 0).getDate();
-      const today = new Date(); today.setHours(0,0,0,0);
+      const todayMs     = toMs(new Date());
+      const startMs     = ppStart ? toMs(ppStart) : null;
+      const endMs       = ppEnd   ? toMs(ppEnd)   : null;
 
       grid.innerHTML = '';
-
-      for (let i = 0; i < firstDay; i++) {
-        grid.appendChild(document.createElement('div'));
-      }
+      for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
 
       for (let d = 1; d <= daysInMonth; d++) {
-        const date = new Date(ppYear, ppMonth, d);
-        const ms = toMs(date);
-        const startMs = ppStart ? toMs(ppStart) : null;
-        const endMs = ppEnd ? toMs(ppEnd) : null;
+        const date  = new Date(ppYear, ppMonth, d);
+        const ms    = toMs(date);
+        const owned = isDayOwned(ms);
 
-        const isStart = startMs !== null && ms === startMs;
-        const isEnd = endMs !== null && ms === endMs;
-        const inRange = startMs !== null && endMs !== null && ms > startMs && ms < endMs;
-        const isToday = ms === toMs(today);
+        const isStart   = startMs !== null && ms === startMs;
+        const isEnd     = endMs   !== null && ms === endMs;
+        const inRange   = startMs !== null && endMs !== null && ms > startMs && ms < endMs;
+        const isToday   = ms === todayMs;
 
+        // 셀 (범위 배경)
         const cell = document.createElement('div');
-        cell.dataset.ms = ms;
         cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;';
+        const RANGE_BG = owned ? 'rgba(52,199,89,0.15)' : 'rgba(0,0,0,0.09)';
+        if (inRange)             cell.style.background = RANGE_BG;
+        else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${RANGE_BG} 50%)`;
+        else if (isEnd)          cell.style.background = `linear-gradient(to left,  transparent 50%, ${RANGE_BG} 50%)`;
 
-        if (inRange) {
-          cell.style.background = 'rgba(0,0,0,0.1)';
-        } else if (isStart && endMs !== null) {
-          cell.style.background = 'linear-gradient(to right, transparent 50%, rgba(0,0,0,0.1) 50%)';
-        } else if (isEnd) {
-          cell.style.background = 'linear-gradient(to left, transparent 50%, rgba(0,0,0,0.1) 50%)';
-        }
-
+        // 원형 날짜
         const dot = document.createElement('div');
         dot.textContent = d;
         dot.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
         if (isStart || isEnd) {
-          dot.style.background = 'rgba(0,0,0,0.82)';
-          dot.style.color = 'white';
-          dot.style.fontWeight = '700';
+          dot.style.background  = owned ? '#34c759' : 'rgba(0,0,0,0.82)';
+          dot.style.color       = '#fff';
+          dot.style.fontWeight  = '700';
+        } else if (owned) {
+          dot.style.color       = '#34c759';
+          dot.style.fontWeight  = '600';
         } else if (isToday) {
-          dot.style.color = '#007aff';
-          dot.style.fontWeight = '700';
+          dot.style.color       = '#007aff';
+          dot.style.fontWeight  = '700';
         } else {
-          dot.style.color = 'rgba(0,0,0,0.78)';
+          dot.style.color       = 'rgba(0,0,0,0.78)';
+        }
+
+        // 소유 표시 점
+        if (owned && !isStart && !isEnd) {
+          const pip = document.createElement('div');
+          pip.style.cssText = 'position:absolute;bottom:1px;width:3px;height:3px;border-radius:50%;background:#34c759;';
+          dot.appendChild(pip);
         }
 
         cell.appendChild(dot);
@@ -5287,38 +5264,32 @@
           if (!ppStart || (ppStart && ppEnd)) {
             ppStart = date; ppEnd = null;
           } else {
-            if (ms < toMs(ppStart)) { ppEnd = new Date(ppStart); ppStart = date; }
+            if (ms < toMs(ppStart))      { ppEnd = new Date(ppStart); ppStart = date; }
             else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
-            else { ppEnd = date; }
+            else                           { ppEnd = date; }
           }
-          updateRangeLabel();
+          updateUI();
           renderGrid();
         });
         grid.appendChild(cell);
       }
     }
 
+    // ── 팝업 열기 ──
     return function({ title, noteName, onConfirm } = {}) {
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
       const today = new Date(); today.setHours(0,0,0,0);
-
-      // 초기 프리셋: 올해 (첫 번째)
-      ppActivePreset = 'thisYear';
-      const { s, e } = makePresets(today)[0].calc(today);
-      ppStart = s; ppEnd = e;
-      ppYear = today.getFullYear(); ppMonth = today.getMonth();
+      ppStart = null; ppEnd = null;
+      ppYear  = today.getFullYear();
+      ppMonth = today.getMonth();
 
       const noteNameEl = document.getElementById('ppNoteName');
       if (noteNameEl) noteNameEl.value = noteName || '';
 
-      // 캘린더 숨기고 프리셋 표시
-      const calArea = document.getElementById('ppCalendarArea');
-      if (calArea) calArea.style.display = 'none';
-
-      renderPresets(today);
-      updateRangeLabel();
+      renderGrid();
+      updateUI();
       overlay.style.display = 'flex';
 
       document.getElementById('ppPrevMonth').onclick = () => {
@@ -5328,12 +5299,17 @@
         ppMonth++; if (ppMonth > 11) { ppMonth = 0; ppYear++; } renderGrid();
       };
       document.getElementById('periodCancelBtn').onclick = () => { overlay.style.display = 'none'; };
-      document.getElementById('periodConfirmBtn').onclick = () => {
+
+      // 결제 버튼
+      const payBtn = document.getElementById('ppPayBtn');
+      if (payBtn) payBtn.onclick = () => {
         if (!ppStart) return;
+        const end = ppEnd || ppStart;
+        addPurchased(ppStart, end);           // 구매 기록 저장
         overlay.style.display = 'none';
         const nameEl = document.getElementById('ppNoteName');
         const enteredName = nameEl ? nameEl.value.trim() : '';
-        if (typeof onConfirm === 'function') onConfirm({ startDate: new Date(ppStart), endDate: new Date(ppEnd || ppStart), noteName: enteredName });
+        if (typeof onConfirm === 'function') onConfirm({ startDate: new Date(ppStart), endDate: new Date(end), noteName: enteredName });
       };
     };
   })();
