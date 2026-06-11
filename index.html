@@ -3843,7 +3843,7 @@
               <span id="ppTitleText">페이지</span>
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <div id="ppSettingsBtn" class="pp-hdr-btn">설정</div>
+            <div id="ppSettingsBtn" class="pp-hdr-btn">추가</div>
           </div>
           <!-- 선택/편집 모드 -->
           <div id="ppSelectHeader" style="display:none;align-items:center;justify-content:space-between;width:100%;">
@@ -7977,13 +7977,6 @@
       if (typeof window.refreshCalendar === 'function') window.refreshCalendar();
     }
 
-    // 기본 4주 (현재 주 포함 최근 4주)
-    for (let i = 3; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i * 7);
-      addWeekPage(d);
-    }
-    activePageIdx = window.weekPages.length - 1;
     renderPageList();
 
     // ── 주 선택 팝업 (멀티 선택) ──
@@ -9204,12 +9197,6 @@
       }
     }
 
-    // 기본 4일 (오늘 포함 최근 4일)
-    for (let i = 3; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      addDayPage(d);
-    }
     activeDayPageIdx = window.dayPages.length - 1;
 
     // 전역 노출
