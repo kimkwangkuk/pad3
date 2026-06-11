@@ -4242,8 +4242,12 @@
         </div>
         <div id="ppRangeLabel" style="font-size:13px;font-weight:500;color:rgba(0,0,0,0.5);white-space:nowrap;"></div>
       </div>
-      <!-- 캘린더 영역 -->
-      <div style="background:#f2f2f7;margin:0 12px 14px;border-radius:16px;padding:14px 12px;">
+      <!-- 프리셋 선택 영역 -->
+      <div id="ppPresetArea" style="padding:2px 16px 16px;">
+        <div id="ppPresetGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      </div>
+      <!-- 직접 설정 캘린더 영역 (기본 hidden) -->
+      <div id="ppCalendarArea" style="display:none;background:#f2f2f7;margin:0 12px 16px;border-radius:16px;padding:14px 12px;">
         <!-- 월 네비게이션 -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <button id="ppPrevMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">‹</button>
@@ -4263,7 +4267,7 @@
         <!-- 날짜 그리드 -->
         <div id="ppGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
       </div>
-      <div style="padding-bottom:6px;"></div>
+      <div style="padding-bottom:2px;"></div>
     </div>
   </div>
 
@@ -5118,7 +5122,7 @@
   // ── 기간 설정 캘린더 팝업 컴포넌트 ──
   // openPeriodPicker({ title, onConfirm })
   window.openPeriodPicker = (function() {
-    let ppYear, ppMonth, ppStart, ppEnd;
+    let ppYear, ppMonth, ppStart, ppEnd, ppActivePreset;
 
     const toMs = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
     const fmtDate = d => {
@@ -5129,9 +5133,94 @@
       return `${yy}.${mm}.${dd}`;
     };
 
+    // 프리셋 정의
+    const PRESETS = [
+      { key: 'thisMonth', label: '이번 달',
+        calc: (t) => {
+          const s = new Date(t.getFullYear(), t.getMonth(), 1);
+          const e = new Date(t.getFullYear(), t.getMonth()+1, 0);
+          return { s, e };
+        }
+      },
+      { key: '1m', label: '1개월',
+        calc: (t) => {
+          const s = new Date(t); const e = new Date(t);
+          e.setMonth(e.getMonth()+1); e.setDate(e.getDate()-1);
+          return { s, e };
+        }
+      },
+      { key: '3m', label: '3개월',
+        calc: (t) => {
+          const s = new Date(t); const e = new Date(t);
+          e.setMonth(e.getMonth()+3); e.setDate(e.getDate()-1);
+          return { s, e };
+        }
+      },
+      { key: '6m', label: '6개월',
+        calc: (t) => {
+          const s = new Date(t); const e = new Date(t);
+          e.setMonth(e.getMonth()+6); e.setDate(e.getDate()-1);
+          return { s, e };
+        }
+      },
+      { key: '1y', label: '1년',
+        calc: (t) => {
+          const s = new Date(t); const e = new Date(t);
+          e.setFullYear(e.getFullYear()+1); e.setDate(e.getDate()-1);
+          return { s, e };
+        }
+      },
+      { key: 'custom', label: '직접 설정', calc: null }
+    ];
+
+    function updateRangeLabel() {
+      const rangeLabel = document.getElementById('ppRangeLabel');
+      if (!rangeLabel) return;
+      if (ppStart && ppEnd) {
+        rangeLabel.textContent = `${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)}`;
+      } else if (ppStart) {
+        rangeLabel.textContent = `${fmtDate(ppStart)} ~`;
+      } else {
+        rangeLabel.textContent = '';
+      }
+    }
+
+    function renderPresets(today) {
+      const grid = document.getElementById('ppPresetGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      PRESETS.forEach(p => {
+        const btn = document.createElement('button');
+        const isActive = ppActivePreset === p.key;
+        btn.style.cssText = `border:none;border-radius:12px;padding:12px 8px;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;letter-spacing:-0.02em;transition:background 0.12s,color 0.12s;outline:none;
+          background:${isActive ? 'rgba(0,0,0,0.82)' : '#f2f2f7'};
+          color:${isActive ? '#fff' : 'rgba(0,0,0,0.75)'};`;
+        btn.textContent = p.label;
+        btn.addEventListener('click', () => {
+          ppActivePreset = p.key;
+          if (p.calc) {
+            const { s, e } = p.calc(today);
+            ppStart = s; ppEnd = e;
+            ppYear = s.getFullYear(); ppMonth = s.getMonth();
+            document.getElementById('ppCalendarArea').style.display = 'none';
+            updateRangeLabel();
+          } else {
+            // 직접 설정
+            ppStart = null; ppEnd = null;
+            const calArea = document.getElementById('ppCalendarArea');
+            calArea.style.display = 'block';
+            ppYear = today.getFullYear(); ppMonth = today.getMonth();
+            renderGrid();
+            updateRangeLabel();
+          }
+          renderPresets(today);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
     function renderGrid() {
       const grid = document.getElementById('ppGrid');
-      const rangeLabel = document.getElementById('ppRangeLabel');
       const monthLabel = document.getElementById('ppMonthLabel');
       if (!grid) return;
 
@@ -5162,7 +5251,6 @@
         cell.dataset.ms = ms;
         cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;';
 
-        // 범위 배경 바
         if (inRange) {
           cell.style.background = 'rgba(0,0,0,0.1)';
         } else if (isStart && endMs !== null) {
@@ -5171,7 +5259,6 @@
           cell.style.background = 'linear-gradient(to left, transparent 50%, rgba(0,0,0,0.1) 50%)';
         }
 
-        // 날짜 원
         const dot = document.createElement('div');
         dot.textContent = d;
         dot.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
@@ -5195,18 +5282,10 @@
             else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
             else { ppEnd = date; }
           }
+          updateRangeLabel();
           renderGrid();
         });
         grid.appendChild(cell);
-      }
-
-      // 범위 레이블
-      if (ppStart && ppEnd) {
-        rangeLabel.textContent = `${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)}`;
-      } else if (ppStart) {
-        rangeLabel.textContent = `${fmtDate(ppStart)} ~`;
-      } else {
-        rangeLabel.textContent = '';
       }
     }
 
@@ -5214,17 +5293,23 @@
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
-      // 초기값: 오늘 ~ 한 달 후
       const today = new Date(); today.setHours(0,0,0,0);
-      ppStart = new Date(today);
-      ppEnd = new Date(today); ppEnd.setMonth(ppEnd.getMonth()+1); ppEnd.setDate(ppEnd.getDate()-1); ppEnd.setHours(0,0,0,0);
-      ppYear = today.getFullYear();
-      ppMonth = today.getMonth();
+
+      // 초기 프리셋: 이번 달
+      ppActivePreset = 'thisMonth';
+      const { s, e } = PRESETS[0].calc(today);
+      ppStart = s; ppEnd = e;
+      ppYear = today.getFullYear(); ppMonth = today.getMonth();
 
       const noteNameEl = document.getElementById('ppNoteName');
       if (noteNameEl) noteNameEl.value = noteName || '';
 
-      renderGrid();
+      // 캘린더 숨기고 프리셋 표시
+      const calArea = document.getElementById('ppCalendarArea');
+      if (calArea) calArea.style.display = 'none';
+
+      renderPresets(today);
+      updateRangeLabel();
       overlay.style.display = 'flex';
 
       document.getElementById('ppPrevMonth').onclick = () => {
