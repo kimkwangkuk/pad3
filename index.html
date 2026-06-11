@@ -5294,53 +5294,61 @@
         const isEnd     = endMs   !== null && ms === endMs;
         const inRange   = startMs !== null && endMs !== null && ms > startMs && ms < endMs;
         const isToday   = ms === todayMs;
+        const isSelected = isStart || isEnd;
+
+        const RANGE_BG       = 'rgba(0,0,0,0.09)';
+        const OWNED_RANGE_BG = 'rgba(52,199,89,0.15)';
 
         // 셀 (범위 배경)
         const cell = document.createElement('div');
-        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;';
-        const RANGE_BG = 'rgba(0,0,0,0.09)';
-        if (!owned) {
-          if (inRange)             cell.style.background = RANGE_BG;
-          else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${RANGE_BG} 50%)`;
-          else if (isEnd)          cell.style.background = `linear-gradient(to left,  transparent 50%, ${RANGE_BG} 50%)`;
-        }
+        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;flex-direction:column;gap:0;';
+        const rangeBg = owned ? OWNED_RANGE_BG : RANGE_BG;
+        if (inRange)                        cell.style.background = rangeBg;
+        else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${rangeBg} 50%)`;
+        else if (isEnd)                     cell.style.background = `linear-gradient(to left,  transparent 50%, ${rangeBg} 50%)`;
 
         // 원형 날짜
         const dot = document.createElement('div');
         dot.textContent = d;
-        dot.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
-        if (owned) {
-          dot.style.color   = 'rgba(0,0,0,0.78)';
-          dot.style.opacity = '0.3';
-        } else if (isStart || isEnd) {
-          dot.style.background  = 'rgba(0,0,0,0.82)';
-          dot.style.color       = '#fff';
-          dot.style.fontWeight  = '700';
+        dot.style.cssText = 'width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
+        if (isSelected && owned) {
+          dot.style.background = '#34c759';
+          dot.style.color      = '#fff';
+          dot.style.fontWeight = '700';
+        } else if (isSelected) {
+          dot.style.background = 'rgba(0,0,0,0.82)';
+          dot.style.color      = '#fff';
+          dot.style.fontWeight = '700';
+        } else if (owned) {
+          dot.style.color      = '#34c759';
+          dot.style.fontWeight = '600';
         } else if (isToday) {
-          dot.style.color       = '#007aff';
-          dot.style.fontWeight  = '700';
+          dot.style.color      = '#007aff';
+          dot.style.fontWeight = '700';
         } else {
-          dot.style.color       = 'rgba(0,0,0,0.78)';
-        }
-
-        if (owned) {
-          cell.style.pointerEvents = 'none';
+          dot.style.color      = 'rgba(0,0,0,0.78)';
         }
 
         cell.appendChild(dot);
-        if (!owned) {
-          cell.addEventListener('click', () => {
-            if (!ppStart || (ppStart && ppEnd)) {
-              ppStart = date; ppEnd = null;
-            } else {
-              if (ms < toMs(ppStart))      { ppEnd = new Date(ppStart); ppStart = date; }
-              else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
-              else                           { ppEnd = date; }
-            }
-            updateUI();
-            renderGrid();
-          });
+
+        // 구매 완료 표시 (작은 점)
+        if (owned) {
+          const ownerDot = document.createElement('div');
+          ownerDot.style.cssText = 'width:4px;height:4px;border-radius:50%;background:#34c759;position:absolute;bottom:3px;';
+          cell.appendChild(ownerDot);
         }
+
+        cell.addEventListener('click', () => {
+          if (!ppStart || (ppStart && ppEnd)) {
+            ppStart = date; ppEnd = null;
+          } else {
+            if (ms < toMs(ppStart))        { ppEnd = new Date(ppStart); ppStart = date; }
+            else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
+            else                           { ppEnd = date; }
+          }
+          updateUI();
+          renderGrid();
+        });
         grid.appendChild(cell);
       }
     }
