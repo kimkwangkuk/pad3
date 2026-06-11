@@ -9154,6 +9154,8 @@
       // 편집 버튼 숨김/표시
       const selectBtn = document.getElementById('ppSelectBtn');
       if (selectBtn) selectBtn.style.visibility = f === 'hidden' ? 'hidden' : '';
+      const settingsBtn2 = document.getElementById('ppSettingsBtn');
+      if (settingsBtn2) settingsBtn2.style.visibility = f === 'hidden' ? 'hidden' : '';
       // 복원 바 표시/숨김
       if (restoreBar) restoreBar.style.display = f === 'hidden' ? 'block' : 'none';
       updateRestoreBar();
