@@ -4247,44 +4247,17 @@
       <!-- 구분선 -->
       <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 20px;"></div>
 
-      <!-- 구매할 페이지 선택 행 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;gap:12px;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);">구매할 페이지 선택</div>
-          <div id="ppSelectionInfo" style="font-size:12px;color:rgba(0,0,0,0.4);margin-top:3px;letter-spacing:-0.01em;">날짜를 선택하세요</div>
-        </div>
-        <div id="ppModeDropdown" style="position:relative;flex-shrink:0;">
-          <div id="ppModeBtn" style="display:flex;align-items:center;gap:5px;background:#f2f2f7;border-radius:10px;padding:8px 12px;cursor:pointer;">
-            <span id="ppModeLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.75);white-space:nowrap;">직접 설정</span>
-            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="rgba(0,0,0,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div id="ppModeMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:120px;overflow:hidden;z-index:10;">
-            <div id="ppModeItem" style="padding:12px 16px;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);cursor:pointer;white-space:nowrap;">직접 선택</div>
-          </div>
-        </div>
+      <!-- 구매할 월 선택 -->
+      <div style="padding:0 20px 10px;">
+        <div style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);margin-bottom:4px;">구매할 월 선택</div>
+        <div id="ppSelectionInfo" style="font-size:12px;color:rgba(0,0,0,0.4);letter-spacing:-0.01em;">월을 선택하세요</div>
       </div>
 
-      <!-- 캘린더 -->
-      <div id="ppCalendarArea" style="background:#f2f2f7;margin:0 12px 0;border-radius:16px;padding:14px 12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <button id="ppPrevMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">‹</button>
-          <div id="ppMonthLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.75);letter-spacing:-0.01em;"></div>
-          <button id="ppNextMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">›</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;">
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">월</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">화</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">수</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">목</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">금</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">토</div>
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">일</div>
-        </div>
-        <div id="ppGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
-      </div>
+      <!-- 월 카드 그리드 -->
+      <div id="ppMonthGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 16px 16px;max-height:280px;overflow-y:auto;"></div>
 
       <!-- 가격 정보 -->
-      <div id="ppPriceInfo" style="display:none;margin:10px 12px 0;padding:12px 14px;background:#f2f2f7;border-radius:14px;">
+      <div id="ppPriceInfo" style="display:none;margin:0 16px 0;padding:10px 14px;background:#f2f2f7;border-radius:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
           <span id="ppPriceDays" style="font-size:12px;color:rgba(0,0,0,0.45);letter-spacing:-0.02em;"></span>
           <span id="ppPriceTotal" style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);letter-spacing:-0.02em;white-space:nowrap;"></span>
@@ -4292,8 +4265,8 @@
       </div>
 
       <!-- 결제 버튼 -->
-      <div style="padding:12px 12px 16px;">
-        <button id="ppPayBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.15);color:rgba(0,0,0,0.35);font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;" disabled>날짜를 선택하세요</button>
+      <div style="padding:12px 16px 16px;">
+        <button id="ppPayBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.15);color:rgba(0,0,0,0.35);font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;" disabled>월을 선택하세요</button>
       </div>
 
       <!-- 히든 노트 이름 -->
@@ -5055,35 +5028,38 @@
           window.openPeriodPicker({
             title: '노트 설정',
             noteName: '나의 ' + tmpl.title,
-            onConfirm: ({ noteName, startDate, endDate } = {}) => {
+            onConfirm: ({ noteName, months } = {}) => {
               const label = (noteName && noteName.trim()) ? noteName.trim() : tmpl.title;
               const reusePageId = tmpl.title === '텐미닛 플래너' ? 'tab-planner' : tmpl.title === '주간 플래너' ? 'tab-2' : null;
               const newTabId = createTabFromHome(label, { reusePageId, color: tmpl.color, icon: STORE_ICONS[tmpl.title], activate: false });
-              // 구매한 날짜 범위를 페이지 목록에 추가
-              if (startDate) {
+              if (months && months.length > 0) {
                 const isWeekTmpl = tmpl.title === '주간 플래너';
-                const rangeEnd = endDate || startDate;
-                if (isWeekTmpl) {
-                  const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
-                  const ws = gwsl2(startDate), we = gwsl2(rangeEnd);
-                  const d = new Date(ws);
-                  while (d.getTime() <= we.getTime()) {
-                    const end = new Date(d); end.setDate(end.getDate()+6);
-                    const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
-                    if (!ex) (window.weekPages = window.weekPages||[]).push({ start:new Date(d), end });
-                    d.setDate(d.getDate()+7);
+                months.forEach(({ startDate, endDate }) => {
+                  if (isWeekTmpl) {
+                    const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
+                    const ws = gwsl2(startDate), we = gwsl2(endDate);
+                    const d = new Date(ws);
+                    while (d.getTime() <= we.getTime()) {
+                      const end = new Date(d); end.setDate(end.getDate()+6);
+                      const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
+                      if (!ex) (window.weekPages = window.weekPages||[]).push({ start:new Date(d), end });
+                      d.setDate(d.getDate()+7);
+                    }
+                  } else {
+                    const s = new Date(startDate); s.setHours(0,0,0,0);
+                    const e = new Date(endDate); e.setHours(0,0,0,0);
+                    const d = new Date(s);
+                    while (d.getTime() <= e.getTime()) {
+                      const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
+                      if (!ex) (window.dayPages = window.dayPages||[]).push({ date:new Date(d) });
+                      d.setDate(d.getDate()+1);
+                    }
                   }
+                });
+                if (isWeekTmpl) {
                   window.weekPages.sort((a,b)=>a.start-b.start);
                   if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
                 } else {
-                  const s = new Date(startDate); s.setHours(0,0,0,0);
-                  const e = new Date(rangeEnd);  e.setHours(0,0,0,0);
-                  const d = new Date(s);
-                  while (d.getTime() <= e.getTime()) {
-                    const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
-                    if (!ex) (window.dayPages = window.dayPages||[]).push({ date:new Date(d) });
-                    d.setDate(d.getDate()+1);
-                  }
                   window.dayPages.sort((a,b)=>a.date-b.date);
                   if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
                 }
@@ -5187,36 +5163,77 @@
   // ── 기간 설정 / 결제 팝업 컴포넌트 ──
   // openPeriodPicker({ title, noteName, onConfirm })
   window.openPeriodPicker = (function() {
-    let ppYear, ppMonth, ppStart, ppEnd;
     const PRICE_PER_DAY = 10;
-    const toMs = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
-    const fmtDate = d => {
-      if (!d) return '';
-      const yy = String(d.getFullYear()).slice(2);
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      return `${yy}.${mm}.${dd}`;
-    };
+    let _selectedMonths = new Set(); // "YYYY-M" keys
+    let _onConfirm = null;
 
-    // ── 구매 기록 (세션 메모리 — 새로고침 시 초기화) ──
-    const _purchasedRanges = [];
-    function getPurchased() { return _purchasedRanges; }
-    function addPurchased(start, end) {
-      _purchasedRanges.push({ s: toMs(start), e: toMs(end) });
-    }
-    function isDayOwned(ms) {
-      return _purchasedRanges.some(r => ms >= r.s && ms <= r.e);
-    }
+    // ── 구매 기록 (세션 메모리) ──
+    const _purchasedMonths = new Set(); // "YYYY-M"
+    function isMonthOwned(year, month) { return _purchasedMonths.has(`${year}-${month}`); }
+    function addPurchasedMonth(year, month) { _purchasedMonths.add(`${year}-${month}`); }
 
-    // ── 가격 계산 ──
-    function calcPrice(start, end) {
-      if (!start || !end) return { total: 0, owned: 0, price: 0 };
-      let total = 0, owned = 0;
-      for (let ms = toMs(start); ms <= toMs(end); ms += 86400000) {
-        total++;
-        if (isDayOwned(ms)) owned++;
+    function daysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
+
+    // ── 월 카드 그리드 렌더 ──
+    function renderMonthGrid() {
+      const grid = document.getElementById('ppMonthGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const now = new Date();
+      const cy = now.getFullYear(), cm = now.getMonth();
+      // 현재달 -2 ~ +13 (총 16개월)
+      for (let offset = -2; offset <= 13; offset++) {
+        let y = cy, m = cm + offset;
+        while (m < 0) { m += 12; y--; }
+        while (m > 11) { m -= 12; y++; }
+        const key = `${y}-${m}`;
+        const selected = _selectedMonths.has(key);
+        const owned = isMonthOwned(y, m);
+        const days = daysInMonth(y, m);
+
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (owned ? 'default' : 'pointer') + ';';
+
+        // 스택 레이어 2
+        const s2 = document.createElement('div');
+        s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (owned ? '#ddd' : selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
+        // 스택 레이어 1
+        const s1 = document.createElement('div');
+        s1.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(1.2deg);background:' + (owned ? '#e5e5ea' : selected ? 'rgba(0,0,0,0.7)' : '#e8e8ed') + ';';
+
+        const front = document.createElement('div');
+        front.style.cssText = 'position:relative;border-radius:12px;padding:10px 10px 8px;background:' + (owned ? '#f2f2f7' : selected ? 'rgba(0,0,0,0.86)' : '#fff') + ';box-shadow:0 2px 6px rgba(0,0,0,0.1);';
+
+        // 체크박스
+        const chk = document.createElement('div');
+        chk.style.cssText = 'width:16px;height:16px;border-radius:50%;border:1.8px solid ' + (owned ? 'rgba(0,0,0,0.18)' : selected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.22)') + ';background:' + (selected ? 'rgba(255,255,255,0.9)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;margin-bottom:10px;';
+        if (selected) chk.innerHTML = '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="rgba(0,0,0,0.82)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        const yearEl = document.createElement('div');
+        yearEl.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:0.02em;color:' + (owned ? 'rgba(0,0,0,0.25)' : selected ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.38)') + ';';
+        yearEl.textContent = `${y}`;
+
+        const monthEl = document.createElement('div');
+        monthEl.style.cssText = 'font-size:17px;font-weight:700;letter-spacing:-0.03em;margin-top:1px;color:' + (owned ? 'rgba(0,0,0,0.28)' : selected ? '#fff' : 'rgba(0,0,0,0.86)') + ';';
+        monthEl.textContent = `${m + 1}월`;
+
+        const daysEl = document.createElement('div');
+        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (owned ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.32)') + ';';
+        daysEl.textContent = owned ? '구매 완료' : `${days}일`;
+
+        front.append(chk, yearEl, monthEl, daysEl);
+        wrap.append(s2, s1, front);
+
+        if (!owned) {
+          wrap.addEventListener('click', () => {
+            if (_selectedMonths.has(key)) _selectedMonths.delete(key);
+            else _selectedMonths.add(key);
+            renderMonthGrid();
+            updateUI();
+          });
+        }
+        grid.appendChild(wrap);
       }
-      return { total, owned, price: (total - owned) * PRICE_PER_DAY };
     }
 
     // ── UI 업데이트 ──
@@ -5227,121 +5244,34 @@
       const priceTotal = document.getElementById('ppPriceTotal');
       const payBtn     = document.getElementById('ppPayBtn');
 
-      // 선택 정보 레이블
-      if (selInfo) {
-        if (ppStart && ppEnd) {
-          const { total } = calcPrice(ppStart, ppEnd);
-          selInfo.textContent = `${total}장 (${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)})`;
-        } else if (ppStart) {
-          selInfo.textContent = `${fmtDate(ppStart)} ~`;
-        } else {
-          selInfo.textContent = '날짜를 선택하세요';
-        }
-      }
+      const selected = [..._selectedMonths].map(k => {
+        const [y, m] = k.split('-').map(Number);
+        return { year: y, month: m };
+      }).sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
 
-      // 가격 정보 + 버튼
-      if (!ppStart || !ppEnd) {
+      if (selected.length === 0) {
+        if (selInfo) selInfo.textContent = '월을 선택하세요';
         if (priceInfo) priceInfo.style.display = 'none';
-        if (payBtn) { payBtn.textContent = '날짜를 선택하세요'; payBtn.disabled = true;
-          payBtn.style.background = 'rgba(0,0,0,0.15)'; payBtn.style.color = 'rgba(0,0,0,0.35)'; }
+        if (payBtn) { payBtn.textContent = '월을 선택하세요'; payBtn.disabled = true; payBtn.style.background = 'rgba(0,0,0,0.15)'; payBtn.style.color = 'rgba(0,0,0,0.35)'; }
         return;
       }
-      const { total, owned, price } = calcPrice(ppStart, ppEnd);
-      const newDays = total - owned;
+
+      let totalDays = 0;
+      selected.forEach(({ year, month }) => { totalDays += daysInMonth(year, month); });
+      const totalPrice = totalDays * PRICE_PER_DAY;
+
+      if (selInfo) {
+        const lbls = selected.map(({ year, month }) => `${year}년 ${month + 1}월`);
+        selInfo.textContent = lbls.length <= 3 ? lbls.join(', ') : `${lbls[0]} 외 ${lbls.length - 1}개월`;
+      }
       if (priceInfo) priceInfo.style.display = 'block';
-      if (priceDays) {
-        priceDays.textContent = owned > 0
-          ? `${total}장 선택 · 이미 소유 ${owned}장`
-          : `${total}장 선택`;
-      }
-      if (priceTotal) {
-        priceTotal.textContent = price > 0
-          ? `${newDays}장 × ${PRICE_PER_DAY}원 = ${price.toLocaleString()}원`
-          : `전체 소유 (0원)`;
-      }
+      if (priceDays) priceDays.textContent = `${selected.length}개월 · ${totalDays}장`;
+      if (priceTotal) priceTotal.textContent = `${totalDays}장 × ${PRICE_PER_DAY}원 = ${totalPrice.toLocaleString()}원`;
       if (payBtn) {
         payBtn.disabled = false;
         payBtn.style.background = 'rgba(0,0,0,0.82)';
         payBtn.style.color = '#fff';
-        payBtn.textContent = price > 0 ? `${price.toLocaleString()}원 결제하고 추가` : '무료로 추가';
-      }
-    }
-
-    // ── 캘린더 렌더 ──
-    function renderGrid() {
-      const grid      = document.getElementById('ppGrid');
-      const monthLbl  = document.getElementById('ppMonthLabel');
-      if (!grid) return;
-      monthLbl.textContent = `${ppYear}년 ${ppMonth+1}월`;
-
-      // 월요일 시작: 일요일(0)→6, 월요일(1)→0, …
-      const rawDay      = new Date(ppYear, ppMonth, 1).getDay();
-      const firstDay    = (rawDay + 6) % 7;
-      const daysInMonth = new Date(ppYear, ppMonth+1, 0).getDate();
-      const todayMs     = toMs(new Date());
-      const startMs     = ppStart ? toMs(ppStart) : null;
-      const endMs       = ppEnd   ? toMs(ppEnd)   : null;
-
-      grid.innerHTML = '';
-      for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
-
-      for (let d = 1; d <= daysInMonth; d++) {
-        const date  = new Date(ppYear, ppMonth, d);
-        const ms    = toMs(date);
-        const owned = isDayOwned(ms);
-
-        const isStart   = startMs !== null && ms === startMs;
-        const isEnd     = endMs   !== null && ms === endMs;
-        const inRange   = startMs !== null && endMs !== null && ms > startMs && ms < endMs;
-        const isToday   = ms === todayMs;
-
-        // 셀 (범위 배경)
-        const cell = document.createElement('div');
-        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;';
-        const RANGE_BG = 'rgba(0,0,0,0.09)';
-        if (!owned) {
-          if (inRange)             cell.style.background = RANGE_BG;
-          else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${RANGE_BG} 50%)`;
-          else if (isEnd)          cell.style.background = `linear-gradient(to left,  transparent 50%, ${RANGE_BG} 50%)`;
-        }
-
-        // 원형 날짜
-        const dot = document.createElement('div');
-        dot.textContent = d;
-        dot.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
-        if (owned) {
-          dot.style.color   = 'rgba(0,0,0,0.78)';
-          dot.style.opacity = '0.3';
-        } else if (isStart || isEnd) {
-          dot.style.background  = 'rgba(0,0,0,0.82)';
-          dot.style.color       = '#fff';
-          dot.style.fontWeight  = '700';
-        } else if (isToday) {
-          dot.style.color       = '#007aff';
-          dot.style.fontWeight  = '700';
-        } else {
-          dot.style.color       = 'rgba(0,0,0,0.78)';
-        }
-
-        if (owned) {
-          cell.style.pointerEvents = 'none';
-        }
-
-        cell.appendChild(dot);
-        if (!owned) {
-          cell.addEventListener('click', () => {
-            if (!ppStart || (ppStart && ppEnd)) {
-              ppStart = date; ppEnd = null;
-            } else {
-              if (ms < toMs(ppStart))      { ppEnd = new Date(ppStart); ppStart = date; }
-              else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
-              else                           { ppEnd = date; }
-            }
-            updateUI();
-            renderGrid();
-          });
-        }
-        grid.appendChild(cell);
+        payBtn.textContent = `${totalPrice.toLocaleString()}원 결제하고 추가`;
       }
     }
 
@@ -5350,52 +5280,38 @@
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
-      const today = new Date(); today.setHours(0,0,0,0);
-      ppStart = null; ppEnd = null;
-      ppYear  = today.getFullYear();
-      ppMonth = today.getMonth();
+      _selectedMonths = new Set();
+      _onConfirm = onConfirm;
 
-      // 상품명 세팅
       const nameEl = document.getElementById('ppProductName');
       if (nameEl) nameEl.textContent = noteName || '';
       const hiddenName = document.getElementById('ppNoteName');
       if (hiddenName) hiddenName.value = noteName || '';
 
-      // 드롭다운 (직접 선택 항목만)
-      const modeBtn  = document.getElementById('ppModeBtn');
-      const modeMenu = document.getElementById('ppModeMenu');
-      const modeItem = document.getElementById('ppModeItem');
-      if (modeBtn && modeMenu) {
-        modeBtn.onclick = (e) => {
-          e.stopPropagation();
-          modeMenu.style.display = modeMenu.style.display === 'none' ? 'block' : 'none';
-        };
-        if (modeItem) modeItem.onclick = () => { modeMenu.style.display = 'none'; };
-        // 외부 클릭 시 닫기
-        overlay.addEventListener('click', () => { modeMenu.style.display = 'none'; }, { once: false });
-      }
-
-      renderGrid();
+      renderMonthGrid();
       updateUI();
       overlay.style.display = 'flex';
 
-      document.getElementById('ppPrevMonth').onclick = () => {
-        ppMonth--; if (ppMonth < 0) { ppMonth = 11; ppYear--; } renderGrid();
-      };
-      document.getElementById('ppNextMonth').onclick = () => {
-        ppMonth++; if (ppMonth > 11) { ppMonth = 0; ppYear++; } renderGrid();
-      };
       document.getElementById('periodCancelBtn').onclick = () => { overlay.style.display = 'none'; };
 
-      // 결제 버튼
       const payBtn = document.getElementById('ppPayBtn');
       if (payBtn) payBtn.onclick = () => {
-        if (!ppStart) return;
-        const end = ppEnd || ppStart;
-        addPurchased(ppStart, end);
+        if (_selectedMonths.size === 0) return;
+        const selected = [..._selectedMonths].map(k => {
+          const [y, m] = k.split('-').map(Number);
+          return { year: y, month: m };
+        }).sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
+        selected.forEach(({ year, month }) => addPurchasedMonth(year, month));
         overlay.style.display = 'none';
         const enteredName = hiddenName ? hiddenName.value.trim() : (noteName || '');
-        if (typeof onConfirm === 'function') onConfirm({ startDate: new Date(ppStart), endDate: new Date(end), noteName: enteredName });
+        if (typeof _onConfirm === 'function') {
+          const months = selected.map(({ year, month }) => ({
+            year, month,
+            startDate: new Date(year, month, 1),
+            endDate: new Date(year, month + 1, 0),
+          }));
+          _onConfirm({ months, noteName: enteredName });
+        }
       };
     };
   })();
@@ -9651,29 +9567,34 @@
       const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
       window.openPeriodPicker({
         noteName: isWeek ? '주간 플래너' : '텐미닛 플래너',
-        onConfirm: ({ startDate, endDate }) => {
-          const rangeEnd = endDate || startDate;
-          if (isWeek) {
-            const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
-            const ws = gwsl2(startDate), we = gwsl2(rangeEnd);
-            const d = new Date(ws);
-            while (d.getTime() <= we.getTime()) {
-              const end = new Date(d); end.setDate(end.getDate()+6);
-              const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
-              if (!ex) window.weekPages.push({ start:new Date(d), end });
-              d.setDate(d.getDate()+7);
+        onConfirm: ({ months }) => {
+          if (!months || months.length === 0) return;
+          months.forEach(({ startDate, endDate }) => {
+            if (isWeek) {
+              const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
+              const ws = gwsl2(startDate), we = gwsl2(endDate);
+              const d = new Date(ws);
+              while (d.getTime() <= we.getTime()) {
+                const end = new Date(d); end.setDate(end.getDate()+6);
+                const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
+                if (!ex) window.weekPages.push({ start:new Date(d), end });
+                d.setDate(d.getDate()+7);
+              }
+            } else {
+              const s = new Date(startDate); s.setHours(0,0,0,0);
+              const e = new Date(endDate); e.setHours(0,0,0,0);
+              const d = new Date(s);
+              while (d.getTime() <= e.getTime()) {
+                const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
+                if (!ex) window.dayPages.push({ date:new Date(d) });
+                d.setDate(d.getDate()+1);
+              }
             }
+          });
+          if (isWeek) {
             window.weekPages.sort((a,b)=>a.start-b.start);
             if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
           } else {
-            const s = new Date(startDate); s.setHours(0,0,0,0);
-            const e = new Date(rangeEnd);  e.setHours(0,0,0,0);
-            const d = new Date(s);
-            while (d.getTime() <= e.getTime()) {
-              const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
-              if (!ex) window.dayPages.push({ date:new Date(d) });
-              d.setDate(d.getDate()+1);
-            }
             window.dayPages.sort((a,b)=>a.date-b.date);
             if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
           }
