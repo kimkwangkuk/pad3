@@ -7802,64 +7802,48 @@
             cardsWrap.appendChild(card);
           });
         });
-      } else {
-        pagesSource.forEach((p, i) => {
-          const card = document.createElement('div');
-          card.className = 'page-week-card' + (i === activePageIdx ? ' active' : '');
-          card.dataset.weekMon = p.start.getTime();
-
-          // 미니 주 플래너 썸네일 + 오늘 뱃지
-          const thumb = buildMiniWkThumb();
-          const isToday = todayMs >= p.start.getTime() && todayMs <= p.end.getTime();
-          if (isToday) {
-            const badge = document.createElement('div');
-            badge.className = 'page-today-badge';
-            badge.textContent = '오늘';
-            thumb.appendChild(badge);
-          }
-          card.appendChild(thumb);
-
-          // 푸터: 레이블만
-          const footer = document.createElement('div');
-          footer.className = 'page-week-footer';
-          const lbl = document.createElement('div');
-          lbl.className = 'page-week-lbl';
-          lbl.textContent = formatWeekLabel(p.start);
-          footer.append(lbl);
-          card.appendChild(footer);
-
-          if (isHiddenFilter) {
-            // 숨긴 페이지: 카드 클릭 → 선택 토글 (라디오는 refreshHiddenRadios에서 삽입)
+      } else if (isHiddenFilter && pagesSource.length > 0) {
+        makeWeekGroups(pagesSource).forEach(grp => {
+          const y = grp[0].start.getFullYear(), m = grp[0].start.getMonth();
+          const groupKey = `hidden-${y}-${m}`;
+          const isCollapsed = !!window._ppGroupCollapsed[groupKey];
+          const hdrRow = document.createElement('div');
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;';
+          const hLbl = document.createElement('span');
+          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
+          hLbl.textContent = `${y}년 ${m + 1}월`;
+          const hBtn = document.createElement('span');
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          hdrRow.append(hLbl, hBtn);
+          list.appendChild(hdrRow);
+          const cardsWrap = document.createElement('div');
+          cardsWrap.style.display = isCollapsed ? 'none' : '';
+          hBtn.addEventListener('click', (e) => { e.stopPropagation(); window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList(); });
+          list.appendChild(cardsWrap);
+          grp.forEach(p => {
+            const i = pagesSource.indexOf(p);
+            const card = document.createElement('div');
+            card.className = 'page-week-card' + (i === activePageIdx ? ' active' : '');
+            card.dataset.weekMon = p.start.getTime();
+            const thumb = buildMiniWkThumb();
+            const isToday = todayMs >= p.start.getTime() && todayMs <= p.end.getTime();
+            if (isToday) { const badge = document.createElement('div'); badge.className = 'page-today-badge'; badge.textContent = '오늘'; thumb.appendChild(badge); }
+            card.appendChild(thumb);
+            const footer = document.createElement('div'); footer.className = 'page-week-footer';
+            const lbl = document.createElement('div'); lbl.className = 'page-week-lbl'; lbl.textContent = formatWeekLabel(p.start);
+            footer.append(lbl); card.appendChild(footer);
             card.style.opacity = '0.72';
             card.addEventListener('click', (e) => {
               if (e.target.closest('.pp-radio')) return;
-              const ms = card.dataset.weekMon || null;
-              if (!ms) return;
-              if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms);
-              else window._hiddenSelectedMs.add(ms);
+              const ms = card.dataset.weekMon || null; if (!ms) return;
+              if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms); else window._hiddenSelectedMs.add(ms);
               if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
-              const restoreBar = document.getElementById('ppRestoreBar');
               const btn = document.getElementById('ppRestoreSelBtn');
-              if (btn) {
-                const cnt = window._hiddenSelectedMs.size;
-                btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원';
-                btn.style.opacity = cnt > 0 ? '1' : '0.35';
-              }
+              if (btn) { const cnt = window._hiddenSelectedMs.size; btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원'; btn.style.opacity = cnt > 0 ? '1' : '0.35'; }
             });
-          } else {
-            // 카드 클릭 → 페이지 선택 + 주 플래너 날짜 업데이트
-            card.addEventListener('click', (e) => {
-              if (e.target.closest('.pp-radio')) return;
-              activePageIdx = i;
-              renderPageList();
-              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
-              if (typeof window.setWeeklyPlannerDate === 'function') {
-                window.setWeeklyPlannerDate(p.start);
-              }
-            });
-          }
-
-          list.appendChild(card);
+            cardsWrap.appendChild(card);
+          });
         });
       }
 
@@ -9035,60 +9019,47 @@
             cardsWrap.appendChild(card);
           });
         });
-      } else {
-        dayPagesSource.forEach((p, i) => {
-          const card = document.createElement('div');
-          card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
-          card.dataset.dateMs = p.date.getTime();
-
-          // 썸네일 + 오늘 뱃지
-          const thumb = buildMiniDayThumb(p.date);
-          if (p.date.getTime() === todayMs) {
-            const badge = document.createElement('div');
-            badge.className = 'page-today-badge';
-            badge.textContent = '오늘';
-            thumb.appendChild(badge);
-          }
-          card.appendChild(thumb);
-
-          const footer = document.createElement('div');
-          footer.className = 'page-week-footer';
-          const lbl = document.createElement('div');
-          lbl.className = 'page-week-lbl';
-          lbl.textContent = formatDayLabel(p.date);
-          footer.append(lbl);
-          card.appendChild(footer);
-
-          if (isDayHiddenFilter) {
-            // 숨긴 페이지: 카드 클릭 → 선택 토글
+      } else if (isDayHiddenFilter && dayPagesSource.length > 0) {
+        makeDayGroups(dayPagesSource).forEach(grp => {
+          const y = grp[0].date.getFullYear(), m = grp[0].date.getMonth();
+          const groupKey = `hidden-${y}-${m}`;
+          const isCollapsed = !!window._ppGroupCollapsed[groupKey];
+          const hdrRow = document.createElement('div');
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
+          const hLbl = document.createElement('span');
+          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
+          hLbl.textContent = `${y}년 ${m + 1}월`;
+          const hBtn = document.createElement('span');
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          hdrRow.append(hLbl, hBtn);
+          list.appendChild(hdrRow);
+          const cardsWrap = document.createElement('div');
+          cardsWrap.style.cssText = `display:${isCollapsed ? 'none' : 'grid'};grid-template-columns:1fr 1fr;gap:4px;grid-column:1/-1;`;
+          hBtn.addEventListener('click', (e) => { e.stopPropagation(); window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderDayPageList === 'function') window.renderDayPageList(); });
+          list.appendChild(cardsWrap);
+          grp.forEach(p => {
+            const i = dayPagesSource.indexOf(p);
+            const card = document.createElement('div');
+            card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
+            card.dataset.dateMs = p.date.getTime();
+            const thumb = buildMiniDayThumb(p.date);
+            if (p.date.getTime() === todayMs) { const badge = document.createElement('div'); badge.className = 'page-today-badge'; badge.textContent = '오늘'; thumb.appendChild(badge); }
+            card.appendChild(thumb);
+            const footer = document.createElement('div'); footer.className = 'page-week-footer';
+            const lbl = document.createElement('div'); lbl.className = 'page-week-lbl'; lbl.textContent = formatDayLabel(p.date);
+            footer.append(lbl); card.appendChild(footer);
             card.style.opacity = '0.72';
             card.addEventListener('click', (e) => {
               if (e.target.closest('.pp-radio')) return;
-              const ms = card.dataset.dateMs || null;
-              if (!ms) return;
-              if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms);
-              else window._hiddenSelectedMs.add(ms);
+              const ms = card.dataset.dateMs || null; if (!ms) return;
+              if (window._hiddenSelectedMs.has(ms)) window._hiddenSelectedMs.delete(ms); else window._hiddenSelectedMs.add(ms);
               if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
               const btn = document.getElementById('ppRestoreSelBtn');
-              if (btn) {
-                const cnt = window._hiddenSelectedMs.size;
-                btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원';
-                btn.style.opacity = cnt > 0 ? '1' : '0.35';
-              }
+              if (btn) { const cnt = window._hiddenSelectedMs.size; btn.textContent = cnt > 0 ? `복원 (${cnt})` : '복원'; btn.style.opacity = cnt > 0 ? '1' : '0.35'; }
             });
-          } else {
-            card.addEventListener('click', (e) => {
-              if (e.target.closest('.pp-radio')) return;
-              activeDayPageIdx = i;
-              renderDayPageList();
-              if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
-              if (typeof window.setPlannerDate === 'function') {
-                window.setPlannerDate(p.date);
-              }
-            });
-          }
-
-          list.appendChild(card);
+            cardsWrap.appendChild(card);
+          });
         });
       }
 
@@ -9288,14 +9259,8 @@
       const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
       if (isWeek) { if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList(); }
       else        { if (typeof window.renderDayPageList  === 'function') window.renderDayPageList();  }
-      // 숨긴 페이지 모드 진입 시 모든 카드 선택
       if (f === 'hidden') {
         window._hiddenSelectedMs = new Set();
-        const hiddenArr = isWeek ? (window.hiddenWeekPages || []) : (window.hiddenDayPages || []);
-        hiddenArr.forEach(p => {
-          const ms = isWeek ? String(p.start.getTime()) : String(p.date.getTime());
-          window._hiddenSelectedMs.add(ms);
-        });
         updateRestoreBar();
         if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
       }
