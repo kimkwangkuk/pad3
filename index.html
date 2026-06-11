@@ -3852,33 +3852,6 @@
             <div id="ppDoneBtn" class="pp-hdr-btn">완료</div>
           </div>
         </div>
-        <!-- 페이지 설정 오버레이 -->
-        <div id="ppSettingsOverlay" style="display:none;position:absolute;inset:0;z-index:100;background:#f2f2f7;flex-direction:column;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;">
-            <div id="ppsCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </div>
-            <span style="font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
-            <div id="ppsConfirmBtn" style="width:32px;height:32px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-              <svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-          </div>
-          <div style="padding:4px 16px 16px;flex-shrink:0;">
-            <p style="font-size:12px;color:rgba(0,0,0,0.45);font-family:'Noto Sans KR',sans-serif;margin:0 0 14px;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</p>
-            <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 16px;">
-              <div style="text-align:center;">
-                <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">시작 페이지</div>
-                <div id="ppsStartLbl" style="font-size:14px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
-              </div>
-              <div style="font-size:13px;color:rgba(0,0,0,0.3);">~</div>
-              <div style="text-align:center;">
-                <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">마지막 페이지</div>
-                <div id="ppsEndLbl" style="font-size:14px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
-              </div>
-            </div>
-          </div>
-          <div id="ppsCalendarWrap" style="flex:1;overflow-y:auto;padding:0 16px 24px;"></div>
-        </div>
         <div class="page-list" id="pageList"></div>
         <div class="page-thumbnails" id="pageThumbnails" style="display:none;"></div>
         <div class="page-panel-footer" id="pagePanelFooter" style="display:none;">
@@ -6901,6 +6874,8 @@
         if (typeof window.exitPageSelectMode === 'function') window.exitPageSelectMode();
         const settingsOv = document.getElementById('ppSettingsOverlay');
         if (settingsOv) settingsOv.style.display = 'none';
+        const settingsBg = document.getElementById('ppSettingsBg');
+        if (settingsBg) settingsBg.style.display = 'none';
         // 필터가 hidden이었으면 all로 되돌리기
         if (window._ppFilter === 'hidden') {
           window._ppFilter = 'all';
@@ -9243,12 +9218,34 @@
   (function initPageSettings() {
     const settingsBtn  = document.getElementById('ppSettingsBtn');
     const overlay      = document.getElementById('ppSettingsOverlay');
+    const backdrop     = document.getElementById('ppSettingsBg');
     const cancelBtn    = document.getElementById('ppsCancelBtn');
     const confirmBtn   = document.getElementById('ppsConfirmBtn');
     const startLbl     = document.getElementById('ppsStartLbl');
     const endLbl       = document.getElementById('ppsEndLbl');
     const calWrap      = document.getElementById('ppsCalendarWrap');
     if (!settingsBtn || !overlay) return;
+
+    function closePopup() {
+      overlay.style.display = 'none';
+      if (backdrop) backdrop.style.display = 'none';
+    }
+    function positionPopup() {
+      const rect = settingsBtn.getBoundingClientRect();
+      const popW = 300;
+      overlay.style.display = 'flex';
+      // try to align right edge of popup with right edge of button
+      let left = rect.right - popW;
+      if (left < 8) left = 8;
+      // try to place below the button
+      let top = rect.bottom + 8;
+      const popH = overlay.offsetHeight;
+      if (top + popH > window.innerHeight - 16) {
+        top = rect.top - popH - 8; // above if no room below
+      }
+      overlay.style.left = left + 'px';
+      overlay.style.top  = top + 'px';
+    }
 
     let selStart = null, selEnd = null;   // Date objects
     let calViewYear, calViewMonth;
@@ -9382,7 +9379,8 @@
 
       updateLabels();
       renderCalendar();
-      overlay.style.display = 'flex';
+      if (backdrop) backdrop.style.display = 'block';
+      positionPopup();
     }
 
     function applySettings() {
@@ -9426,12 +9424,13 @@
         window.dayPages = newPages;
         if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
       }
-      overlay.style.display = 'none';
+      closePopup();
     }
 
     settingsBtn.addEventListener('click', openSettings);
-    cancelBtn.addEventListener('click',  () => { overlay.style.display = 'none'; });
+    cancelBtn.addEventListener('click', closePopup);
     confirmBtn.addEventListener('click', applySettings);
+    if (backdrop) backdrop.addEventListener('click', closePopup);
   })();
 
   // ── 페이지 선택 모드 ──
@@ -9574,5 +9573,33 @@
     });
   });
 </script>
+  <!-- 페이지 설정 팝업 (body 레벨 fixed) -->
+  <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.35);"></div>
+  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:300px;max-height:80vh;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);">
+      <div id="ppsCancelBtn" style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <span style="font-size:14px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
+      <div id="ppsConfirmBtn" style="width:28px;height:28px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="12" height="10" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div style="padding:12px 14px 10px;flex-shrink:0;">
+      <p style="font-size:11px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin:0 0 10px;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#f7f7f9;border-radius:12px;padding:10px 14px;">
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">시작</div>
+          <div id="ppsStartLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+        </div>
+        <div style="font-size:12px;color:rgba(0,0,0,0.25);">→</div>
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">종료</div>
+          <div id="ppsEndLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+        </div>
+      </div>
+    </div>
+    <div id="ppsCalendarWrap" style="flex:1;overflow-y:auto;padding:4px 14px 16px;"></div>
+  </div>
 </body>
 </html>
