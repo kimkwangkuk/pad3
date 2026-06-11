@@ -5192,46 +5192,41 @@
         const days = daysInMonth(y, m);
 
         const wrap = document.createElement('div');
-        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (owned ? 'default' : 'pointer') + ';';
+        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:pointer;';
 
-        // 스택 레이어 2
         const s2 = document.createElement('div');
-        s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (owned ? '#ddd' : selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
-        // 스택 레이어 1
+        s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
         const s1 = document.createElement('div');
-        s1.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(1.2deg);background:' + (owned ? '#e5e5ea' : selected ? 'rgba(0,0,0,0.7)' : '#e8e8ed') + ';';
+        s1.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(1.2deg);background:' + (selected ? 'rgba(0,0,0,0.7)' : '#e8e8ed') + ';';
 
         const front = document.createElement('div');
-        front.style.cssText = 'position:relative;border-radius:12px;padding:10px 10px 8px;background:' + (owned ? '#f2f2f7' : selected ? 'rgba(0,0,0,0.86)' : '#fff') + ';box-shadow:0 2px 6px rgba(0,0,0,0.1);';
+        front.style.cssText = 'position:relative;border-radius:12px;padding:10px 10px 8px;background:' + (selected ? 'rgba(0,0,0,0.86)' : '#fff') + ';box-shadow:0 2px 6px rgba(0,0,0,0.1);';
 
-        // 체크박스
         const chk = document.createElement('div');
-        chk.style.cssText = 'width:16px;height:16px;border-radius:50%;border:1.8px solid ' + (owned ? 'rgba(0,0,0,0.18)' : selected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.22)') + ';background:' + (selected ? 'rgba(255,255,255,0.9)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;margin-bottom:10px;';
+        chk.style.cssText = 'width:16px;height:16px;border-radius:50%;border:1.8px solid ' + (selected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.22)') + ';background:' + (selected ? 'rgba(255,255,255,0.9)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;margin-bottom:10px;';
         if (selected) chk.innerHTML = '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="rgba(0,0,0,0.82)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
         const yearEl = document.createElement('div');
-        yearEl.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:0.02em;color:' + (owned ? 'rgba(0,0,0,0.25)' : selected ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.38)') + ';';
+        yearEl.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:0.02em;color:' + (selected ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.38)') + ';';
         yearEl.textContent = `${y}`;
 
         const monthEl = document.createElement('div');
-        monthEl.style.cssText = 'font-size:17px;font-weight:700;letter-spacing:-0.03em;margin-top:1px;color:' + (owned ? 'rgba(0,0,0,0.28)' : selected ? '#fff' : 'rgba(0,0,0,0.86)') + ';';
+        monthEl.style.cssText = 'font-size:17px;font-weight:700;letter-spacing:-0.03em;margin-top:1px;color:' + (selected ? '#fff' : 'rgba(0,0,0,0.86)') + ';';
         monthEl.textContent = `${m + 1}월`;
 
         const daysEl = document.createElement('div');
-        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (owned ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.32)') + ';';
-        daysEl.textContent = owned ? '구매 완료' : `${days}일`;
+        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned ? '600' : '400') + ';';
+        daysEl.textContent = owned ? '무료' : `${days}일`;
 
         front.append(chk, yearEl, monthEl, daysEl);
         wrap.append(s2, s1, front);
 
-        if (!owned) {
-          wrap.addEventListener('click', () => {
-            if (_selectedMonths.has(key)) _selectedMonths.delete(key);
-            else _selectedMonths.add(key);
-            renderMonthGrid();
-            updateUI();
-          });
-        }
+        wrap.addEventListener('click', () => {
+          if (_selectedMonths.has(key)) _selectedMonths.delete(key);
+          else _selectedMonths.add(key);
+          renderMonthGrid();
+          updateUI();
+        });
         grid.appendChild(wrap);
       }
     }
@@ -5256,22 +5251,31 @@
         return;
       }
 
-      let totalDays = 0;
-      selected.forEach(({ year, month }) => { totalDays += daysInMonth(year, month); });
-      const totalPrice = totalDays * PRICE_PER_DAY;
+      let paidDays = 0, freeDaysCount = 0;
+      const freeMonths = [], paidMonths = [];
+      selected.forEach(({ year, month }) => {
+        if (isMonthOwned(year, month)) { freeDaysCount += daysInMonth(year, month); freeMonths.push({ year, month }); }
+        else { paidDays += daysInMonth(year, month); paidMonths.push({ year, month }); }
+      });
+      const totalPrice = paidDays * PRICE_PER_DAY;
 
       if (selInfo) {
         const lbls = selected.map(({ year, month }) => `${year}년 ${month + 1}월`);
         selInfo.textContent = lbls.length <= 3 ? lbls.join(', ') : `${lbls[0]} 외 ${lbls.length - 1}개월`;
       }
       if (priceInfo) priceInfo.style.display = 'block';
-      if (priceDays) priceDays.textContent = `${selected.length}개월 · ${totalDays}장`;
-      if (priceTotal) priceTotal.textContent = `${totalDays}장 × ${PRICE_PER_DAY}원 = ${totalPrice.toLocaleString()}원`;
+      if (priceDays) {
+        const parts = [];
+        if (paidMonths.length > 0) parts.push(`${paidMonths.length}개월 · ${paidDays}장`);
+        if (freeMonths.length > 0) parts.push(`${freeMonths.length}개월 무료`);
+        priceDays.textContent = parts.join(' + ');
+      }
+      if (priceTotal) priceTotal.textContent = paidDays > 0 ? `${paidDays}장 × ${PRICE_PER_DAY}원 = ${totalPrice.toLocaleString()}원` : '무료';
       if (payBtn) {
         payBtn.disabled = false;
         payBtn.style.background = 'rgba(0,0,0,0.82)';
         payBtn.style.color = '#fff';
-        payBtn.textContent = `${totalPrice.toLocaleString()}원 결제하고 추가`;
+        payBtn.textContent = totalPrice > 0 ? `${totalPrice.toLocaleString()}원 결제하고 추가` : '무료로 추가';
       }
     }
 
