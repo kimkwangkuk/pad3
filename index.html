@@ -4374,8 +4374,8 @@
 </div>
 
   <!-- 페이지 설정 팝업 (body 레벨 fixed, script보다 먼저 와야 getElementById 성공) -->
-  <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.28);"></div>
-  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:540px;overflow:hidden;">
+  <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.28);align-items:center;justify-content:center;">
+  <div id="ppSettingsOverlay" style="display:flex;flex-direction:column;background:#fff;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,0.22);width:540px;overflow:hidden;">
     <!-- 헤더 -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;flex-shrink:0;">
       <div id="ppsCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -4402,6 +4402,7 @@
     </div>
     <!-- 달력 -->
     <div id="ppsCalendarWrap" style="padding:0 20px 20px;flex-shrink:0;background:#f7f7f9;border-radius:0 0 22px 22px;"></div>
+  </div>
   </div>
 
 <script>
@@ -9343,15 +9344,11 @@
     }
 
     function positionPopup() {
-      // 화면 정중앙
-      overlay.style.left = '50%';
-      overlay.style.top  = '50%';
-      overlay.style.transform = 'translate(-50%, -50%)';
-      overlay.style.display = 'flex';
+      // backdrop을 flex 컨테이너로 사용해 overlay를 정중앙에 표시
+      if (backdrop) backdrop.style.display = 'flex';
     }
 
     function closePopup() {
-      overlay.style.display = 'none';
       if (backdrop) backdrop.style.display = 'none';
     }
 
@@ -9364,7 +9361,6 @@
       calViewMonth = refDate.getMonth();
       updateButtons();
       renderCalendar();
-      if (backdrop) backdrop.style.display = 'block';
       positionPopup();
     }
 
@@ -9419,7 +9415,7 @@
     if (settingsBtn) settingsBtn.addEventListener('click', () => openSettings('start'));
     if (cancelBtn)   cancelBtn.addEventListener('click', closePopup);
     if (confirmBtn)  confirmBtn.addEventListener('click', applySettings);
-    if (backdrop)    backdrop.addEventListener('click', closePopup);
+    if (backdrop)    backdrop.addEventListener('click', e => { if (e.target === backdrop) closePopup(); });
 
     // pill 버튼에서 호출 가능하도록 노출
     window.openPageSettings = openSettings;
