@@ -5055,10 +5055,39 @@
           window.openPeriodPicker({
             title: '노트 설정',
             noteName: '나의 ' + tmpl.title,
-            onConfirm: ({ noteName } = {}) => {
+            onConfirm: ({ noteName, startDate, endDate } = {}) => {
               const label = (noteName && noteName.trim()) ? noteName.trim() : tmpl.title;
               const reusePageId = tmpl.title === '텐미닛 플래너' ? 'tab-planner' : tmpl.title === '주간 플래너' ? 'tab-2' : null;
               const newTabId = createTabFromHome(label, { reusePageId, color: tmpl.color, icon: STORE_ICONS[tmpl.title], activate: false });
+              // 구매한 날짜 범위를 페이지 목록에 추가
+              if (startDate) {
+                const isWeekTmpl = tmpl.title === '주간 플래너';
+                const rangeEnd = endDate || startDate;
+                if (isWeekTmpl) {
+                  const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
+                  const ws = gwsl2(startDate), we = gwsl2(rangeEnd);
+                  const d = new Date(ws);
+                  while (d.getTime() <= we.getTime()) {
+                    const end = new Date(d); end.setDate(end.getDate()+6);
+                    const ex = (window.weekPages||[]).find(p => gwsl2(p.start).getTime()===d.getTime());
+                    if (!ex) (window.weekPages = window.weekPages||[]).push({ start:new Date(d), end });
+                    d.setDate(d.getDate()+7);
+                  }
+                  window.weekPages.sort((a,b)=>a.start-b.start);
+                  if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+                } else {
+                  const s = new Date(startDate); s.setHours(0,0,0,0);
+                  const e = new Date(rangeEnd);  e.setHours(0,0,0,0);
+                  const d = new Date(s);
+                  while (d.getTime() <= e.getTime()) {
+                    const ex = (window.dayPages||[]).find(p => { const t=new Date(p.date); t.setHours(0,0,0,0); return t.getTime()===d.getTime(); });
+                    if (!ex) (window.dayPages = window.dayPages||[]).push({ date:new Date(d) });
+                    d.setDate(d.getDate()+1);
+                  }
+                  window.dayPages.sort((a,b)=>a.date-b.date);
+                  if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+                }
+              }
               window.showNoteCreatedDialog({
                 title: '구매 완료',
                 subtitle: '홈에 추가되었습니다.',
@@ -9642,7 +9671,7 @@
         onConfirm: ({ startDate, endDate }) => {
           const rangeEnd = endDate || startDate;
           if (isWeek) {
-            function gwsl2(d) { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; }
+            const gwsl2 = (d) => { const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-((r.getDay()+6)%7)); return r; };
             const ws = gwsl2(startDate), we = gwsl2(rangeEnd);
             const d = new Date(ws);
             while (d.getTime() <= we.getTime()) {
