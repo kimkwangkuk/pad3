@@ -5189,8 +5189,6 @@
   window.openPeriodPicker = (function() {
     let ppYear, ppMonth, ppStart, ppEnd;
     const PRICE_PER_DAY = 10;
-    const STORAGE_KEY = 'pad3_purchased_ranges';
-
     const toMs = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
     const fmtDate = d => {
       if (!d) return '';
@@ -5200,18 +5198,14 @@
       return `${yy}.${mm}.${dd}`;
     };
 
-    // ── 구매 기록 (localStorage) ──
-    function getPurchased() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-      catch(e) { return []; }
-    }
+    // ── 구매 기록 (세션 메모리 — 새로고침 시 초기화) ──
+    const _purchasedRanges = [];
+    function getPurchased() { return _purchasedRanges; }
     function addPurchased(start, end) {
-      const list = getPurchased();
-      list.push({ s: toMs(start), e: toMs(end) });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      _purchasedRanges.push({ s: toMs(start), e: toMs(end) });
     }
     function isDayOwned(ms) {
-      return getPurchased().some(r => ms >= r.s && ms <= r.e);
+      return _purchasedRanges.some(r => ms >= r.s && ms <= r.e);
     }
 
     // ── 가격 계산 ──
