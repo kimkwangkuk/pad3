@@ -4223,21 +4223,47 @@
 
   <div id="periodPickerOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:420;align-items:center;justify-content:center;">
     <div id="periodPickerModal" style="background:#fff;border-radius:24px;width:360px;box-shadow:0 12px 48px rgba(0,0,0,0.26);font-family:'Noto Sans KR',sans-serif;overflow:hidden;">
+
       <!-- 헤더 -->
-      <div style="position:relative;display:flex;align-items:center;justify-content:center;padding:18px 20px 16px;">
-        <button id="periodCancelBtn" style="position:absolute;left:20px;border:none;background:none;font-size:15px;font-weight:400;color:rgba(0,0,0,0.45);cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:4px 0;letter-spacing:-0.02em;">취소</button>
-        <div style="font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;" id="periodPickerTitle">노트 설정</div>
+      <div style="display:flex;align-items:center;padding:16px 20px 14px;position:relative;">
+        <button id="periodCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;">구매</div>
       </div>
-      <!-- 노트 이름 행 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
-        <span style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);flex-shrink:0;">노트 이름</span>
-        <input id="ppNoteName" type="text" style="font-size:14px;color:rgba(0,0,0,0.6);border:none;outline:none;text-align:right;background:transparent;flex:1;min-width:0;margin-left:12px;font-family:'Noto Sans KR',sans-serif;">
+
+      <!-- 상품 정보 카드 -->
+      <div style="display:flex;align-items:center;gap:14px;padding:0 20px 16px;">
+        <div id="ppThumb" style="width:80px;height:80px;background:#e5e5ea;border-radius:14px;flex-shrink:0;overflow:hidden;"></div>
+        <div style="flex:1;min-width:0;">
+          <div id="ppProductName" style="font-size:15px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+            <span style="font-size:13px;color:rgba(0,0,0,0.4);">장당 가격</span>
+            <span id="ppPricePerPage" style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);">10원</span>
+          </div>
+        </div>
       </div>
-      <!-- 날짜 레이블 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px;">
-        <span style="font-size:12px;color:rgba(0,0,0,0.38);font-family:'Noto Sans KR',sans-serif;">기간 선택</span>
-        <div id="ppRangeLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);white-space:nowrap;letter-spacing:-0.02em;"></div>
+
+      <!-- 구분선 -->
+      <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 20px;"></div>
+
+      <!-- 구매할 페이지 선택 행 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);">구매할 페이지 선택</div>
+          <div id="ppSelectionInfo" style="font-size:12px;color:rgba(0,0,0,0.4);margin-top:3px;letter-spacing:-0.01em;">날짜를 선택하세요</div>
+        </div>
+        <div id="ppModeDropdown" style="position:relative;flex-shrink:0;">
+          <div id="ppModeBtn" style="display:flex;align-items:center;gap:5px;background:#f2f2f7;border-radius:10px;padding:8px 12px;cursor:pointer;">
+            <span id="ppModeLabel" style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.75);white-space:nowrap;">직접 설정</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="rgba(0,0,0,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div id="ppModeMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:120px;overflow:hidden;z-index:10;">
+            <div id="ppModeItem" style="padding:12px 16px;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);cursor:pointer;white-space:nowrap;">직접 선택</div>
+          </div>
+        </div>
       </div>
+
       <!-- 캘린더 -->
       <div id="ppCalendarArea" style="background:#f2f2f7;margin:0 12px 0;border-radius:16px;padding:14px 12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -4246,27 +4272,32 @@
           <button id="ppNextMonth" style="width:28px;height:28px;border:none;background:rgba(0,0,0,0.06);cursor:pointer;border-radius:8px;font-size:16px;color:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;line-height:1;">›</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;">
-          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">일</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">월</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">화</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">수</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">목</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">금</div>
           <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">토</div>
+          <div style="text-align:center;font-size:11px;font-weight:600;color:rgba(0,0,0,0.3);padding:2px 0;">일</div>
         </div>
         <div id="ppGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
       </div>
+
       <!-- 가격 정보 -->
       <div id="ppPriceInfo" style="display:none;margin:10px 12px 0;padding:12px 14px;background:#f2f2f7;border-radius:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-          <span id="ppPriceDays" style="font-size:12px;color:rgba(0,0,0,0.45);font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;"></span>
-          <span id="ppPriceTotal" style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;white-space:nowrap;"></span>
+          <span id="ppPriceDays" style="font-size:12px;color:rgba(0,0,0,0.45);letter-spacing:-0.02em;"></span>
+          <span id="ppPriceTotal" style="font-size:14px;font-weight:700;color:rgba(0,0,0,0.82);letter-spacing:-0.02em;white-space:nowrap;"></span>
         </div>
       </div>
+
       <!-- 결제 버튼 -->
       <div style="padding:12px 12px 16px;">
-        <button id="ppPayBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.82);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;">날짜를 선택하세요</button>
+        <button id="ppPayBtn" style="width:100%;padding:14px;border:none;border-radius:14px;background:rgba(0,0,0,0.15);color:rgba(0,0,0,0.35);font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.02em;" disabled>날짜를 선택하세요</button>
       </div>
+
+      <!-- 히든 노트 이름 -->
+      <input id="ppNoteName" type="text" style="display:none;">
     </div>
   </div>
 
@@ -5161,24 +5192,29 @@
 
     // ── UI 업데이트 ──
     function updateUI() {
-      const rangeLabel = document.getElementById('ppRangeLabel');
+      const selInfo    = document.getElementById('ppSelectionInfo');
       const priceInfo  = document.getElementById('ppPriceInfo');
       const priceDays  = document.getElementById('ppPriceDays');
       const priceTotal = document.getElementById('ppPriceTotal');
       const payBtn     = document.getElementById('ppPayBtn');
 
-      // 날짜 레이블
-      if (rangeLabel) {
-        if (ppStart && ppEnd)      rangeLabel.textContent = `${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)}`;
-        else if (ppStart)          rangeLabel.textContent = `${fmtDate(ppStart)} ~`;
-        else                       rangeLabel.textContent = '';
+      // 선택 정보 레이블
+      if (selInfo) {
+        if (ppStart && ppEnd) {
+          const { total } = calcPrice(ppStart, ppEnd);
+          selInfo.textContent = `${total}장 (${fmtDate(ppStart)} ~ ${fmtDate(ppEnd)})`;
+        } else if (ppStart) {
+          selInfo.textContent = `${fmtDate(ppStart)} ~`;
+        } else {
+          selInfo.textContent = '날짜를 선택하세요';
+        }
       }
 
       // 가격 정보 + 버튼
       if (!ppStart || !ppEnd) {
         if (priceInfo) priceInfo.style.display = 'none';
-        if (payBtn)    payBtn.textContent = '날짜를 선택하세요';
-        if (payBtn)    payBtn.disabled = true;
+        if (payBtn) { payBtn.textContent = '날짜를 선택하세요'; payBtn.disabled = true;
+          payBtn.style.background = 'rgba(0,0,0,0.15)'; payBtn.style.color = 'rgba(0,0,0,0.35)'; }
         return;
       }
       const { total, owned, price } = calcPrice(ppStart, ppEnd);
@@ -5186,16 +5222,18 @@
       if (priceInfo) priceInfo.style.display = 'block';
       if (priceDays) {
         priceDays.textContent = owned > 0
-          ? `${total}일 선택 · 이미 소유 ${owned}일`
-          : `${total}일 선택`;
+          ? `${total}장 선택 · 이미 소유 ${owned}장`
+          : `${total}장 선택`;
       }
       if (priceTotal) {
         priceTotal.textContent = price > 0
-          ? `${newDays}일 × ${PRICE_PER_DAY}원 = ${price.toLocaleString()}원`
+          ? `${newDays}장 × ${PRICE_PER_DAY}원 = ${price.toLocaleString()}원`
           : `전체 소유 (0원)`;
       }
       if (payBtn) {
         payBtn.disabled = false;
+        payBtn.style.background = 'rgba(0,0,0,0.82)';
+        payBtn.style.color = '#fff';
         payBtn.textContent = price > 0 ? `${price.toLocaleString()}원 결제` : '무료로 추가';
       }
     }
@@ -5207,7 +5245,9 @@
       if (!grid) return;
       monthLbl.textContent = `${ppYear}년 ${ppMonth+1}월`;
 
-      const firstDay    = new Date(ppYear, ppMonth, 1).getDay();
+      // 월요일 시작: 일요일(0)→6, 월요일(1)→0, …
+      const rawDay      = new Date(ppYear, ppMonth, 1).getDay();
+      const firstDay    = (rawDay + 6) % 7;
       const daysInMonth = new Date(ppYear, ppMonth+1, 0).getDate();
       const todayMs     = toMs(new Date());
       const startMs     = ppStart ? toMs(ppStart) : null;
@@ -5285,8 +5325,25 @@
       ppYear  = today.getFullYear();
       ppMonth = today.getMonth();
 
-      const noteNameEl = document.getElementById('ppNoteName');
-      if (noteNameEl) noteNameEl.value = noteName || '';
+      // 상품명 세팅
+      const nameEl = document.getElementById('ppProductName');
+      if (nameEl) nameEl.textContent = noteName || '';
+      const hiddenName = document.getElementById('ppNoteName');
+      if (hiddenName) hiddenName.value = noteName || '';
+
+      // 드롭다운 (직접 선택 항목만)
+      const modeBtn  = document.getElementById('ppModeBtn');
+      const modeMenu = document.getElementById('ppModeMenu');
+      const modeItem = document.getElementById('ppModeItem');
+      if (modeBtn && modeMenu) {
+        modeBtn.onclick = (e) => {
+          e.stopPropagation();
+          modeMenu.style.display = modeMenu.style.display === 'none' ? 'block' : 'none';
+        };
+        if (modeItem) modeItem.onclick = () => { modeMenu.style.display = 'none'; };
+        // 외부 클릭 시 닫기
+        overlay.addEventListener('click', () => { modeMenu.style.display = 'none'; }, { once: false });
+      }
 
       renderGrid();
       updateUI();
@@ -5305,10 +5362,9 @@
       if (payBtn) payBtn.onclick = () => {
         if (!ppStart) return;
         const end = ppEnd || ppStart;
-        addPurchased(ppStart, end);           // 구매 기록 저장
+        addPurchased(ppStart, end);
         overlay.style.display = 'none';
-        const nameEl = document.getElementById('ppNoteName');
-        const enteredName = nameEl ? nameEl.value.trim() : '';
+        const enteredName = hiddenName ? hiddenName.value.trim() : (noteName || '');
         if (typeof onConfirm === 'function') onConfirm({ startDate: new Date(ppStart), endDate: new Date(end), noteName: enteredName });
       };
     };
