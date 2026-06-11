@@ -7730,7 +7730,7 @@
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
           const grpMsList = grp.map(p => String(p.start.getTime()));
           const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;cursor:pointer;';
           const hLeft = document.createElement('div');
           hLeft.style.cssText = 'display:flex;align-items:center;gap:7px;';
           const grpCheck = document.createElement('div');
@@ -7758,8 +7758,8 @@
 
           const cardsWrap = document.createElement('div');
           cardsWrap.style.display = isCollapsed ? 'none' : '';
-          hBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+          hdrRow.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-group-check')) return;
             window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey];
             if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
           });
@@ -7808,18 +7808,18 @@
           const groupKey = `hidden-${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
           const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;cursor:pointer;';
           const hLbl = document.createElement('span');
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
           const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           hdrRow.append(hLbl, hBtn);
           list.appendChild(hdrRow);
           const cardsWrap = document.createElement('div');
           cardsWrap.style.display = isCollapsed ? 'none' : '';
-          hBtn.addEventListener('click', (e) => { e.stopPropagation(); window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList(); });
+          hdrRow.addEventListener('click', () => { window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList(); });
           list.appendChild(cardsWrap);
           grp.forEach(p => {
             const i = pagesSource.indexOf(p);
@@ -8969,15 +8969,16 @@
           hLbl.textContent = `${y}년 ${m + 1}월`;
           hLeft.append(grpCheck, hLbl);
           const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           hdrRow.append(hLeft, hBtn);
+          hdrRow.style.cursor = 'pointer';
           list.appendChild(hdrRow);
 
           const cardsWrap = document.createElement('div');
           cardsWrap.style.cssText = `display:${isCollapsed ? 'none' : 'grid'};grid-template-columns:1fr 1fr;gap:4px;grid-column:1/-1;`;
-          hBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+          hdrRow.addEventListener('click', (e) => {
+            if (e.target.closest('.pp-group-check')) return;
             window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey];
             if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
           });
@@ -9025,18 +9026,18 @@
           const groupKey = `hidden-${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
           const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;cursor:pointer;';
           const hLbl = document.createElement('span');
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
           const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           hdrRow.append(hLbl, hBtn);
           list.appendChild(hdrRow);
           const cardsWrap = document.createElement('div');
           cardsWrap.style.cssText = `display:${isCollapsed ? 'none' : 'grid'};grid-template-columns:1fr 1fr;gap:4px;grid-column:1/-1;`;
-          hBtn.addEventListener('click', (e) => { e.stopPropagation(); window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderDayPageList === 'function') window.renderDayPageList(); });
+          hdrRow.addEventListener('click', () => { window._ppGroupCollapsed[groupKey] = !window._ppGroupCollapsed[groupKey]; if (typeof window.renderDayPageList === 'function') window.renderDayPageList(); });
           list.appendChild(cardsWrap);
           grp.forEach(p => {
             const i = dayPagesSource.indexOf(p);
