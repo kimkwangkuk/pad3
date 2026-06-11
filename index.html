@@ -4373,6 +4373,35 @@
 
 </div>
 
+  <!-- 페이지 설정 팝업 (body 레벨 fixed, script보다 먼저 와야 getElementById 성공) -->
+  <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.35);"></div>
+  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:300px;max-height:80vh;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);">
+      <div id="ppsCancelBtn" style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <span style="font-size:14px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
+      <div id="ppsConfirmBtn" style="width:28px;height:28px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="12" height="10" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div style="padding:12px 14px 10px;flex-shrink:0;">
+      <p style="font-size:11px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin:0 0 10px;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#f7f7f9;border-radius:12px;padding:10px 14px;">
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">시작</div>
+          <div id="ppsStartLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+        </div>
+        <div style="font-size:12px;color:rgba(0,0,0,0.25);">→</div>
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">종료</div>
+          <div id="ppsEndLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+        </div>
+      </div>
+    </div>
+    <div id="ppsCalendarWrap" style="flex:1;overflow-y:auto;padding:4px 14px 16px;"></div>
+  </div>
+
 <script>
   // 멤버 카드 HTML 생성 헬퍼
   function makeMember(name, time, imgSrc, opacity) {
@@ -9575,33 +9604,5 @@
     });
   });
 </script>
-  <!-- 페이지 설정 팝업 (body 레벨 fixed) -->
-  <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.35);"></div>
-  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:300px;max-height:80vh;overflow:hidden;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);">
-      <div id="ppsCancelBtn" style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </div>
-      <span style="font-size:14px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
-      <div id="ppsConfirmBtn" style="width:28px;height:28px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="12" height="10" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-    </div>
-    <div style="padding:12px 14px 10px;flex-shrink:0;">
-      <p style="font-size:11px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin:0 0 10px;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;background:#f7f7f9;border-radius:12px;padding:10px 14px;">
-        <div style="text-align:center;">
-          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">시작</div>
-          <div id="ppsStartLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
-        </div>
-        <div style="font-size:12px;color:rgba(0,0,0,0.25);">→</div>
-        <div style="text-align:center;">
-          <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:2px;">종료</div>
-          <div id="ppsEndLbl" style="font-size:13px;font-weight:600;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
-        </div>
-      </div>
-    </div>
-    <div id="ppsCalendarWrap" style="flex:1;overflow-y:auto;padding:4px 14px 16px;"></div>
-  </div>
 </body>
 </html>
