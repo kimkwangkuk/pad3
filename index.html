@@ -4375,31 +4375,33 @@
 
   <!-- 페이지 설정 팝업 (body 레벨 fixed, script보다 먼저 와야 getElementById 성공) -->
   <div id="ppSettingsBg" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.28);"></div>
-  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:320px;overflow:hidden;">
+  <div id="ppSettingsOverlay" style="display:none;position:fixed;z-index:3001;background:#fff;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,0.22);flex-direction:column;width:540px;overflow:hidden;">
     <!-- 헤더 -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;flex-shrink:0;">
       <div id="ppsCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
       </div>
-      <span style="font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
+      <span style="font-size:16px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">페이지 설정</span>
       <div id="ppsConfirmBtn" style="width:32px;height:32px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg width="12" height="10" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
     </div>
+    <!-- 부제목 -->
+    <div style="text-align:center;font-size:12px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;padding:0 20px 14px;flex-shrink:0;">설정한 날짜 범위에 따라 노트 페이지가 구성됩니다.</div>
     <!-- 날짜 선택 버튼 행 -->
-    <div style="display:flex;align-items:center;gap:8px;padding:0 16px 14px;flex-shrink:0;">
-      <div id="ppsStartBtn" style="flex:1;border:2px solid #111;border-radius:14px;padding:10px 8px;text-align:center;cursor:pointer;background:#fff;transition:border-color 0.15s;">
-        <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">시작 페이지</div>
-        <div id="ppsStartLbl" style="font-size:14px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:0 20px 16px;flex-shrink:0;">
+      <div id="ppsStartBtn" style="flex:1;border:2px solid #111;border-radius:14px;padding:12px 10px;text-align:center;cursor:pointer;background:#fff;transition:border-color 0.15s;">
+        <div style="font-size:11px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:4px;">시작 페이지</div>
+        <div id="ppsStartLbl" style="font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
       </div>
-      <div style="font-size:14px;color:rgba(0,0,0,0.25);flex-shrink:0;">~</div>
-      <div id="ppsEndBtn" style="flex:1;border:1.5px solid rgba(0,0,0,0.13);border-radius:14px;padding:10px 8px;text-align:center;cursor:pointer;background:#fff;transition:border-color 0.15s;">
-        <div style="font-size:10px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:3px;">마지막 페이지</div>
-        <div id="ppsEndLbl" style="font-size:14px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
+      <div style="font-size:16px;color:rgba(0,0,0,0.25);flex-shrink:0;">~</div>
+      <div id="ppsEndBtn" style="flex:1;border:1.5px solid rgba(0,0,0,0.13);border-radius:14px;padding:12px 10px;text-align:center;cursor:pointer;background:#fff;transition:border-color 0.15s;">
+        <div style="font-size:11px;color:rgba(0,0,0,0.4);font-family:'Noto Sans KR',sans-serif;margin-bottom:4px;">마지막 페이지</div>
+        <div id="ppsEndLbl" style="font-size:15px;font-weight:700;color:#111;font-family:'Noto Sans KR',sans-serif;">--</div>
       </div>
     </div>
     <!-- 달력 -->
-    <div id="ppsCalendarWrap" style="padding:0 16px 18px;flex-shrink:0;"></div>
+    <div id="ppsCalendarWrap" style="padding:0 20px 20px;flex-shrink:0;background:#f7f7f9;border-radius:0 0 22px 22px;"></div>
   </div>
 
 <script>
@@ -9212,7 +9214,7 @@
 
       // 네비게이션 헤더
       const nav = document.createElement('div');
-      nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;';
+      nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-top:16px;';
 
       const prev = document.createElement('div');
       prev.style.cssText = 'width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,0,0,0.4);user-select:none;';
@@ -9224,7 +9226,7 @@
       });
 
       const title = document.createElement('div');
-      title.style.cssText = 'font-size:15px;font-weight:700;color:#111;font-family:"Noto Sans KR",sans-serif;';
+      title.style.cssText = 'font-size:17px;font-weight:700;color:#111;font-family:"Noto Sans KR",sans-serif;';
       title.textContent = `${calViewYear}년 ${calViewMonth+1}월`;
 
       const next = document.createElement('div');
@@ -9244,7 +9246,7 @@
       grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:0;';
       DAYS.forEach((d, i) => {
         const dh = document.createElement('div');
-        dh.style.cssText = 'text-align:center;font-size:11px;font-weight:500;padding:3px 0 6px;color:rgba(0,0,0,0.35);font-family:"Noto Sans KR",sans-serif;';
+        dh.style.cssText = 'text-align:center;font-size:12px;font-weight:500;padding:4px 0 8px;color:rgba(0,0,0,0.35);font-family:"Noto Sans KR",sans-serif;';
         dh.textContent = d;
         if (i === 5) dh.style.color = '#5b8ff9'; // 토
         if (i === 6) dh.style.color = '#ff5f57'; // 일
@@ -9258,7 +9260,7 @@
       // 빈 셀 (wrapper 포함)
       for (let i = 0; i < offset; i++) {
         const blank = document.createElement('div');
-        blank.style.cssText = 'height:36px;';
+        blank.style.cssText = 'height:48px;';
         grid.appendChild(blank);
       }
 
@@ -9278,7 +9280,7 @@
 
         // 래퍼 — 연결 배경 담당
         const wrap = document.createElement('div');
-        wrap.style.cssText = 'height:36px;display:flex;align-items:center;justify-content:center;';
+        wrap.style.cssText = 'height:48px;display:flex;align-items:center;justify-content:center;';
         if (!isSingle) {
           if (isStart && endMs)   wrap.style.background = `linear-gradient(to right, transparent 50%, ${RANGE_BG} 50%)`;
           else if (isEnd && startMs) wrap.style.background = `linear-gradient(to left,  transparent 50%, ${RANGE_BG} 50%)`;
@@ -9288,7 +9290,7 @@
         // 날짜 원
         const cell = document.createElement('div');
         const colIdx = (offset + d - 1) % 7; // 0=월 5=토 6=일
-        cell.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:13px;font-weight:500;color:#111;font-family:"Noto Sans KR",sans-serif;transition:background 0.1s;position:relative;z-index:1;';
+        cell.style.cssText = 'width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:14px;font-weight:500;color:#111;font-family:"Noto Sans KR",sans-serif;transition:background 0.1s;position:relative;z-index:1;';
         cell.textContent = d;
 
         if (isStart || isEnd) {
@@ -9345,7 +9347,7 @@
       const panel = document.getElementById('pagePanel');
       if (!panel) { overlay.style.display = 'flex'; return; }
       const panelRect = panel.getBoundingClientRect();
-      const popW = 320;
+      const popW = 540;
       // 패널 헤더 바로 아래, 수평 중앙
       const hdrEl = document.getElementById('ppNormalHeader') || document.getElementById('ppSelectHeader');
       const hdrBottom = hdrEl ? hdrEl.getBoundingClientRect().bottom : panelRect.top + 48;
