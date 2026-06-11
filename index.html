@@ -7704,44 +7704,35 @@
         return;
       }
 
-      // ── 날짜 연속 그룹화 ──
+      // ── 월별 그룹화 ──
       function makeWeekGroups(pages) {
         if (!pages.length) return [];
         const sorted = [...pages].sort((a,b) => a.start - b.start);
-        const groups = []; let cur = [sorted[0]];
-        for (let i=1; i<sorted.length; i++) {
-          const gap = (sorted[i].start - sorted[i-1].end) / 86400000;
-          if (gap <= 1) cur.push(sorted[i]);
-          else { groups.push(cur); cur=[sorted[i]]; }
-        }
-        groups.push(cur);
-        return groups;
-      }
-      function fmtGroupDate(d) {
-        return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+        const map = new Map();
+        sorted.forEach(p => {
+          const key = `${p.start.getFullYear()}-${p.start.getMonth()}`;
+          if (!map.has(key)) map.set(key, []);
+          map.get(key).push(p);
+        });
+        return [...map.values()];
       }
 
       if (!isHiddenFilter && !isSelectMode && pagesSource.length > 0) {
         const weekGroups = makeWeekGroups(pagesSource);
         weekGroups.forEach(grp => {
-          const groupKey = String(grp[0].start.getTime());
+          const y = grp[0].start.getFullYear();
+          const m = grp[0].start.getMonth();
+          const groupKey = `${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
-          const grpStart = getWeekStart(grp[0].start);
-          const grpEnd   = new Date(grp[grp.length-1].end);
           const hdrRow = document.createElement('div');
-          hdrRow.className = 'pp-range-pill-row';
-          const hLine1 = document.createElement('div'); hLine1.className = 'pp-range-pill-line';
-          const hLine2 = document.createElement('div'); hLine2.className = 'pp-range-pill-line';
-          const hPill  = document.createElement('div');
-          hPill.className = 'pp-range-pill';
-          hPill.style.gap = '6px';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;';
           const hLbl = document.createElement('span');
-          hLbl.textContent = `${fmtGroupDate(grpStart)} ~ ${fmtGroupDate(grpEnd)}`;
+          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
+          hLbl.textContent = `${y}년 ${m + 1}월`;
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hPill.append(hLbl, hBtn);
-          hdrRow.append(hLine1, hPill, hLine2);
+          hdrRow.append(hLbl, hBtn);
           list.appendChild(hdrRow);
 
           const cardsWrap = document.createElement('div');
@@ -8930,43 +8921,35 @@
         return;
       }
 
-      // ── 날짜 연속 그룹화 ──
+      // ── 월별 그룹화 ──
       function makeDayGroups(pages) {
         if (!pages.length) return [];
         const sorted = [...pages].sort((a,b)=>a.date-b.date);
-        const groups=[]; let cur=[sorted[0]];
-        for (let i=1;i<sorted.length;i++) {
-          const gap=(sorted[i].date-sorted[i-1].date)/86400000;
-          if (gap<=1) cur.push(sorted[i]);
-          else { groups.push(cur); cur=[sorted[i]]; }
-        }
-        groups.push(cur);
-        return groups;
-      }
-      function fmtGroupDateD(d) {
-        return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+        const map = new Map();
+        sorted.forEach(p => {
+          const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
+          if (!map.has(key)) map.set(key, []);
+          map.get(key).push(p);
+        });
+        return [...map.values()];
       }
 
       if (!isDayHiddenFilter && !isDaySelectMode && dayPagesSource.length > 0) {
         const dayGroups = makeDayGroups(dayPagesSource);
         dayGroups.forEach(grp => {
-          const groupKey = String(grp[0].date.getTime());
+          const y = grp[0].date.getFullYear();
+          const m = grp[0].date.getMonth();
+          const groupKey = `${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
           const hdrRow = document.createElement('div');
-          hdrRow.className = 'pp-range-pill-row';
-          hdrRow.style.gridColumn = '1/-1';
-          const hLine1 = document.createElement('div'); hLine1.className = 'pp-range-pill-line';
-          const hLine2 = document.createElement('div'); hLine2.className = 'pp-range-pill-line';
-          const hPill  = document.createElement('div');
-          hPill.className = 'pp-range-pill';
-          hPill.style.gap = '6px';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
           const hLbl = document.createElement('span');
-          hLbl.textContent = `${fmtGroupDateD(grp[0].date)} ~ ${fmtGroupDateD(grp[grp.length-1].date)}`;
+          hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
+          hLbl.textContent = `${y}년 ${m + 1}월`;
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hPill.append(hLbl, hBtn);
-          hdrRow.append(hLine1, hPill, hLine2);
+          hdrRow.append(hLbl, hBtn);
           list.appendChild(hdrRow);
 
           const cardsWrap = document.createElement('div');
