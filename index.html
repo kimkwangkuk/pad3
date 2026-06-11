@@ -7822,8 +7822,8 @@
           const hLbl = document.createElement('span');
           hLbl.textContent = `${fmtGroupDate(grpStart)} ~ ${fmtGroupDate(grpEnd)}`;
           const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'font-size:11px;color:rgba(0,0,0,0.4);cursor:pointer;';
-          hBtn.textContent = isCollapsed ? '펼치기' : '접기';
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           hPill.append(hLbl, hBtn);
           hdrRow.append(hLine1, hPill, hLine2);
           list.appendChild(hdrRow);
@@ -9047,8 +9047,8 @@
           const hLbl = document.createElement('span');
           hLbl.textContent = `${fmtGroupDateD(grp[0].date)} ~ ${fmtGroupDateD(grp[grp.length-1].date)}`;
           const hBtn = document.createElement('span');
-          hBtn.style.cssText = 'font-size:11px;color:rgba(0,0,0,0.4);cursor:pointer;';
-          hBtn.textContent = isCollapsed ? '펼치기' : '접기';
+          hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
+          hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           hPill.append(hLbl, hBtn);
           hdrRow.append(hLine1, hPill, hLine2);
           list.appendChild(hdrRow);
