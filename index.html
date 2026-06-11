@@ -7644,7 +7644,7 @@
         const line1 = document.createElement('div'); line1.className = 'pp-range-pill-line';
         const pill = document.createElement('div');
         pill.className = 'pp-range-pill';
-        pill.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">시작</span><span>${fmtBtn(firstStart)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        pill.innerHTML = `<span>시작 페이지: ${fmtBtn(firstStart)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const line2 = document.createElement('div'); line2.className = 'pp-range-pill-line';
         pill.addEventListener('click', e => {
           e.stopPropagation();
@@ -7723,7 +7723,7 @@
         const lineA = document.createElement('div'); lineA.className = 'pp-range-pill-line';
         const pill2 = document.createElement('div');
         pill2.className = 'pp-range-pill';
-        pill2.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">종료</span><span>${fmtBtn(lastEnd)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        pill2.innerHTML = `<span>마지막 페이지: ${fmtBtn(lastEnd)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const lineB = document.createElement('div'); lineB.className = 'pp-range-pill-line';
         pill2.addEventListener('click', e => {
           e.stopPropagation();
@@ -8830,7 +8830,7 @@
         const lineD1 = document.createElement('div'); lineD1.className = 'pp-range-pill-line';
         const pillD = document.createElement('div');
         pillD.className = 'pp-range-pill';
-        pillD.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">시작</span><span>${fmtBtn(firstDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        pillD.innerHTML = `<span>시작 페이지: ${fmtBtn(firstDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const lineD2 = document.createElement('div'); lineD2.className = 'pp-range-pill-line';
         pillD.addEventListener('click', e => {
           e.stopPropagation();
@@ -8904,7 +8904,7 @@
         const lineDa = document.createElement('div'); lineDa.className = 'pp-range-pill-line';
         const pillD2 = document.createElement('div');
         pillD2.className = 'pp-range-pill';
-        pillD2.innerHTML = `<span style="color:rgba(0,0,0,0.35);font-size:10px;">종료</span><span>${fmtBtn(lastDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        pillD2.innerHTML = `<span>마지막 페이지: ${fmtBtn(lastDate)}</span><svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const lineDb = document.createElement('div'); lineDb.className = 'pp-range-pill-line';
         pillD2.addEventListener('click', e => {
           e.stopPropagation();
