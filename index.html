@@ -5188,6 +5188,7 @@
   // openPeriodPicker({ title, noteName, onConfirm })
   window.openPeriodPicker = (function() {
     let ppYear, ppMonth, ppStart, ppEnd;
+    let _disableOwned = false;
     const PRICE_PER_DAY = 10;
     const toMs = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
     const fmtDate = d => {
@@ -5299,19 +5300,25 @@
         const RANGE_BG       = 'rgba(0,0,0,0.09)';
         const OWNED_RANGE_BG = 'rgba(52,199,89,0.15)';
 
+        const isDisabled = owned && _disableOwned;
+
         // 셀 (범위 배경)
         const cell = document.createElement('div');
-        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;cursor:pointer;user-select:none;flex-direction:column;gap:0;';
+        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;height:36px;user-select:none;flex-direction:column;gap:0;' + (isDisabled ? 'cursor:default;' : 'cursor:pointer;');
         const rangeBg = owned ? OWNED_RANGE_BG : RANGE_BG;
-        if (inRange)                        cell.style.background = rangeBg;
-        else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${rangeBg} 50%)`;
-        else if (isEnd)                     cell.style.background = `linear-gradient(to left,  transparent 50%, ${rangeBg} 50%)`;
+        if (!isDisabled) {
+          if (inRange)                        cell.style.background = rangeBg;
+          else if (isStart && endMs !== null) cell.style.background = `linear-gradient(to right, transparent 50%, ${rangeBg} 50%)`;
+          else if (isEnd)                     cell.style.background = `linear-gradient(to left,  transparent 50%, ${rangeBg} 50%)`;
+        }
 
         // 원형 날짜
         const dot = document.createElement('div');
         dot.textContent = d;
         dot.style.cssText = 'width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
-        if (isSelected && owned) {
+        if (isDisabled) {
+          dot.style.color   = 'rgba(0,0,0,0.25)';
+        } else if (isSelected && owned) {
           dot.style.background = '#34c759';
           dot.style.color      = '#fff';
           dot.style.fontWeight = '700';
@@ -5331,33 +5338,36 @@
 
         cell.appendChild(dot);
 
-        // 구매 완료 표시 (작은 점)
-        if (owned) {
+        // 구매 완료 표시 (작은 점) — 스토어 모드에서만
+        if (owned && !_disableOwned) {
           const ownerDot = document.createElement('div');
           ownerDot.style.cssText = 'width:4px;height:4px;border-radius:50%;background:#34c759;position:absolute;bottom:3px;';
           cell.appendChild(ownerDot);
         }
 
-        cell.addEventListener('click', () => {
-          if (!ppStart || (ppStart && ppEnd)) {
-            ppStart = date; ppEnd = null;
-          } else {
-            if (ms < toMs(ppStart))        { ppEnd = new Date(ppStart); ppStart = date; }
-            else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
-            else                           { ppEnd = date; }
-          }
-          updateUI();
-          renderGrid();
-        });
+        if (!isDisabled) {
+          cell.addEventListener('click', () => {
+            if (!ppStart || (ppStart && ppEnd)) {
+              ppStart = date; ppEnd = null;
+            } else {
+              if (ms < toMs(ppStart))        { ppEnd = new Date(ppStart); ppStart = date; }
+              else if (ms === toMs(ppStart)) { ppStart = null; ppEnd = null; }
+              else                           { ppEnd = date; }
+            }
+            updateUI();
+            renderGrid();
+          });
+        }
         grid.appendChild(cell);
       }
     }
 
     // ── 팝업 열기 ──
-    return function({ title, noteName, onConfirm } = {}) {
+    return function({ title, noteName, onConfirm, disableOwned = false } = {}) {
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
+      _disableOwned = disableOwned;
       const today = new Date(); today.setHours(0,0,0,0);
       ppStart = null; ppEnd = null;
       ppYear  = today.getFullYear();
@@ -9659,6 +9669,7 @@
       const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
       window.openPeriodPicker({
         noteName: isWeek ? '주간 플래너' : '텐미닛 플래너',
+        disableOwned: true,
         onConfirm: ({ startDate, endDate }) => {
           const rangeEnd = endDate || startDate;
           if (isWeek) {
