@@ -5315,9 +5315,10 @@
         // 원형 날짜
         const dot = document.createElement('div');
         dot.textContent = d;
-        dot.style.cssText = 'width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;';
+        dot.style.cssText = 'width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;font-weight:500;position:relative;z-index:1;box-sizing:border-box;';
         if (isDisabled) {
-          dot.style.color   = 'rgba(0,0,0,0.25)';
+          dot.style.color  = 'rgba(0,0,0,0.25)';
+          dot.style.border = '1.5px solid rgba(0,0,0,0.08)';
         } else if (isSelected && owned) {
           dot.style.background = '#34c759';
           dot.style.color      = '#fff';
@@ -5329,11 +5330,14 @@
         } else if (owned) {
           dot.style.color      = '#34c759';
           dot.style.fontWeight = '600';
+          dot.style.border     = '1.5px solid rgba(52,199,89,0.35)';
         } else if (isToday) {
           dot.style.color      = '#007aff';
           dot.style.fontWeight = '700';
+          dot.style.border     = '1.5px solid rgba(0,122,255,0.3)';
         } else {
-          dot.style.color      = 'rgba(0,0,0,0.78)';
+          dot.style.color  = 'rgba(0,0,0,0.78)';
+          dot.style.border = '1.5px solid rgba(0,0,0,0.1)';
         }
 
         cell.appendChild(dot);
