@@ -7611,6 +7611,7 @@
       if (list._todayObserver) { list._todayObserver.disconnect(); list._todayObserver = null; }
       const todayMs = (() => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
       const isHiddenFilter = window._ppFilter === 'hidden';
+      const isSelectMode = !!(document.getElementById('pagePanel') || {}).classList && document.getElementById('pagePanel').classList.contains('select-mode');
       // 숨긴 필터일 때 오늘 버튼 즉시 숨김 (비동기 observer 콜백 방지)
       const _footerEl = document.getElementById('pagePanelFooter');
       if (isHiddenFilter && _footerEl) _footerEl.style.display = 'none';
@@ -7626,8 +7627,8 @@
         return;
       }
 
-      // 전체 모드일 때 "첫 페이지" 범위 헤더
-      if (!isHiddenFilter && pagesSource.length > 0) {
+      // 전체 모드이고 선택 모드가 아닐 때 "첫 페이지" 범위 헤더
+      if (!isHiddenFilter && !isSelectMode && pagesSource.length > 0) {
         const firstStart = getWeekStart(pagesSource[0].start);
         const fmtBtn = d => {
           const yy = d.getFullYear();
@@ -7710,7 +7711,7 @@
       });
 
       // "마지막 페이지" 범위 헤더
-      if (!isHiddenFilter && pagesSource.length > 0) {
+      if (!isHiddenFilter && !isSelectMode && pagesSource.length > 0) {
         const lastStart = getWeekStart(pagesSource[pagesSource.length - 1].start);
         const lastEnd = new Date(lastStart); lastEnd.setDate(lastEnd.getDate() + 6);
         const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
@@ -8802,6 +8803,7 @@
       list.style.alignContent = 'start';
       const todayMs = (() => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
       const isDayHiddenFilter = window._ppFilter === 'hidden';
+      const isDaySelectMode = !!(document.getElementById('pagePanel') || {}).classList && document.getElementById('pagePanel').classList.contains('select-mode');
       // 숨긴 필터일 때 오늘 버튼 즉시 숨김 (비동기 observer 콜백 방지)
       const _dayFooterEl = document.getElementById('pagePanelFooter');
       if (isDayHiddenFilter && _dayFooterEl) _dayFooterEl.style.display = 'none';
@@ -8817,7 +8819,7 @@
       }
 
       // 전체 모드일 때 "첫 페이지" 범위 헤더
-      if (!isDayHiddenFilter && dayPagesSource.length > 0) {
+      if (!isDayHiddenFilter && !isDaySelectMode && dayPagesSource.length > 0) {
         const firstDate = dayPagesSource[0].date;
         const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
         const pillRowD = document.createElement('div');
@@ -8891,7 +8893,7 @@
       });
 
       // "마지막 페이지" 범위 헤더
-      if (!isDayHiddenFilter && dayPagesSource.length > 0) {
+      if (!isDayHiddenFilter && !isDaySelectMode && dayPagesSource.length > 0) {
         const lastDate = dayPagesSource[dayPagesSource.length - 1].date;
         const fmtBtn = d => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
         const pillRowD2 = document.createElement('div');
@@ -9239,7 +9241,7 @@
 
       // 요일 헤더 (월~일)
       const grid = document.createElement('div');
-      grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:2px;';
+      grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:0;';
       DAYS.forEach((d, i) => {
         const dh = document.createElement('div');
         dh.style.cssText = 'text-align:center;font-size:11px;font-weight:500;padding:3px 0 6px;color:rgba(0,0,0,0.35);font-family:"Noto Sans KR",sans-serif;';
@@ -9253,53 +9255,71 @@
       const first = new Date(calViewYear, calViewMonth, 1);
       const dow = first.getDay(); // 0=Sun
       const offset = dow === 0 ? 6 : dow - 1;
+      // 빈 셀 (wrapper 포함)
       for (let i = 0; i < offset; i++) {
-        grid.appendChild(document.createElement('div'));
+        const blank = document.createElement('div');
+        blank.style.cssText = 'height:36px;';
+        grid.appendChild(blank);
       }
 
-      // 날짜 셀
       const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
-      const activeDate = activeField === 'start' ? selStart : selEnd;
+      const startMs = selStart ? selStart.getTime() : null;
+      const endMs   = selEnd   ? selEnd.getTime()   : null;
+      const RANGE_BG = 'rgba(255,107,53,0.10)';
 
       for (let d = 1; d <= daysInMonth; d++) {
+        const cellDate = new Date(calViewYear, calViewMonth, d);
+        const cellMs   = cellDate.getTime();
+
+        const isStart   = startMs && cellMs === startMs;
+        const isEnd     = endMs   && cellMs === endMs;
+        const isInRange = startMs && endMs && cellMs > startMs && cellMs < endMs;
+        const isSingle  = isStart && isEnd; // start === end
+
+        // 래퍼 — 연결 배경 담당
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'height:36px;display:flex;align-items:center;justify-content:center;';
+        if (!isSingle) {
+          if (isStart && endMs)   wrap.style.background = `linear-gradient(to right, transparent 50%, ${RANGE_BG} 50%)`;
+          else if (isEnd && startMs) wrap.style.background = `linear-gradient(to left,  transparent 50%, ${RANGE_BG} 50%)`;
+          else if (isInRange)     wrap.style.background = RANGE_BG;
+        }
+
+        // 날짜 원
         const cell = document.createElement('div');
-        cell.style.cssText = 'aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:13px;font-weight:500;color:#111;font-family:"Noto Sans KR",sans-serif;transition:background 0.1s;';
+        const colIdx = (offset + d - 1) % 7; // 0=월 5=토 6=일
+        cell.style.cssText = 'width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:13px;font-weight:500;color:#111;font-family:"Noto Sans KR",sans-serif;transition:background 0.1s;position:relative;z-index:1;';
         cell.textContent = d;
 
-        const isActive = activeDate &&
-          activeDate.getFullYear() === calViewYear &&
-          activeDate.getMonth() === calViewMonth &&
-          activeDate.getDate() === d;
-
-        if (isActive) {
+        if (isStart || isEnd) {
           cell.style.background = '#ff6b35';
           cell.style.color = '#fff';
           cell.style.fontWeight = '700';
         } else {
-          const colIdx = (offset + d - 1) % 7; // 0=월 5=토 6=일
-          if (colIdx === 5) cell.style.color = '#5b8ff9';
-          if (colIdx === 6) cell.style.color = '#ff5f57';
-          cell.addEventListener('mouseenter', () => { cell.style.background = 'rgba(0,0,0,0.06)'; });
-          cell.addEventListener('mouseleave', () => { cell.style.background = ''; });
+          if (colIdx === 5) cell.style.color = '#5b8ff9'; // 토
+          if (colIdx === 6) cell.style.color = '#ff5f57'; // 일
+          cell.addEventListener('mouseenter', () => { cell.style.background = 'rgba(0,0,0,0.07)'; });
+          cell.addEventListener('mouseleave', () => { cell.style.background = isInRange ? '' : ''; });
         }
 
         cell.addEventListener('click', () => {
           const picked = new Date(calViewYear, calViewMonth, d);
           if (activeField === 'start') {
             selStart = picked;
-            // 시작이 종료보다 늦으면 종료 초기화
             if (selEnd && selStart > selEnd) selEnd = null;
           } else {
             selEnd = picked;
-            // 종료가 시작보다 이르면 시작 초기화
             if (selStart && selEnd < selStart) selStart = null;
           }
           updateButtons();
           renderCalendar();
         });
 
-        grid.appendChild(cell);
+        wrap.appendChild(cell);
+        grid.appendChild(wrap);
       }
+      // gap 제거 (range 배경 연결)
+      grid.style.gap = '0';
       calWrap.appendChild(grid);
     }
 
@@ -9321,20 +9341,20 @@
     }
 
     function positionPopup() {
-      overlay.style.display = 'flex';
-      const btn = document.getElementById('ppSettingsBtn');
+      // 먼저 위치를 잡은 후 display:flex (offsetHeight 0 문제 방지)
       const panel = document.getElementById('pagePanel');
-      const ref = btn || panel;
-      if (!ref) return;
-      const rect = ref.getBoundingClientRect();
-      const popW = overlay.offsetWidth || 320;
-      let left = rect.right - popW;
+      if (!panel) { overlay.style.display = 'flex'; return; }
+      const panelRect = panel.getBoundingClientRect();
+      const popW = 320;
+      // 패널 헤더 바로 아래, 수평 중앙
+      const hdrEl = document.getElementById('ppNormalHeader') || document.getElementById('ppSelectHeader');
+      const hdrBottom = hdrEl ? hdrEl.getBoundingClientRect().bottom : panelRect.top + 48;
+      let left = panelRect.left + (panelRect.width - popW) / 2;
       if (left < 8) left = 8;
-      let top = rect.bottom + 8;
-      const popH = overlay.offsetHeight;
-      if (top + popH > window.innerHeight - 16) top = rect.top - popH - 8;
+      if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
       overlay.style.left = left + 'px';
-      overlay.style.top  = top + 'px';
+      overlay.style.top  = (hdrBottom + 8) + 'px';
+      overlay.style.display = 'flex';
     }
 
     function closePopup() {
