@@ -5167,6 +5167,7 @@
     const PRICE_PER_DAY = 10;
     let _selectedMonths = new Set(); // "YYYY-M" keys
     let _onConfirm = null;
+    let _disableOwned = false; // true = 페이지 패널, false = 스토어
 
     // ── 구매 기록 (세션 메모리) ──
     const _purchasedMonths = new Set(); // "YYYY-M"
@@ -5193,7 +5194,8 @@
         const days = daysInMonth(y, m);
 
         const wrap = document.createElement('div');
-        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:pointer;';
+        const isDisabled = owned && _disableOwned;
+        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (isDisabled ? 'default' : 'pointer') + ';' + (isDisabled ? 'opacity:0.4;' : '');
 
         const s2 = document.createElement('div');
         s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
@@ -5217,17 +5219,19 @@
 
         const daysEl = document.createElement('div');
         daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned ? '600' : '400') + ';';
-        daysEl.textContent = owned ? '무료' : `${days}일`;
+        daysEl.textContent = owned ? '구매 완료' : `${days}일`;
 
         front.append(chk, yearEl, monthEl, daysEl);
         wrap.append(s2, s1, front);
 
-        wrap.addEventListener('click', () => {
-          if (_selectedMonths.has(key)) _selectedMonths.delete(key);
-          else _selectedMonths.add(key);
-          renderMonthGrid();
-          updateUI();
-        });
+        if (!isDisabled) {
+          wrap.addEventListener('click', () => {
+            if (_selectedMonths.has(key)) _selectedMonths.delete(key);
+            else _selectedMonths.add(key);
+            renderMonthGrid();
+            updateUI();
+          });
+        }
         grid.appendChild(wrap);
       }
     }
@@ -5281,12 +5285,13 @@
     }
 
     // ── 팝업 열기 ──
-    return function({ title, noteName, onConfirm } = {}) {
+    return function({ title, noteName, onConfirm, disableOwned = false } = {}) {
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
       _selectedMonths = new Set();
       _onConfirm = onConfirm;
+      _disableOwned = disableOwned;
 
       const nameEl = document.getElementById('ppProductName');
       if (nameEl) nameEl.textContent = noteName || '';
@@ -9555,6 +9560,7 @@
       const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
       window.openPeriodPicker({
         noteName: isWeek ? '주간 플래너' : '텐미닛 플래너',
+        disableOwned: true,
         onConfirm: ({ months }) => {
           if (!months || months.length === 0) return;
           months.forEach(({ startDate, endDate }) => {
