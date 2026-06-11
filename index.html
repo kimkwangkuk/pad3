@@ -7717,22 +7717,39 @@
         return [...map.values()];
       }
 
-      if (!isHiddenFilter && !isSelectMode && pagesSource.length > 0) {
+      if (!isHiddenFilter && pagesSource.length > 0) {
         const weekGroups = makeWeekGroups(pagesSource);
         weekGroups.forEach(grp => {
           const y = grp[0].start.getFullYear();
           const m = grp[0].start.getMonth();
           const groupKey = `${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
+          const grpMsList = grp.map(p => String(p.start.getTime()));
           const hdrRow = document.createElement('div');
           hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;';
+          const hLeft = document.createElement('div');
+          hLeft.style.cssText = 'display:flex;align-items:center;gap:7px;';
+          const grpCheck = document.createElement('div');
+          grpCheck.className = 'pp-radio pp-group-check';
+          grpCheck.dataset.msList = JSON.stringify(grpMsList);
+          grpCheck.style.display = isSelectMode ? 'flex' : 'none';
+          grpCheck.style.flexShrink = '0';
+          grpCheck.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!window._ppSelectedMs) return;
+            const allSel = grpMsList.every(ms => window._ppSelectedMs.has(ms));
+            grpMsList.forEach(ms => { if (allSel) window._ppSelectedMs.delete(ms); else window._ppSelectedMs.add(ms); });
+            if (window._ppUpdateHideBar) window._ppUpdateHideBar();
+            if (window.refreshCardRadios) window.refreshCardRadios();
+          });
           const hLbl = document.createElement('span');
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
+          hLeft.append(grpCheck, hLbl);
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hdrRow.append(hLbl, hBtn);
+          hdrRow.append(hLeft, hBtn);
           list.appendChild(hdrRow);
 
           const cardsWrap = document.createElement('div');
@@ -8934,22 +8951,39 @@
         return [...map.values()];
       }
 
-      if (!isDayHiddenFilter && !isDaySelectMode && dayPagesSource.length > 0) {
+      if (!isDayHiddenFilter && dayPagesSource.length > 0) {
         const dayGroups = makeDayGroups(dayPagesSource);
         dayGroups.forEach(grp => {
           const y = grp[0].date.getFullYear();
           const m = grp[0].date.getMonth();
           const groupKey = `${y}-${m}`;
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
+          const grpMsList = grp.map(p => String(p.date.getTime()));
           const hdrRow = document.createElement('div');
           hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
+          const hLeft = document.createElement('div');
+          hLeft.style.cssText = 'display:flex;align-items:center;gap:7px;';
+          const grpCheck = document.createElement('div');
+          grpCheck.className = 'pp-radio pp-group-check';
+          grpCheck.dataset.msList = JSON.stringify(grpMsList);
+          grpCheck.style.display = isDaySelectMode ? 'flex' : 'none';
+          grpCheck.style.flexShrink = '0';
+          grpCheck.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!window._ppSelectedMs) return;
+            const allSel = grpMsList.every(ms => window._ppSelectedMs.has(ms));
+            grpMsList.forEach(ms => { if (allSel) window._ppSelectedMs.delete(ms); else window._ppSelectedMs.add(ms); });
+            if (window._ppUpdateHideBar) window._ppUpdateHideBar();
+            if (window.refreshCardRadios) window.refreshCardRadios();
+          });
           const hLbl = document.createElement('span');
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
+          hLeft.append(grpCheck, hLbl);
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          hdrRow.append(hLbl, hBtn);
+          hdrRow.append(hLeft, hBtn);
           list.appendChild(hdrRow);
 
           const cardsWrap = document.createElement('div');
@@ -9644,12 +9678,10 @@
         let radio = card.querySelector('.pp-radio');
         if (!isSelectMode()) {
           if (radio) radio.parentElement.replaceWith(...radio.parentElement.childNodes); // unwrap
-          // simpler: just hide
           if (radio) radio.style.display = 'none';
           return;
         }
         if (!radio) {
-          // wrap footer in a row with radio
           const footer = card.querySelector('.page-week-footer');
           if (!footer) return;
           radio = document.createElement('div');
@@ -9660,6 +9692,14 @@
         const ms = getCardMs(card);
         const checked = ms && selectedMs.has(ms);
         radio.classList.toggle('checked', !!checked);
+      });
+      // 그룹 체크박스 갱신
+      document.querySelectorAll('#pageList .pp-group-check').forEach(chk => {
+        chk.style.display = isSelectMode() ? 'flex' : 'none';
+        if (!isSelectMode()) return;
+        const msList = JSON.parse(chk.dataset.msList || '[]');
+        const allSel = msList.length > 0 && msList.every(ms => selectedMs.has(ms));
+        chk.classList.toggle('checked', allSel);
       });
     }
 
@@ -9688,6 +9728,8 @@
     // 전역 노출
     window.refreshCardRadios = refreshCardRadios;
     window.exitPageSelectMode = exitSelectMode;
+    window._ppSelectedMs = selectedMs;
+    window._ppUpdateHideBar = updateHideBar;
 
     selectBtn.addEventListener('click', enterSelectMode);
     doneBtn.addEventListener('click', exitSelectMode);
