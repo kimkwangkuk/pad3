@@ -3023,80 +3023,106 @@
       font-size: 15px; font-weight: 600; cursor: pointer;
       font-family: 'Noto Sans KR', sans-serif;
     }
-    /* 페이지 구매 오버레이 */
+    /* 페이지 구매 팝업 */
     .page-purchase-overlay {
       position: absolute; inset: 0; z-index: 960;
-      background: #f5f5f5; display: none; flex-direction: column;
+      background: rgba(0,0,0,0.42); display: none;
+      align-items: center; justify-content: center;
       font-family: 'Noto Sans KR', sans-serif;
     }
     .page-purchase-overlay.show { display: flex; }
+    .pp-purchase-box {
+      width: 308px; background: #f0ede8;
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+      display: flex; flex-direction: column;
+    }
     .pp-purchase-header {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 14px 10px; background: white;
-      border-bottom: 1px solid rgba(0,0,0,0.07); flex-shrink: 0;
+      display: flex; align-items: center;
+      padding: 14px 14px 10px; background: #f0ede8; flex-shrink: 0;
     }
-    .pp-purchase-back {
-      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-      border: none; background: none; cursor: pointer; border-radius: 50%;
-      color: rgba(0,0,0,0.55); flex-shrink: 0;
+    .pp-purchase-close {
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      border: none; background: rgba(0,0,0,0.08); cursor: pointer; border-radius: 50%;
+      color: rgba(0,0,0,0.5); flex-shrink: 0; margin-left: auto;
     }
-    .pp-purchase-title { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.85); flex: 1; }
+    .pp-purchase-title { font-size: 14px; font-weight: 700; color: rgba(0,0,0,0.75); flex: 1; letter-spacing: -0.01em; }
     .pp-purchase-select-all-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 11px 16px; background: white;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 14px 9px;
       cursor: pointer; flex-shrink: 0; user-select: none;
     }
     .pp-chk {
-      width: 20px; height: 20px; border-radius: 50%;
-      border: 2px solid rgba(0,0,0,0.2);
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.8px solid rgba(0,0,0,0.25);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0; background: white;
+      transition: background 0.15s, border-color 0.15s;
     }
     .pp-chk.checked { background: #1a1a1a; border-color: #1a1a1a; }
-    .pp-chk svg { display: none; width: 11px; height: 11px; fill: white; }
+    .pp-chk svg { display: none; width: 10px; height: 10px; }
     .pp-chk.checked svg { display: block; }
-    .pp-purchase-select-all-lbl { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.65); }
-    .pp-purchase-count { font-size: 12px; color: rgba(0,0,0,0.38); margin-left: auto; }
+    .pp-purchase-select-all-lbl { font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.55); }
+    .pp-purchase-count { font-size: 11px; color: rgba(0,0,0,0.38); margin-left: auto; }
+    /* 종이 그리드 */
     .pp-purchase-grid {
-      flex: 1; overflow-y: auto;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 8px; padding: 12px; align-content: start;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px; padding: 4px 14px 12px; align-content: start;
     }
     .pp-purchase-card {
-      background: white; border-radius: 10px;
-      border: 2px solid transparent; cursor: pointer;
-      transition: border-color 0.15s; overflow: hidden;
-      position: relative;
+      cursor: pointer; position: relative;
+      transition: transform 0.15s;
     }
-    .pp-purchase-card.selected { border-color: #1a1a1a; }
+    .pp-purchase-card:hover { transform: translateY(-2px); }
+    .pp-paper {
+      background: white; border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.13), 0 1px 2px rgba(0,0,0,0.08);
+      overflow: hidden; position: relative;
+      border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .pp-purchase-card.selected .pp-paper {
+      border-color: #1a1a1a;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
     .pp-card-chk {
-      position: absolute; top: 6px; right: 6px; z-index: 2;
-      width: 19px; height: 19px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.85);
-      background: rgba(0,0,0,0.28);
+      position: absolute; top: 4px; right: 4px; z-index: 2;
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.8);
+      background: rgba(0,0,0,0.22);
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s, border-color 0.15s;
     }
     .pp-purchase-card.selected .pp-card-chk { background: #1a1a1a; border-color: #1a1a1a; }
-    .pp-card-chk svg { display: none; width: 10px; height: 10px; fill: white; }
+    .pp-card-chk svg { display: none; width: 9px; height: 9px; }
     .pp-purchase-card.selected .pp-card-chk svg { display: block; }
-    .pp-purchase-card .page-day-thumb { opacity: 1 !important; }
+    .pp-paper .page-day-thumb { opacity: 1 !important; border: none !important; border-radius: 0 !important; }
     .pp-purchase-card-date {
-      text-align: center; font-size: 11px; font-weight: 600;
-      color: rgba(0,0,0,0.5); padding: 5px 4px 7px;
+      text-align: center; font-size: 9.5px; font-weight: 600;
+      color: rgba(0,0,0,0.45); padding: 4px 2px 2px; line-height: 1.3;
     }
+    /* 페이지네이션 */
+    .pp-pagination {
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      padding: 2px 14px 10px; flex-shrink: 0;
+    }
+    .pp-page-btn {
+      width: 28px; height: 28px; border: none; background: rgba(0,0,0,0.08);
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: rgba(0,0,0,0.55); transition: background 0.15s;
+    }
+    .pp-page-btn:disabled { opacity: 0.28; cursor: default; }
+    .pp-page-btn:not(:disabled):hover { background: rgba(0,0,0,0.14); }
+    .pp-page-info { font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.45); min-width: 40px; text-align: center; }
     .pp-purchase-footer {
-      padding: 12px 16px 22px; background: white;
-      border-top: 1px solid rgba(0,0,0,0.07); flex-shrink: 0;
+      padding: 8px 14px 16px; flex-shrink: 0;
     }
     .pp-purchase-btn {
-      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
       background: #1a1a1a; color: white;
-      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: 'Noto Sans KR', sans-serif; transition: opacity 0.15s;
     }
-    .pp-purchase-btn:disabled { opacity: 0.3; cursor: default; }
+    .pp-purchase-btn:disabled { opacity: 0.28; cursor: default; }
     .page-day-thumb {
       width: 100%; aspect-ratio: 9/14; background: white; border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.12); display: flex; flex-direction: column;
@@ -4279,24 +4305,35 @@
     </div>
   </div>
 
-  <!-- 페이지 구매 선택 오버레이 -->
+  <!-- 페이지 구매 팝업 -->
   <div class="page-purchase-overlay" id="pagePurchaseOverlay">
-    <div class="pp-purchase-header">
-      <button class="pp-purchase-back" id="ppPurchaseBack">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="pp-purchase-title">페이지 구매하기</div>
-    </div>
-    <div class="pp-purchase-select-all-row" id="ppPurchaseSelectAll">
-      <div class="pp-chk" id="ppSelectAllChk">
-        <svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    <div class="pp-purchase-box">
+      <div class="pp-purchase-header">
+        <div class="pp-purchase-title">페이지 구매하기</div>
+        <button class="pp-purchase-close" id="ppPurchaseBack">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <span class="pp-purchase-select-all-lbl">전체 선택</span>
-      <span class="pp-purchase-count" id="ppPurchaseSelectedCount"></span>
-    </div>
-    <div class="pp-purchase-grid" id="ppPurchaseGrid"></div>
-    <div class="pp-purchase-footer">
-      <button class="pp-purchase-btn" id="ppPurchaseConfirm" disabled>구매하기</button>
+      <div class="pp-purchase-select-all-row" id="ppPurchaseSelectAll">
+        <div class="pp-chk" id="ppSelectAllChk">
+          <svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="pp-purchase-select-all-lbl">전체 선택</span>
+        <span class="pp-purchase-count" id="ppPurchaseSelectedCount"></span>
+      </div>
+      <div class="pp-purchase-grid" id="ppPurchaseGrid"></div>
+      <div class="pp-pagination">
+        <button class="pp-page-btn" id="ppPagePrev">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="pp-page-info" id="ppPageInfo"></span>
+        <button class="pp-page-btn" id="ppPageNext">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="pp-purchase-footer">
+        <button class="pp-purchase-btn" id="ppPurchaseConfirm" disabled>구매하기</button>
+      </div>
     </div>
   </div>
 
@@ -9970,94 +10007,111 @@
     window.hideLockUpgradePopup = closePopup;
   })();
 
-  // 페이지 구매 선택 오버레이
+  // 페이지 구매 팝업
   (function initPagePurchase() {
-    const overlay   = document.getElementById('pagePurchaseOverlay');
-    const grid      = document.getElementById('ppPurchaseGrid');
-    const selectAll = document.getElementById('ppPurchaseSelectAll');
-    const allChk    = document.getElementById('ppSelectAllChk');
-    const countLbl  = document.getElementById('ppPurchaseSelectedCount');
+    const overlay    = document.getElementById('pagePurchaseOverlay');
+    const grid       = document.getElementById('ppPurchaseGrid');
+    const selectAll  = document.getElementById('ppPurchaseSelectAll');
+    const allChk     = document.getElementById('ppSelectAllChk');
+    const countLbl   = document.getElementById('ppPurchaseSelectedCount');
     const confirmBtn = document.getElementById('ppPurchaseConfirm');
-    const backBtn   = document.getElementById('ppPurchaseBack');
+    const backBtn    = document.getElementById('ppPurchaseBack');
+    const prevBtn    = document.getElementById('ppPagePrev');
+    const nextBtn    = document.getElementById('ppPageNext');
+    const pageInfo   = document.getElementById('ppPageInfo');
     if (!overlay) return;
 
-    const CHECKMARK = '<svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+    const PER_PAGE = 9;
+    const CHECKMARK = '<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
     let selected = new Set();
+    let currentPage = 0;
 
     function getLockedPages() {
       return (window.dayPages || []).filter(p => p.locked);
     }
 
-    function updateUI() {
+    function totalPages(locked) {
+      return Math.max(1, Math.ceil(locked.length / PER_PAGE));
+    }
+
+    function updateHeader() {
       const locked = getLockedPages();
-      const total = locked.length;
       const cnt = selected.size;
-      // 전체선택 체크박스
-      if (cnt === total && total > 0) allChk.classList.add('checked');
+      if (cnt === locked.length && locked.length > 0) allChk.classList.add('checked');
       else allChk.classList.remove('checked');
-      // 카운트
       countLbl.textContent = cnt > 0 ? `${cnt}개 선택됨` : '';
-      // 카드 상태 동기화
-      grid.querySelectorAll('.pp-purchase-card').forEach(card => {
-        const ms = card.dataset.ms;
-        if (selected.has(ms)) card.classList.add('selected');
-        else card.classList.remove('selected');
-      });
-      // 구매 버튼
       confirmBtn.disabled = cnt === 0;
       confirmBtn.textContent = cnt > 0 ? `${cnt}개 구매하기` : '구매하기';
     }
 
-    function renderGrid() {
+    function renderPage() {
       grid.innerHTML = '';
-      selected.clear();
       const locked = getLockedPages();
-      locked.forEach(p => {
+      const tp = totalPages(locked);
+      if (currentPage >= tp) currentPage = tp - 1;
+
+      pageInfo.textContent = `${currentPage + 1} / ${tp}`;
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = currentPage === tp - 1;
+
+      const slice = locked.slice(currentPage * PER_PAGE, (currentPage + 1) * PER_PAGE);
+      slice.forEach(p => {
         const ms = String(p.date.getTime());
         const card = document.createElement('div');
-        card.className = 'pp-purchase-card';
+        card.className = 'pp-purchase-card' + (selected.has(ms) ? ' selected' : '');
         card.dataset.ms = ms;
+
+        const paper = document.createElement('div');
+        paper.className = 'pp-paper';
 
         const chk = document.createElement('div');
         chk.className = 'pp-card-chk';
         chk.innerHTML = CHECKMARK;
-        card.appendChild(chk);
+        paper.appendChild(chk);
 
         const thumb = typeof window.buildMiniDayThumb === 'function'
-          ? window.buildMiniDayThumb(p.date, false)
-          : document.createElement('div');
-        card.appendChild(thumb);
+          ? window.buildMiniDayThumb(p.date, false) : document.createElement('div');
+        paper.appendChild(thumb);
+        card.appendChild(paper);
 
         const dateLbl = document.createElement('div');
         dateLbl.className = 'pp-purchase-card-date';
-        dateLbl.textContent = typeof window.formatDayLabel === 'function'
-          ? window.formatDayLabel(p.date) : p.date.toLocaleDateString('ko');
+        const d = p.date;
+        dateLbl.textContent = `${d.getMonth()+1}월 ${d.getDate()}일`;
         card.appendChild(dateLbl);
 
         card.addEventListener('click', () => {
-          if (selected.has(ms)) selected.delete(ms);
-          else selected.add(ms);
-          updateUI();
+          if (selected.has(ms)) selected.delete(ms); else selected.add(ms);
+          card.classList.toggle('selected', selected.has(ms));
+          updateHeader();
         });
         grid.appendChild(card);
       });
-      updateUI();
+      updateHeader();
     }
 
     function open() {
-      renderGrid();
+      selected.clear();
+      currentPage = 0;
+      renderPage();
       overlay.classList.add('show');
     }
     function close() { overlay.classList.remove('show'); }
 
     backBtn.addEventListener('click', close);
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+    prevBtn.addEventListener('click', () => { if (currentPage > 0) { currentPage--; renderPage(); } });
+    nextBtn.addEventListener('click', () => {
+      if (currentPage < totalPages(getLockedPages()) - 1) { currentPage++; renderPage(); }
+    });
 
     selectAll.addEventListener('click', () => {
       const locked = getLockedPages();
       if (selected.size === locked.length) selected.clear();
       else locked.forEach(p => selected.add(String(p.date.getTime())));
-      updateUI();
+      renderPage();
     });
 
     confirmBtn.addEventListener('click', () => {
