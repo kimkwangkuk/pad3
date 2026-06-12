@@ -2962,6 +2962,67 @@
     }
     .page-day-card.active { border-color: rgba(0,0,0,0.25); }
     .page-day-card:hover { background: rgba(0,0,0,0.03); }
+    /* 잠금 페이지 */
+    .page-day-card.locked .page-day-thumb { opacity: 0.5; }
+    .pdt-lock-overlay {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.18); border-radius: 5px; pointer-events: none;
+    }
+    .pdt-lock-icon {
+      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55); border-radius: 50%;
+    }
+    .pdt-lock-icon svg { width: 12px; height: 12px; fill: white; }
+    /* 플래너 잠금 배지 */
+    .planner-lock-badge {
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.07); border-radius: 20px;
+      padding: 5px 12px 5px 8px; cursor: pointer;
+      font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.6);
+      font-family: 'Noto Sans KR', sans-serif; user-select: none;
+    }
+    .planner-lock-badge.show { display: flex; }
+    .planner-lock-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+    /* 잠금 업그레이드 팝업 */
+    .lock-upgrade-overlay {
+      position: absolute; inset: 0; z-index: 900;
+      background: rgba(0,0,0,0.35); display: none;
+      align-items: flex-end; justify-content: center;
+    }
+    .lock-upgrade-overlay.show { display: flex; }
+    .lock-upgrade-box {
+      width: 100%; background: white;
+      border-radius: 22px 22px 0 0;
+      padding: 24px 20px 32px;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .lock-upgrade-icon {
+      width: 52px; height: 52px; background: rgba(0,0,0,0.07);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .lock-upgrade-icon svg { width: 26px; height: 26px; }
+    .lock-upgrade-title {
+      text-align: center; font-size: 17px; font-weight: 700;
+      color: rgba(0,0,0,0.85); margin-bottom: 8px;
+    }
+    .lock-upgrade-desc {
+      text-align: center; font-size: 13px; color: rgba(0,0,0,0.48);
+      line-height: 1.55; margin-bottom: 24px;
+    }
+    .lock-upgrade-btns { display: flex; flex-direction: column; gap: 10px; }
+    .lock-upgrade-btn-primary {
+      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      background: #1a1a1a; color: white;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .lock-upgrade-btn-secondary {
+      width: 100%; padding: 14px; border: 1.5px solid rgba(0,0,0,0.15);
+      border-radius: 14px; background: white; color: rgba(0,0,0,0.7);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
     .page-day-thumb {
       width: 100%; aspect-ratio: 9/14; background: white; border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.12); display: flex; flex-direction: column;
@@ -3887,6 +3948,10 @@
             <div class="planner-date-num" id="plannerDateNum"></div>
             <div class="planner-sub" id="plannerSub" contenteditable="true"></div>
           </div>
+          <button class="planner-lock-badge" id="plannerLockBadge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            잠긴 페이지
+          </button>
           <div class="planner-meta">
             <div class="planner-meta-block">
               <div class="planner-label">Dday</div>
@@ -4121,6 +4186,21 @@
       <div class="page-del-btns">
         <button class="page-del-cancel" id="pageDelCancel">취소</button>
         <button class="page-del-confirm" id="pageDelConfirm">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 잠금 업그레이드 팝업 -->
+  <div class="lock-upgrade-overlay" id="lockUpgradeOverlay">
+    <div class="lock-upgrade-box">
+      <div class="lock-upgrade-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      </div>
+      <div class="lock-upgrade-title">구독이 만료되었습니다</div>
+      <div class="lock-upgrade-desc">이 페이지는 구독 중 추가한 속지입니다.<br>다시 이용하려면 구독을 재개하거나<br>페이지를 개별 구매하세요.</div>
+      <div class="lock-upgrade-btns">
+        <button class="lock-upgrade-btn-primary" id="lockUpgradePremium">프리미엄 구독하기</button>
+        <button class="lock-upgrade-btn-secondary" id="lockUpgradePurchase">페이지 구매하기</button>
       </div>
     </div>
   </div>
@@ -8850,7 +8930,7 @@
     }
 
     // 세로형 일간 썸네일 (텐미닛 플래너 레이아웃)
-    function buildMiniDayThumb(date) {
+    function buildMiniDayThumb(date, locked) {
       const thumb = document.createElement('div');
       thumb.className = 'page-day-thumb';
 
@@ -8901,6 +8981,16 @@
         const row = document.createElement('div');
         row.className = 'pdt-todo-row';
         thumb.appendChild(row);
+      }
+
+      if (locked) {
+        const lockOvl = document.createElement('div');
+        lockOvl.className = 'pdt-lock-overlay';
+        const lockIco = document.createElement('div');
+        lockIco.className = 'pdt-lock-icon';
+        lockIco.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+        lockOvl.appendChild(lockIco);
+        thumb.appendChild(lockOvl);
       }
 
       return thumb;
@@ -8992,11 +9082,12 @@
 
           grp.forEach((p) => {
             const i = dayPagesSource.indexOf(p);
+            const isLocked = !!p.locked;
             const card = document.createElement('div');
-            card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '');
+            card.className = 'page-day-card' + (i === activeDayPageIdx ? ' active' : '') + (isLocked ? ' locked' : '');
             card.dataset.dateMs = p.date.getTime();
 
-            const thumb = buildMiniDayThumb(p.date);
+            const thumb = buildMiniDayThumb(p.date, isLocked);
             if (p.date.getTime() === todayMs) {
               const badge = document.createElement('div');
               badge.className = 'page-today-badge';
@@ -9018,9 +9109,10 @@
               activeDayPageIdx = i;
               renderDayPageList();
               if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
-              if (typeof window.setPlannerDate === 'function') {
-                window.setPlannerDate(p.date);
-              }
+              if (typeof window.setPlannerDate === 'function') window.setPlannerDate(p.date);
+              // 잠금 배지 업데이트
+              const badge = document.getElementById('plannerLockBadge');
+              if (badge) { if (isLocked) badge.classList.add('show'); else badge.classList.remove('show'); }
             });
 
             cardsWrap.appendChild(card);
@@ -9738,6 +9830,53 @@
       if (typeof _origRefresh === 'function') _origRefresh(tab);
       setTimeout(refreshCardRadios, 0);
     };
+  })();
+
+  // 잠금 업그레이드 팝업
+  (function initLockUpgrade() {
+    const overlay = document.getElementById('lockUpgradeOverlay');
+    const badge = document.getElementById('plannerLockBadge');
+    if (!overlay || !badge) return;
+
+    function openPopup() { overlay.classList.add('show'); }
+    function closePopup() { overlay.classList.remove('show'); }
+
+    badge.addEventListener('click', (e) => { e.stopPropagation(); openPopup(); });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closePopup();
+    });
+
+    document.getElementById('lockUpgradePremium').addEventListener('click', () => {
+      alert('프리미엄 구독 페이지로 이동합니다.');
+      closePopup();
+    });
+
+    document.getElementById('lockUpgradePurchase').addEventListener('click', () => {
+      alert('페이지 구매 페이지로 이동합니다.');
+      closePopup();
+    });
+
+    window.showLockUpgradePopup = openPopup;
+    window.hideLockUpgradePopup = closePopup;
+  })();
+
+  // 데모: 구독 만료 시나리오 — 잠긴 페이지 샘플 추가
+  (function setupLockedPagesDemo() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const mkDate = (offset) => { const d = new Date(today); d.setDate(d.getDate() + offset); return d; };
+    const demoDates = [-5, -4, -3, -2, -1, 0];
+    demoDates.forEach((offset, idx) => {
+      const d = mkDate(offset);
+      const exists = (window.dayPages || []).some(p => p.date && p.date.getTime() === d.getTime());
+      if (!exists) {
+        window.dayPages = window.dayPages || [];
+        // 짝수 인덱스는 잠금, 홀수는 정상
+        window.dayPages.push({ date: d, locked: idx % 2 === 0 });
+      }
+    });
+    window.dayPages.sort((a, b) => a.date - b.date);
+    if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
   })();
 
   // 툴 버튼 active
