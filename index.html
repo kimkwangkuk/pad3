@@ -2987,13 +2987,13 @@
     .lock-upgrade-overlay {
       position: absolute; inset: 0; z-index: 900;
       background: rgba(0,0,0,0.35); display: none;
-      align-items: flex-end; justify-content: center;
+      align-items: center; justify-content: center;
     }
     .lock-upgrade-overlay.show { display: flex; }
     .lock-upgrade-box {
-      width: 100%; background: white;
-      border-radius: 22px 22px 0 0;
-      padding: 24px 20px 32px;
+      width: 320px; background: white;
+      border-radius: 22px;
+      padding: 24px 20px 28px;
       font-family: 'Noto Sans KR', sans-serif;
     }
     .lock-upgrade-icon {
@@ -3023,6 +3023,80 @@
       font-size: 15px; font-weight: 600; cursor: pointer;
       font-family: 'Noto Sans KR', sans-serif;
     }
+    /* 페이지 구매 오버레이 */
+    .page-purchase-overlay {
+      position: absolute; inset: 0; z-index: 960;
+      background: #f5f5f5; display: none; flex-direction: column;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .page-purchase-overlay.show { display: flex; }
+    .pp-purchase-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 14px 10px; background: white;
+      border-bottom: 1px solid rgba(0,0,0,0.07); flex-shrink: 0;
+    }
+    .pp-purchase-back {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer; border-radius: 50%;
+      color: rgba(0,0,0,0.55); flex-shrink: 0;
+    }
+    .pp-purchase-title { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.85); flex: 1; }
+    .pp-purchase-select-all-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; background: white;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      cursor: pointer; flex-shrink: 0; user-select: none;
+    }
+    .pp-chk {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s, border-color 0.15s;
+    }
+    .pp-chk.checked { background: #1a1a1a; border-color: #1a1a1a; }
+    .pp-chk svg { display: none; width: 11px; height: 11px; fill: white; }
+    .pp-chk.checked svg { display: block; }
+    .pp-purchase-select-all-lbl { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.65); }
+    .pp-purchase-count { font-size: 12px; color: rgba(0,0,0,0.38); margin-left: auto; }
+    .pp-purchase-grid {
+      flex: 1; overflow-y: auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; padding: 12px; align-content: start;
+    }
+    .pp-purchase-card {
+      background: white; border-radius: 10px;
+      border: 2px solid transparent; cursor: pointer;
+      transition: border-color 0.15s; overflow: hidden;
+      position: relative;
+    }
+    .pp-purchase-card.selected { border-color: #1a1a1a; }
+    .pp-card-chk {
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 19px; height: 19px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.28);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pp-purchase-card.selected .pp-card-chk { background: #1a1a1a; border-color: #1a1a1a; }
+    .pp-card-chk svg { display: none; width: 10px; height: 10px; fill: white; }
+    .pp-purchase-card.selected .pp-card-chk svg { display: block; }
+    .pp-purchase-card .page-day-thumb { opacity: 1 !important; }
+    .pp-purchase-card-date {
+      text-align: center; font-size: 11px; font-weight: 600;
+      color: rgba(0,0,0,0.5); padding: 5px 4px 7px;
+    }
+    .pp-purchase-footer {
+      padding: 12px 16px 22px; background: white;
+      border-top: 1px solid rgba(0,0,0,0.07); flex-shrink: 0;
+    }
+    .pp-purchase-btn {
+      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      background: #1a1a1a; color: white;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif; transition: opacity 0.15s;
+    }
+    .pp-purchase-btn:disabled { opacity: 0.3; cursor: default; }
     .page-day-thumb {
       width: 100%; aspect-ratio: 9/14; background: white; border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.12); display: flex; flex-direction: column;
@@ -4202,6 +4276,27 @@
         <button class="lock-upgrade-btn-primary" id="lockUpgradePremium">프리미엄 구독하기</button>
         <button class="lock-upgrade-btn-secondary" id="lockUpgradePurchase">페이지 구매하기</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 페이지 구매 선택 오버레이 -->
+  <div class="page-purchase-overlay" id="pagePurchaseOverlay">
+    <div class="pp-purchase-header">
+      <button class="pp-purchase-back" id="ppPurchaseBack">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="pp-purchase-title">페이지 구매하기</div>
+    </div>
+    <div class="pp-purchase-select-all-row" id="ppPurchaseSelectAll">
+      <div class="pp-chk" id="ppSelectAllChk">
+        <svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      </div>
+      <span class="pp-purchase-select-all-lbl">전체 선택</span>
+      <span class="pp-purchase-count" id="ppPurchaseSelectedCount"></span>
+    </div>
+    <div class="pp-purchase-grid" id="ppPurchaseGrid"></div>
+    <div class="pp-purchase-footer">
+      <button class="pp-purchase-btn" id="ppPurchaseConfirm" disabled>구매하기</button>
     </div>
   </div>
 
@@ -9110,6 +9205,7 @@
               renderDayPageList();
               if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
               if (typeof window.setPlannerDate === 'function') window.setPlannerDate(p.date);
+              window._currentPageLocked = isLocked;
               // 잠금 배지 업데이트
               const badge = document.getElementById('plannerLockBadge');
               if (badge) { if (isLocked) badge.classList.add('show'); else badge.classList.remove('show'); }
@@ -9213,6 +9309,8 @@
       if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
     };
     window.addDayPage = addDayPage;
+    window.buildMiniDayThumb = buildMiniDayThumb;
+    window.formatDayLabel = formatDayLabel;
   })();
 
   // ── 페이지 필터 버튼 ──
@@ -9843,6 +9941,17 @@
 
     badge.addEventListener('click', (e) => { e.stopPropagation(); openPopup(); });
 
+    // 플래너 영역 클릭 시 잠긴 페이지면 팝업 열기
+    const plannerBody = document.querySelector('.planner-body');
+    const plannerHeader = document.querySelector('.planner-header');
+    [plannerBody, plannerHeader].forEach(el => {
+      if (!el) return;
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('#plannerLockBadge')) return;
+        if (window._currentPageLocked) openPopup();
+      });
+    });
+
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closePopup();
     });
@@ -9853,12 +9962,111 @@
     });
 
     document.getElementById('lockUpgradePurchase').addEventListener('click', () => {
-      alert('페이지 구매 페이지로 이동합니다.');
       closePopup();
+      if (typeof window.openPagePurchase === 'function') window.openPagePurchase();
     });
 
     window.showLockUpgradePopup = openPopup;
     window.hideLockUpgradePopup = closePopup;
+  })();
+
+  // 페이지 구매 선택 오버레이
+  (function initPagePurchase() {
+    const overlay   = document.getElementById('pagePurchaseOverlay');
+    const grid      = document.getElementById('ppPurchaseGrid');
+    const selectAll = document.getElementById('ppPurchaseSelectAll');
+    const allChk    = document.getElementById('ppSelectAllChk');
+    const countLbl  = document.getElementById('ppPurchaseSelectedCount');
+    const confirmBtn = document.getElementById('ppPurchaseConfirm');
+    const backBtn   = document.getElementById('ppPurchaseBack');
+    if (!overlay) return;
+
+    const CHECKMARK = '<svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+
+    let selected = new Set();
+
+    function getLockedPages() {
+      return (window.dayPages || []).filter(p => p.locked);
+    }
+
+    function updateUI() {
+      const locked = getLockedPages();
+      const total = locked.length;
+      const cnt = selected.size;
+      // 전체선택 체크박스
+      if (cnt === total && total > 0) allChk.classList.add('checked');
+      else allChk.classList.remove('checked');
+      // 카운트
+      countLbl.textContent = cnt > 0 ? `${cnt}개 선택됨` : '';
+      // 카드 상태 동기화
+      grid.querySelectorAll('.pp-purchase-card').forEach(card => {
+        const ms = card.dataset.ms;
+        if (selected.has(ms)) card.classList.add('selected');
+        else card.classList.remove('selected');
+      });
+      // 구매 버튼
+      confirmBtn.disabled = cnt === 0;
+      confirmBtn.textContent = cnt > 0 ? `${cnt}개 구매하기` : '구매하기';
+    }
+
+    function renderGrid() {
+      grid.innerHTML = '';
+      selected.clear();
+      const locked = getLockedPages();
+      locked.forEach(p => {
+        const ms = String(p.date.getTime());
+        const card = document.createElement('div');
+        card.className = 'pp-purchase-card';
+        card.dataset.ms = ms;
+
+        const chk = document.createElement('div');
+        chk.className = 'pp-card-chk';
+        chk.innerHTML = CHECKMARK;
+        card.appendChild(chk);
+
+        const thumb = typeof window.buildMiniDayThumb === 'function'
+          ? window.buildMiniDayThumb(p.date, false)
+          : document.createElement('div');
+        card.appendChild(thumb);
+
+        const dateLbl = document.createElement('div');
+        dateLbl.className = 'pp-purchase-card-date';
+        dateLbl.textContent = typeof window.formatDayLabel === 'function'
+          ? window.formatDayLabel(p.date) : p.date.toLocaleDateString('ko');
+        card.appendChild(dateLbl);
+
+        card.addEventListener('click', () => {
+          if (selected.has(ms)) selected.delete(ms);
+          else selected.add(ms);
+          updateUI();
+        });
+        grid.appendChild(card);
+      });
+      updateUI();
+    }
+
+    function open() {
+      renderGrid();
+      overlay.classList.add('show');
+    }
+    function close() { overlay.classList.remove('show'); }
+
+    backBtn.addEventListener('click', close);
+
+    selectAll.addEventListener('click', () => {
+      const locked = getLockedPages();
+      if (selected.size === locked.length) selected.clear();
+      else locked.forEach(p => selected.add(String(p.date.getTime())));
+      updateUI();
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      if (confirmBtn.disabled) return;
+      alert(`${selected.size}개 페이지를 구매합니다.`);
+      close();
+    });
+
+    window.openPagePurchase = open;
   })();
 
   // 데모: 구독 만료 시나리오 — 잠긴 페이지 샘플 추가
