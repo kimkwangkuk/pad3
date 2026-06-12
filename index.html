@@ -3116,13 +3116,32 @@
     .pp-purchase-footer {
       padding: 8px 14px 16px; flex-shrink: 0;
     }
+    .pp-price-summary {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 4px 10px;
+    }
+    .pp-price-unit {
+      font-size: 11.5px; color: rgba(0,0,0,0.4); font-weight: 500;
+    }
+    .pp-price-total {
+      display: flex; align-items: baseline; gap: 4px;
+    }
+    .pp-price-total-num {
+      font-size: 18px; font-weight: 800; color: rgba(0,0,0,0.82); letter-spacing: -0.03em;
+    }
+    .pp-price-total-sub {
+      font-size: 11px; color: rgba(0,0,0,0.38); font-weight: 500;
+    }
     .pp-purchase-btn {
       width: 100%; padding: 13px; border: none; border-radius: 12px;
       background: #1a1a1a; color: white;
       font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: 'Noto Sans KR', sans-serif; transition: opacity 0.15s;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .pp-purchase-btn:disabled { opacity: 0.28; cursor: default; }
+    .pp-btn-label { flex: 1; text-align: center; }
+    .pp-btn-price { font-size: 13px; font-weight: 700; opacity: 0.75; }
     .page-day-thumb {
       width: 100%; aspect-ratio: 9/14; background: white; border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.12); display: flex; flex-direction: column;
@@ -4332,7 +4351,17 @@
         </button>
       </div>
       <div class="pp-purchase-footer">
-        <button class="pp-purchase-btn" id="ppPurchaseConfirm" disabled>구매하기</button>
+        <div class="pp-price-summary">
+          <span class="pp-price-unit" id="ppPriceUnit">페이지당 ₩990</span>
+          <div class="pp-price-total">
+            <span class="pp-price-total-num" id="ppPriceTotalNum">—</span>
+            <span class="pp-price-total-sub" id="ppPriceTotalSub"></span>
+          </div>
+        </div>
+        <button class="pp-purchase-btn" id="ppPurchaseConfirm" disabled>
+          <span class="pp-btn-label">구매하기</span>
+          <span class="pp-btn-price" id="ppBtnPrice"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -10022,7 +10051,11 @@
     if (!overlay) return;
 
     const PER_PAGE = 9;
+    const PRICE_PER_PAGE = 990;
     const CHECKMARK = '<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const totalNumEl = document.getElementById('ppPriceTotalNum');
+    const totalSubEl = document.getElementById('ppPriceTotalSub');
+    const btnPriceEl = document.getElementById('ppBtnPrice');
 
     let selected = new Set();
     let currentPage = 0;
@@ -10042,7 +10075,20 @@
       else allChk.classList.remove('checked');
       countLbl.textContent = cnt > 0 ? `${cnt}개 선택됨` : '';
       confirmBtn.disabled = cnt === 0;
-      confirmBtn.textContent = cnt > 0 ? `${cnt}개 구매하기` : '구매하기';
+      // 가격 업데이트
+      const total = cnt * PRICE_PER_PAGE;
+      if (cnt > 0) {
+        totalNumEl.textContent = '₩' + total.toLocaleString('ko-KR');
+        totalSubEl.textContent = `(${cnt}장 × ₩${PRICE_PER_PAGE.toLocaleString('ko-KR')})`;
+        btnPriceEl.textContent = '₩' + total.toLocaleString('ko-KR');
+      } else {
+        totalNumEl.textContent = '—';
+        totalSubEl.textContent = '';
+        btnPriceEl.textContent = '';
+      }
+      // 버튼 텍스트
+      const btnLabel = confirmBtn.querySelector('.pp-btn-label');
+      if (btnLabel) btnLabel.textContent = cnt > 0 ? `${cnt}개 구매하기` : '구매하기';
     }
 
     function renderPage() {
