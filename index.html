@@ -10071,19 +10071,23 @@
 
   // 데모: 구독 만료 시나리오 — 잠긴 페이지 샘플 추가
   (function setupLockedPagesDemo() {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const mkDate = (offset) => { const d = new Date(today); d.setDate(d.getDate() + offset); return d; };
-    const demoDates = [-5, -4, -3, -2, -1, 0];
-    demoDates.forEach((offset, idx) => {
-      const d = mkDate(offset);
-      const exists = (window.dayPages || []).some(p => p.date && p.date.getTime() === d.getTime());
-      if (!exists) {
-        window.dayPages = window.dayPages || [];
-        // 짝수 인덱스는 잠금, 홀수는 정상
-        window.dayPages.push({ date: d, locked: idx % 2 === 0 });
-      }
+    // 5월 1일 ~ 5월 20일: 구매한 페이지 (접근 가능)
+    // 5월 21일 ~ 5월 31일 + 6월 전체: 잠긴 페이지
+    const cutoff = new Date(2026, 4, 20); // 5월 20일
+    cutoff.setHours(0,0,0,0);
+
+    const dates = [];
+    // 5월 1일 ~ 5월 31일
+    for (let d = 1; d <= 31; d++) dates.push(new Date(2026, 4, d));
+    // 6월 1일 ~ 6월 12일 (오늘까지)
+    for (let d = 1; d <= 12; d++) dates.push(new Date(2026, 5, d));
+
+    window.dayPages = [];
+    dates.forEach(date => {
+      date.setHours(0,0,0,0);
+      window.dayPages.push({ date, locked: date > cutoff });
     });
-    window.dayPages.sort((a, b) => a.date - b.date);
+
     if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
   })();
 
