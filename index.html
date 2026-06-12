@@ -4442,6 +4442,7 @@
   </div>
 
 <script>
+
   // 멤버 카드 HTML 생성 헬퍼
   function makeMember(name, time, imgSrc, opacity) {
     const avatar = imgSrc
@@ -8994,6 +8995,7 @@
     const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
     const HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
+
     function formatDayLabel(date) {
       const m = date.getMonth() + 1;
       const d = date.getDate();
@@ -9036,6 +9038,7 @@
           thumb.appendChild(row);
         });
       } else {
+
         for (let i = 0; i < 4; i++) {
           const row = document.createElement('div');
           row.className = 'pdt-time-row';
@@ -9071,6 +9074,7 @@
         if (_rb) _rb.style.display = 'none';
         return;
       }
+
 
       // ── v3: 장 단위 — 그룹 없이 순서대로 표시 ──
       if (!isDayHiddenFilter && dayPagesSource.length > 0) {
@@ -9133,7 +9137,6 @@
       if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
       if (typeof window.refreshHiddenRadios === 'function') window.refreshHiddenRadios();
     };
-    window.addDayPage = addDayPage;
   })();
 
   // ── 페이지 필터 버튼 ──
@@ -9155,6 +9158,7 @@
       if (popup) { popup.remove(); popup = null; }
       document.removeEventListener('click', onOutside);
     }
+
 
     function onOutside(e) {
       if (popup && !popup.contains(e.target) && !titleDropdown.contains(e.target)) closePopup();
@@ -9327,9 +9331,41 @@
 
   window._ppGroupCollapsed = window._ppGroupCollapsed || {};
 
+
   // ── 페이지 설정 ──
   (function initPageSettings() {
+
     const settingsBtn = document.getElementById('ppSettingsBtn');
+
+
+    // v3: 추가 버튼 → 장 수 선택 팝업
+    if (settingsBtn) {
+
+      settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const activeTab = document.querySelector('.tab.active');
+        const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
+        window.openPageCountPicker({
+          title: '페이지 추가',
+          onConfirm: (count) => {
+            for (let i = 0; i < count; i++) {
+              const id = 'page-' + Date.now() + '-' + i;
+              if (isWeek) {
+                (window.weekPages = window.weekPages||[]).push({ id, date: null, subjects: [] });
+              } else {
+                (window.dayPages = window.dayPages||[]).push({ id, date: null, subjects: [] });
+              }
+            }
+            if (isWeek) {
+              if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
+            } else {
+              if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+            }
+          }
+        });
+      });
+    }
+
     const overlay     = document.getElementById('ppSettingsOverlay');
     const backdrop    = document.getElementById('ppSettingsBg');
     const cancelBtn   = document.getElementById('ppsCancelBtn');
@@ -9568,28 +9604,6 @@
       updateButtons(); renderCalendar();
     });
 
-    if (settingsBtn) settingsBtn.addEventListener('click', () => {
-      const activeTab = document.querySelector('.tab.active');
-      const isWeek = activeTab && (activeTab.dataset.tabReusePage || activeTab.dataset.tabId) === 'tab-2';
-      window.openPageCountPicker({
-        title: '페이지 추가',
-        onConfirm: (count) => {
-          for (let i = 0; i < count; i++) {
-            const id = 'page-' + Date.now() + '-' + i;
-            if (isWeek) {
-              (window.weekPages = window.weekPages||[]).push({ id, date: null, subjects: [] });
-            } else {
-              (window.dayPages = window.dayPages||[]).push({ id, date: null, subjects: [] });
-            }
-          }
-          if (isWeek) {
-            if (typeof window.renderWeekPageList === 'function') window.renderWeekPageList();
-          } else {
-            if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
-          }
-        }
-      });
-    });
     if (cancelBtn)   cancelBtn.addEventListener('click', closePopup);
     if (confirmBtn)  confirmBtn.addEventListener('click', applySettings);
     if (backdrop)    backdrop.addEventListener('click', e => { if (e.target === backdrop) closePopup(); });
