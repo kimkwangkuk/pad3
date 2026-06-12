@@ -3140,6 +3140,33 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .pp-purchase-btn:disabled { opacity: 0.28; cursor: default; }
+    /* 구매됨 배지 (페이지 패널 월 헤더) */
+    .pp-owned-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 10px; font-weight: 700; color: #2e7d4f;
+      background: rgba(46,125,79,0.1); border-radius: 20px;
+      padding: 2px 7px 2px 5px; letter-spacing: -0.01em;
+    }
+    .pp-owned-badge svg { width: 9px; height: 9px; }
+    /* 구매 팝업 — 구매된 달 섹션 */
+    .pp-owned-section {
+      padding: 2px 14px 10px; flex-shrink: 0;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .pp-owned-section-lbl {
+      font-size: 10.5px; font-weight: 700; color: rgba(0,0,0,0.35);
+      letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 7px;
+    }
+    .pp-owned-months {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .pp-owned-month-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(46,125,79,0.08); border: 1px solid rgba(46,125,79,0.2);
+      border-radius: 20px; padding: 4px 10px 4px 7px;
+      font-size: 12px; font-weight: 600; color: #2e7d4f;
+    }
+    .pp-owned-month-chip svg { width: 12px; height: 12px; flex-shrink: 0; }
     .pp-btn-label { flex: 1; text-align: center; }
     .pp-btn-price { font-size: 13px; font-weight: 700; opacity: 0.75; }
     .page-day-thumb {
@@ -4332,6 +4359,10 @@
         <button class="pp-purchase-close" id="ppPurchaseBack">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
+      </div>
+      <div class="pp-owned-section" id="ppOwnedSection" style="display:none">
+        <div class="pp-owned-section-lbl">이미 구매됨</div>
+        <div class="pp-owned-months" id="ppOwnedMonths"></div>
       </div>
       <div class="pp-purchase-select-all-row" id="ppPurchaseSelectAll">
         <div class="pp-chk" id="ppSelectAllChk">
@@ -9225,6 +9256,14 @@
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
           hLeft.append(grpCheck, hLbl);
+          // 해당 월 전체가 구매된 상태면 배지 표시
+          const allOwned = grp.every(p => !p.locked);
+          if (allOwned) {
+            const badge = document.createElement('span');
+            badge.className = 'pp-owned-badge';
+            badge.innerHTML = '<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="#2e7d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>구매됨';
+            hLeft.appendChild(badge);
+          }
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -10137,9 +10176,33 @@
       updateHeader();
     }
 
+    function renderOwnedSection() {
+      const ownedSection = document.getElementById('ppOwnedSection');
+      const ownedMonths = document.getElementById('ppOwnedMonths');
+      if (!ownedSection || !ownedMonths) return;
+      // 월별 그룹화해서 전체 구매된 달만 추출
+      const all = window.dayPages || [];
+      const monthMap = new Map();
+      all.forEach(p => {
+        const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
+        if (!monthMap.has(key)) monthMap.set(key, { y: p.date.getFullYear(), m: p.date.getMonth(), pages: [] });
+        monthMap.get(key).pages.push(p);
+      });
+      const ownedList = [...monthMap.values()].filter(g => g.pages.every(p => !p.locked));
+      ownedMonths.innerHTML = '';
+      ownedList.forEach(g => {
+        const chip = document.createElement('div');
+        chip.className = 'pp-owned-month-chip';
+        chip.innerHTML = `<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="#2e7d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${g.y}년 ${g.m + 1}월`;
+        ownedMonths.appendChild(chip);
+      });
+      ownedSection.style.display = ownedList.length > 0 ? '' : 'none';
+    }
+
     function open() {
       selected.clear();
       currentPage = 0;
+      renderOwnedSection();
       renderPage();
       overlay.classList.add('show');
     }
