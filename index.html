@@ -4679,7 +4679,7 @@
             <div id="storeDetailName" style="font-size:18px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.04px;"></div>
             <div id="storeDetailCat" style="font-size:13px;color:rgba(0,0,0,0.45);margin-top:2px;"></div>
           </div>
-          <div id="storeDetailAddBtn" style="flex-shrink:0;padding:10px 20px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">+ 추가</div>
+          <div id="storeDetailAddBtn" style="flex-shrink:0;padding:10px 20px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">새 노트 추가</div>
         </div>
         <!-- 구분선 -->
         <div style="height:1px;background:rgba(0,0,0,0.07);margin:20px 20px 0;"></div>
@@ -5383,7 +5383,7 @@
       document.getElementById('storeDetailTags').textContent = tmpl.tags;
 
       const addBtn = document.getElementById('storeDetailAddBtn');
-      addBtn.textContent = '+ 추가';
+      addBtn.textContent = '새 노트 추가';
       addBtn.style.cssText = 'flex-shrink:0;padding:10px 20px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;';
       addBtn.onclick = () => {
         const needsPeriod = (tmpl.title === '텐미닛 플래너' || tmpl.title === '주간 플래너');
@@ -5391,6 +5391,7 @@
           window.openPeriodPicker({
             title: '노트 설정',
             noteName: '나의 ' + tmpl.title,
+            alwaysPay: true,
             onConfirm: ({ noteName, months } = {}) => {
               const label = (noteName && noteName.trim()) ? noteName.trim() : tmpl.title;
               const reusePageId = tmpl.title === '텐미닛 플래너' ? 'tab-planner' : tmpl.title === '주간 플래너' ? 'tab-2' : null;
@@ -5532,6 +5533,8 @@
     let _disableOwned = false; // true = 페이지 패널, false = 스토어
     let _monthList = null; // null = 전체 범위, [{y,m}] = 지정 목록만 표시
     let _paidDaysMap = null; // { 'YYYY-M': count } — 월별 실제 구매 대상 장수 오버라이드
+    let _alwaysPay = false; // true = 이미 구매한 달도 항상 정가 결제 (스토어 플로우)
+    let _skipOwnership = false; // true = 결제 후 addPurchasedMonth 호출 안함 (잠금 해제 플로우)
 
     // ── 구매 기록 (세션 메모리) ──
     const _purchasedMonths = new Set(); // "YYYY-M"
@@ -5569,7 +5572,8 @@
         const days = daysInMonth(y, m);
 
         const wrap = document.createElement('div');
-        const isDisabled = owned && _disableOwned;
+        const isOwned = owned && !_alwaysPay;
+        const isDisabled = isOwned && _disableOwned;
         wrap.style.cssText = 'cursor:' + (isDisabled ? 'default' : 'pointer') + ';';
 
         const cardInner = document.createElement('div');
@@ -5604,7 +5608,7 @@
         const effectiveDays = (_paidDaysMap && _paidDaysMap[key] !== undefined) ? _paidDaysMap[key] : days;
         const priceEl = document.createElement('div');
         priceEl.style.cssText = 'font-size:11px;font-weight:600;text-align:center;margin-top:3px;color:' + (isDisabled ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.55)') + ';';
-        priceEl.textContent = isDisabled ? '이미 추가됨' : owned ? '0원' : `${(effectiveDays * PRICE_PER_DAY).toLocaleString()}원`;
+        priceEl.textContent = isDisabled ? '이미 추가됨' : isOwned ? '0원' : `${(effectiveDays * PRICE_PER_DAY).toLocaleString()}원`;
 
         cardInner.append(s2, s1, front);
         wrap.append(cardInner, priceEl);
@@ -5645,7 +5649,7 @@
       const freeMonths = [], paidMonths = [];
       selected.forEach(({ year, month }) => {
         const overrideDays = _paidDaysMap ? (_paidDaysMap[`${year}-${month}`] ?? daysInMonth(year, month)) : daysInMonth(year, month);
-        if (isMonthOwned(year, month)) { freeDaysCount += overrideDays; freeMonths.push({ year, month }); }
+        if (!_alwaysPay && isMonthOwned(year, month)) { freeDaysCount += overrideDays; freeMonths.push({ year, month }); }
         else { paidDays += overrideDays; paidMonths.push({ year, month }); }
       });
       const totalPrice = paidDays * PRICE_PER_DAY;
@@ -5671,7 +5675,7 @@
     }
 
     // ── 팝업 열기 ──
-    return function({ title, noteName, onConfirm, disableOwned = false, monthList = null, paidDaysMap = null, sectionTitle = null } = {}) {
+    return function({ title, noteName, onConfirm, disableOwned = false, monthList = null, paidDaysMap = null, sectionTitle = null, alwaysPay = false, skipOwnership = false } = {}) {
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
@@ -5680,6 +5684,8 @@
       _disableOwned = disableOwned;
       _monthList = monthList;
       _paidDaysMap = paidDaysMap;
+      _alwaysPay = alwaysPay;
+      _skipOwnership = skipOwnership;
       const secTitleEl = document.getElementById('ppSectionTitle');
       if (secTitleEl) secTitleEl.textContent = sectionTitle || '구매할 월 선택';
 
@@ -5701,7 +5707,7 @@
           const [y, m] = k.split('-').map(Number);
           return { year: y, month: m };
         }).sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
-        selected.forEach(({ year, month }) => addPurchasedMonth(year, month));
+        if (!_skipOwnership) selected.forEach(({ year, month }) => addPurchasedMonth(year, month));
         overlay.style.display = 'none';
         const enteredName = hiddenName ? hiddenName.value.trim() : (noteName || '');
         if (typeof _onConfirm === 'function') {
@@ -5725,6 +5731,8 @@
     document.querySelector('.toolbar').classList.add('hidden');
     frame.dataset.activeTabType = 'home';
     document.getElementById('tabHomeBtn').classList.add('active');
+    const _lbHome = document.getElementById('plannerLockBadge');
+    if (_lbHome) _lbHome.classList.remove('show');
   });
 
   // 탭 X 버튼 (탭 삭제)
@@ -5791,6 +5799,9 @@
 
     // 탭 타입에 따라 레이아웃 결정
     frame.dataset.activeTabType = tab.dataset.tabType || 'note';
+    // 잠긴 페이지 배지는 노트 탭(day 플래너)에서만 표시
+    const _lockBadge = document.getElementById('plannerLockBadge');
+    if (_lockBadge) _lockBadge.classList.remove('show');
 
     if (isFocusing) {
       const isFocusTabActive = tab === focusTab;
@@ -10329,11 +10340,11 @@
         monthList: lockedMonthList,
         paidDaysMap,
         sectionTitle: '잠긴 월 선택',
+        skipOwnership: true,
         onConfirm: ({ months }) => {
           if (!months || months.length === 0) return;
           months.forEach(({ year, month, startDate, endDate }) => {
-            if (typeof window.addPurchasedMonth === 'function') window.addPurchasedMonth(year, month);
-            // 잠긴 페이지 해제
+            // 잠긴 페이지 해제 (addPurchasedMonth 호출 안함 — 잠금 해제는 "추가" 개념이 아님)
             const s = new Date(startDate); s.setHours(0,0,0,0);
             const e = new Date(endDate); e.setHours(0,0,0,0);
             (window.dayPages || []).forEach(p => {
