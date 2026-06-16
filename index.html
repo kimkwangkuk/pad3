@@ -757,6 +757,7 @@
       flex: 1;
       min-height: 0;
       align-items: stretch;
+      position: relative;
     }
     .page-panel {
       width: 340px;
@@ -766,6 +767,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
     .page-panel-header {
       display: flex;
@@ -2963,26 +2965,28 @@
     .page-day-card.active { border-color: rgba(0,0,0,0.25); }
     .page-day-card:hover { background: rgba(0,0,0,0.03); }
     /* 잠금 페이지 */
-    .page-day-card.locked .page-day-thumb { opacity: 0.5; }
+    .page-day-card.locked .page-day-thumb { filter: grayscale(60%) opacity(0.65); }
+    .planner-body.page-locked, .planner-header.page-locked { filter: blur(5px); pointer-events: none; user-select: none; }
     .pdt-lock-overlay {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.18); border-radius: 5px; pointer-events: none;
+      position: absolute; left: 5px; bottom: 5px; pointer-events: none;
     }
     .pdt-lock-icon {
-      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.55); border-radius: 50%;
+      width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.45); border-radius: 50%;
     }
-    .pdt-lock-icon svg { width: 12px; height: 12px; fill: white; }
+    .pdt-lock-icon svg { width: 9px; height: 9px; fill: white; }
     /* 플래너 잠금 배지 */
     .planner-lock-badge {
       display: none; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.07); border-radius: 20px;
-      padding: 5px 12px 5px 8px; cursor: pointer;
-      font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.6);
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.08); border-radius: 20px;
+      padding: 8px 18px 8px 13px; cursor: pointer; z-index: 50;
+      font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.55);
       font-family: 'Noto Sans KR', sans-serif; user-select: none;
+      white-space: nowrap; backdrop-filter: blur(4px);
     }
     .planner-lock-badge.show { display: flex; }
-    .planner-lock-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .planner-lock-badge svg { width: 15px; height: 15px; flex-shrink: 0; }
     /* 잠금 업그레이드 팝업 */
     .lock-upgrade-overlay {
       position: absolute; inset: 0; z-index: 900;
@@ -3169,6 +3173,61 @@
     .pp-owned-month-chip svg { width: 12px; height: 12px; flex-shrink: 0; }
     .pp-btn-label { flex: 1; text-align: center; }
     .pp-btn-price { font-size: 13px; font-weight: 700; opacity: 0.75; }
+    /* 잠긴 페이지 구매 — 페이지 패널 내 인패널 */
+    .pp-lock-purchase-panel {
+      position: absolute; inset: 0; z-index: 20;
+      background: #efefef; display: none; flex-direction: column;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .pp-lock-purchase-panel.show { display: flex; }
+    .pp-lp-header {
+      display: flex; align-items: center; gap: 4px;
+      padding: 12px 10px 8px; flex-shrink: 0;
+    }
+    .pp-lp-back {
+      width: 32px; height: 32px; border: none; background: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: rgba(0,0,0,0.6); border-radius: 8px; flex-shrink: 0;
+    }
+    .pp-lp-title { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.82); letter-spacing: -0.02em; }
+    .pp-lp-select-all-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px 8px; cursor: pointer; flex-shrink: 0; user-select: none;
+    }
+    .pp-lp-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 4px 14px 12px; align-content: start;
+      overflow-y: auto; flex: 1;
+    }
+    .pp-lp-month-card { cursor: pointer; position: relative; transition: transform 0.15s; }
+    .pp-lp-month-card:hover { transform: translateY(-2px); }
+    .pp-lp-month-paper {
+      background: white; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.07);
+      padding: 16px 12px 14px;
+      border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      position: relative;
+    }
+    .pp-lp-month-card.selected .pp-lp-month-paper {
+      border-color: #1a1a1a; box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+    }
+    .pp-lp-month-chk {
+      position: absolute; top: 6px; right: 6px;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pp-lp-month-card.selected .pp-lp-month-chk { background: #1a1a1a; border-color: #1a1a1a; }
+    .pp-lp-month-chk svg { display: none; width: 10px; height: 10px; }
+    .pp-lp-month-card.selected .pp-lp-month-chk svg { display: block; }
+    .pp-lp-month-name { font-size: 26px; font-weight: 800; color: rgba(0,0,0,0.82); letter-spacing: -0.03em; line-height: 1; }
+    .pp-lp-month-year { font-size: 11px; color: rgba(0,0,0,0.38); font-weight: 500; margin-top: 2px; }
+    .pp-lp-month-pages { font-size: 11px; color: rgba(0,0,0,0.45); font-weight: 600; margin-top: 6px; }
+    .pp-lp-month-price { font-size: 13px; font-weight: 700; color: rgba(0,0,0,0.7); margin-top: 1px; }
+    .pp-lp-footer { padding: 8px 14px 16px; flex-shrink: 0; }
     .page-day-thumb {
       width: 100%; aspect-ratio: 9/14; background: white; border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.12); display: flex; flex-direction: column;
@@ -4075,6 +4134,41 @@
             <button id="ppRestoreSelBtn" style="flex:1;padding:13px;background:rgba(0,0,0,0.82);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:-0.01em;opacity:0.35;">복원</button>
           </div>
         </div>
+
+        <!-- 잠긴 페이지 구매 인패널 -->
+        <div class="pp-lock-purchase-panel" id="ppLockPurchasePanel">
+          <div class="pp-lp-header">
+            <button class="pp-lp-back" id="ppLpBack">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="pp-lp-title">잠긴 페이지 구매</span>
+          </div>
+          <div class="pp-owned-section" id="ppLpOwnedSection" style="display:none">
+            <div class="pp-owned-section-lbl">이미 구매됨</div>
+            <div class="pp-owned-months" id="ppLpOwnedMonths"></div>
+          </div>
+          <div class="pp-lp-select-all-row" id="ppLpSelectAllRow">
+            <div class="pp-chk" id="ppLpAllChk">
+              <svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="pp-purchase-select-all-lbl">전체 선택</span>
+            <span class="pp-purchase-count" id="ppLpSelectedCount"></span>
+          </div>
+          <div class="pp-lp-grid" id="ppLpGrid"></div>
+          <div class="pp-lp-footer">
+            <div class="pp-price-summary">
+              <span class="pp-price-unit">월 단위 구매</span>
+              <div class="pp-price-total">
+                <span class="pp-price-total-num" id="ppLpTotalNum">—</span>
+                <span class="pp-price-total-sub" id="ppLpTotalSub"></span>
+              </div>
+            </div>
+            <button class="pp-purchase-btn" id="ppLpConfirm" disabled>
+              <span class="pp-btn-label">구매하기</span>
+              <span class="pp-btn-price" id="ppLpBtnPrice"></span>
+            </button>
+          </div>
+        </div>
       </div>
       <div id="contentPages" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative;overflow:hidden;">
     <div id="defaultContent">
@@ -4094,10 +4188,6 @@
             <div class="planner-date-num" id="plannerDateNum"></div>
             <div class="planner-sub" id="plannerSub" contenteditable="true"></div>
           </div>
-          <button class="planner-lock-badge" id="plannerLockBadge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            잠긴 페이지
-          </button>
           <div class="planner-meta">
             <div class="planner-meta-block">
               <div class="planner-label">Dday</div>
@@ -4501,7 +4591,7 @@
         <button id="periodCancelBtn" style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
           <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="rgba(0,0,0,0.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
-        <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;">구매</div>
+        <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:rgba(0,0,0,0.86);letter-spacing:-0.03em;">추가</div>
       </div>
 
       <!-- 상품 정보 카드 -->
@@ -4521,7 +4611,7 @@
 
       <!-- 구매할 월 선택 -->
       <div style="padding:0 20px 10px;">
-        <div style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);margin-bottom:4px;">구매할 월 선택</div>
+        <div id="ppSectionTitle" style="font-size:14px;font-weight:600;color:rgba(0,0,0,0.82);margin-bottom:4px;">구매할 월 선택</div>
         <div id="ppSelectionInfo" style="font-size:12px;color:rgba(0,0,0,0.4);letter-spacing:-0.01em;">월을 선택하세요</div>
       </div>
 
@@ -5237,12 +5327,11 @@
     };
 
     const storeTemplates = [
-      { title: '텐미닛 플래너', desc: '10분 단위로 하루를 설계하는 올인원 데일리 플래너입니다. 시간대별 계획, 할일 관리, 공부 기록을 한 페이지에서 관리하세요.', tags: '#공부 #생산성 #집중', badge: '프리미엄', color: '#e8d5f5', filter: '일간' },
-      { title: '주간 플래너', desc: '한 주의 계획을 요일별로 정리하는 위클리 플래너입니다. 주간 목표와 메모를 한눈에 확인하세요.', tags: '#주간 #위클리 #스케줄', badge: '무료', color: '#c8dcff', filter: '주간' },
-      { title: '월간 캘린더', desc: '한눈에 보이는 월별 일정 관리 캘린더입니다. 이벤트와 메모를 추가해 한 달을 체계적으로 계획하세요.', tags: '#월간 #캘린더 #일정', badge: '무료', color: '#d6f0e0', filter: '월간' },
-      { title: '습관 트래커', desc: '매일 반복할 루틴을 기록하고 달성률을 추적하는 습관 관리 탭입니다. 연속 달성일을 확인하며 동기를 유지하세요.', tags: '#습관 #루틴 #자기계발', badge: '무료', color: '#ffd6d6', filter: '일간' },
-
-      { title: '버킷리스트', desc: '이루고 싶은 꿈과 목표를 카테고리별로 정리하는 버킷리스트 탭입니다. 하나씩 체크해나가며 꿈을 이루세요.', tags: '#목표 #꿈 #버킷리스트', badge: '무료', color: '#d6f0e0', filter: '일간' },
+      { title: '텐미닛 플래너', desc: '10분 단위로 하루를 설계하는 올인원 데일리 플래너입니다. 시간대별 계획, 할일 관리, 공부 기록을 한 페이지에서 관리하세요.', tags: '#공부 #생산성 #집중', badge: '프리미엄', color: '#e8d5f5', filter: '일간', price: '장당 ₩10' },
+      { title: '주간 플래너', desc: '한 주의 계획을 요일별로 정리하는 위클리 플래너입니다. 주간 목표와 메모를 한눈에 확인하세요.', tags: '#주간 #위클리 #스케줄', badge: '무료', color: '#c8dcff', filter: '주간', price: '무료' },
+      { title: '월간 캘린더', desc: '한눈에 보이는 월별 일정 관리 캘린더입니다. 이벤트와 메모를 추가해 한 달을 체계적으로 계획하세요.', tags: '#월간 #캘린더 #일정', badge: '무료', color: '#d6f0e0', filter: '월간', price: '무료' },
+      { title: '습관 트래커', desc: '매일 반복할 루틴을 기록하고 달성률을 추적하는 습관 관리 탭입니다. 연속 달성일을 확인하며 동기를 유지하세요.', tags: '#습관 #루틴 #자기계발', badge: '무료', color: '#ffd6d6', filter: '일간', price: '무료' },
+      { title: '버킷리스트', desc: '이루고 싶은 꿈과 목표를 카테고리별로 정리하는 버킷리스트 탭입니다. 하나씩 체크해나가며 꿈을 이루세요.', tags: '#목표 #꿈 #버킷리스트', badge: '무료', color: '#d6f0e0', filter: '일간', price: '무료' },
     ];
 
     function renderGrid(filter) {
@@ -5258,6 +5347,7 @@
           </div>
           <div class="store-card-title">${t.title}</div>
           <div class="store-card-desc">${t.desc.substring(0, 30)}…<br><span style="color:rgba(0,0,0,0.38);font-size:11px;">${t.tags}</span></div>
+          <div style="font-size:11px;color:rgba(0,0,0,0.4);text-align:center;margin-top:4px;">${t.price || ''}</div>
         </div>
       `).join('');
     }
@@ -5440,11 +5530,15 @@
     let _selectedMonths = new Set(); // "YYYY-M" keys
     let _onConfirm = null;
     let _disableOwned = false; // true = 페이지 패널, false = 스토어
+    let _monthList = null; // null = 전체 범위, [{y,m}] = 지정 목록만 표시
+    let _paidDaysMap = null; // { 'YYYY-M': count } — 월별 실제 구매 대상 장수 오버라이드
 
     // ── 구매 기록 (세션 메모리) ──
     const _purchasedMonths = new Set(); // "YYYY-M"
     function isMonthOwned(year, month) { return _purchasedMonths.has(`${year}-${month}`); }
     function addPurchasedMonth(year, month) { _purchasedMonths.add(`${year}-${month}`); }
+    window.addPurchasedMonth = addPurchasedMonth;
+    window.isMonthOwned = isMonthOwned;
 
     function daysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
 
@@ -5453,13 +5547,22 @@
       const grid = document.getElementById('ppMonthGrid');
       if (!grid) return;
       grid.innerHTML = '';
-      const now = new Date();
-      const cy = now.getFullYear(), cm = now.getMonth();
-      // 현재달 -2 ~ +13 (총 16개월)
-      for (let offset = -2; offset <= 13; offset++) {
-        let y = cy, m = cm + offset;
-        while (m < 0) { m += 12; y--; }
-        while (m > 11) { m -= 12; y++; }
+      // _monthList가 있으면 그 목록만, 없으면 현재달 -2~+13
+      let monthEntries;
+      if (_monthList) {
+        monthEntries = _monthList;
+      } else {
+        const now = new Date();
+        const cy = now.getFullYear(), cm = now.getMonth();
+        monthEntries = [];
+        for (let offset = -2; offset <= 13; offset++) {
+          let y = cy, m = cm + offset;
+          while (m < 0) { m += 12; y--; }
+          while (m > 11) { m -= 12; y++; }
+          monthEntries.push({ y, m });
+        }
+      }
+      for (const { y, m } of monthEntries) {
         const key = `${y}-${m}`;
         const selected = _selectedMonths.has(key);
         const owned = isMonthOwned(y, m);
@@ -5467,7 +5570,10 @@
 
         const wrap = document.createElement('div');
         const isDisabled = owned && _disableOwned;
-        wrap.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;cursor:' + (isDisabled ? 'default' : 'pointer') + ';';
+        wrap.style.cssText = 'cursor:' + (isDisabled ? 'default' : 'pointer') + ';';
+
+        const cardInner = document.createElement('div');
+        cardInner.style.cssText = 'position:relative;padding-bottom:4px;padding-right:4px;';
 
         const s2 = document.createElement('div');
         s2.style.cssText = 'position:absolute;inset:0;bottom:4px;right:4px;border-radius:12px;transform:rotate(2.5deg);background:' + (isDisabled ? '#eaeaea' : selected ? 'rgba(0,0,0,0.55)' : '#d8d8de') + ';';
@@ -5490,11 +5596,18 @@
         monthEl.textContent = `${m + 1}월`;
 
         const daysEl = document.createElement('div');
-        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (isDisabled ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : owned ? '#34c759' : 'rgba(0,0,0,0.32)') + ';font-weight:' + (owned && !isDisabled ? '600' : '400') + ';';
-        daysEl.textContent = owned ? (isDisabled ? '이미 추가됨' : '구매 완료') : `${days}일`;
+        daysEl.style.cssText = 'font-size:10px;margin-top:5px;color:' + (isDisabled ? 'rgba(0,0,0,0.22)' : selected ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.32)') + ';font-weight:400;';
+        daysEl.textContent = `${days}일`;
 
         front.append(chk, yearEl, monthEl, daysEl);
-        wrap.append(s2, s1, front);
+
+        const effectiveDays = (_paidDaysMap && _paidDaysMap[key] !== undefined) ? _paidDaysMap[key] : days;
+        const priceEl = document.createElement('div');
+        priceEl.style.cssText = 'font-size:11px;font-weight:600;text-align:center;margin-top:3px;color:' + (isDisabled ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.55)') + ';';
+        priceEl.textContent = isDisabled ? '이미 추가됨' : owned ? '0원' : `${(effectiveDays * PRICE_PER_DAY).toLocaleString()}원`;
+
+        cardInner.append(s2, s1, front);
+        wrap.append(cardInner, priceEl);
 
         if (!isDisabled) {
           wrap.addEventListener('click', () => {
@@ -5531,8 +5644,9 @@
       let paidDays = 0, freeDaysCount = 0;
       const freeMonths = [], paidMonths = [];
       selected.forEach(({ year, month }) => {
-        if (isMonthOwned(year, month)) { freeDaysCount += daysInMonth(year, month); freeMonths.push({ year, month }); }
-        else { paidDays += daysInMonth(year, month); paidMonths.push({ year, month }); }
+        const overrideDays = _paidDaysMap ? (_paidDaysMap[`${year}-${month}`] ?? daysInMonth(year, month)) : daysInMonth(year, month);
+        if (isMonthOwned(year, month)) { freeDaysCount += overrideDays; freeMonths.push({ year, month }); }
+        else { paidDays += overrideDays; paidMonths.push({ year, month }); }
       });
       const totalPrice = paidDays * PRICE_PER_DAY;
 
@@ -5557,13 +5671,17 @@
     }
 
     // ── 팝업 열기 ──
-    return function({ title, noteName, onConfirm, disableOwned = false } = {}) {
+    return function({ title, noteName, onConfirm, disableOwned = false, monthList = null, paidDaysMap = null, sectionTitle = null } = {}) {
       const overlay = document.getElementById('periodPickerOverlay');
       if (!overlay) return;
 
       _selectedMonths = new Set();
       _onConfirm = onConfirm;
       _disableOwned = disableOwned;
+      _monthList = monthList;
+      _paidDaysMap = paidDaysMap;
+      const secTitleEl = document.getElementById('ppSectionTitle');
+      if (secTitleEl) secTitleEl.textContent = sectionTitle || '구매할 월 선택';
 
       const nameEl = document.getElementById('ppProductName');
       if (nameEl) nameEl.textContent = noteName || '';
@@ -9236,7 +9354,7 @@
           const isCollapsed = !!window._ppGroupCollapsed[groupKey];
           const grpMsList = grp.map(p => String(p.date.getTime()));
           const hdrRow = document.createElement('div');
-          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;';
+          hdrRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px 4px;grid-column:1/-1;position:sticky;top:0;background:#efefef;z-index:2;';
           const hLeft = document.createElement('div');
           hLeft.style.cssText = 'display:flex;align-items:center;gap:7px;';
           const grpCheck = document.createElement('div');
@@ -9256,14 +9374,6 @@
           hLbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(0,0,0,0.5);letter-spacing:-0.01em;';
           hLbl.textContent = `${y}년 ${m + 1}월`;
           hLeft.append(grpCheck, hLbl);
-          // 해당 월 전체가 구매된 상태면 배지 표시
-          const allOwned = grp.every(p => !p.locked);
-          if (allOwned) {
-            const badge = document.createElement('span');
-            badge.className = 'pp-owned-badge';
-            badge.innerHTML = '<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="#2e7d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>구매됨';
-            hLeft.appendChild(badge);
-          }
           const hBtn = document.createElement('span');
           hBtn.style.cssText = 'display:flex;align-items:center;color:rgba(0,0,0,0.35);transition:transform 0.2s;transform:' + (isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)') + ';';
           hBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -9311,9 +9421,11 @@
               if (typeof window.refreshCardRadios === 'function') window.refreshCardRadios();
               if (typeof window.setPlannerDate === 'function') window.setPlannerDate(p.date);
               window._currentPageLocked = isLocked;
-              // 잠금 배지 업데이트
               const badge = document.getElementById('plannerLockBadge');
               if (badge) { if (isLocked) badge.classList.add('show'); else badge.classList.remove('show'); }
+              document.querySelectorAll('.planner-body, .planner-header').forEach(el => {
+                if (isLocked) el.classList.add('page-locked'); else el.classList.remove('page-locked');
+              });
             });
 
             cardsWrap.appendChild(card);
@@ -9878,6 +9990,11 @@
                 if (!ex) window.dayPages.push({ date:new Date(d) });
                 d.setDate(d.getDate()+1);
               }
+              // 잠긴 페이지 해제
+              (window.dayPages||[]).forEach(p => {
+                const t = new Date(p.date); t.setHours(0,0,0,0);
+                if (t >= s && t <= e) p.locked = false;
+              });
             }
           });
           if (isWeek) {
@@ -10036,43 +10153,224 @@
   })();
 
   // 잠금 업그레이드 팝업
-  (function initLockUpgrade() {
-    const overlay = document.getElementById('lockUpgradeOverlay');
-    const badge = document.getElementById('plannerLockBadge');
-    if (!overlay || !badge) return;
+  (function initLockPurchasePanel() {
+    const panel      = document.getElementById('ppLockPurchasePanel');
+    const grid       = document.getElementById('ppLpGrid');
+    const allChk     = document.getElementById('ppLpAllChk');
+    const selectRow  = document.getElementById('ppLpSelectAllRow');
+    const countLbl   = document.getElementById('ppLpSelectedCount');
+    const confirmBtn = document.getElementById('ppLpConfirm');
+    const backBtn    = document.getElementById('ppLpBack');
+    const badge      = document.getElementById('plannerLockBadge');
+    const totalNumEl = document.getElementById('ppLpTotalNum');
+    const totalSubEl = document.getElementById('ppLpTotalSub');
+    const btnPriceEl = document.getElementById('ppLpBtnPrice');
+    if (!panel) return;
 
-    function openPopup() { overlay.classList.add('show'); }
-    function closePopup() { overlay.classList.remove('show'); }
+    const PRICE_PER_PAGE = 990;
+    const CHECKMARK = '<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-    badge.addEventListener('click', (e) => { e.stopPropagation(); openPopup(); });
+    let selected = new Set();
 
-    // 플래너 영역 클릭 시 잠긴 페이지면 팝업 열기
-    const plannerBody = document.querySelector('.planner-body');
-    const plannerHeader = document.querySelector('.planner-header');
-    [plannerBody, plannerHeader].forEach(el => {
-      if (!el) return;
-      el.addEventListener('click', (e) => {
-        if (e.target.closest('#plannerLockBadge')) return;
-        if (window._currentPageLocked) openPopup();
+    function getLockedMonths() {
+      const all = window.dayPages || [];
+      const map = new Map();
+      all.forEach(p => {
+        const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
+        if (!map.has(key)) map.set(key, { y: p.date.getFullYear(), m: p.date.getMonth(), pages: [] });
+        map.get(key).pages.push(p);
       });
+      return [...map.values()].filter(g => g.pages.some(p => p.locked));
+    }
+
+    function monthPageCount(g) { return g.pages.filter(p => p.locked).length; }
+
+    function updateFooter() {
+      const months = getLockedMonths();
+      const selMonths = months.filter(g => selected.has(`${g.y}-${g.m}`));
+      const totalPages = selMonths.reduce((s, g) => s + monthPageCount(g), 0);
+      const total = totalPages * PRICE_PER_PAGE;
+      const cnt = selMonths.length;
+
+      if (months.length > 0 && cnt === months.length) allChk.classList.add('checked');
+      else allChk.classList.remove('checked');
+
+      countLbl.textContent = cnt > 0 ? `${cnt}개월 선택됨` : '';
+      confirmBtn.disabled = cnt === 0;
+
+      if (cnt > 0) {
+        totalNumEl.textContent = '₩' + total.toLocaleString('ko-KR');
+        totalSubEl.textContent = `(${cnt}개월 · ${totalPages}페이지)`;
+        btnPriceEl.textContent = '₩' + total.toLocaleString('ko-KR');
+      } else {
+        totalNumEl.textContent = '—';
+        totalSubEl.textContent = '';
+        btnPriceEl.textContent = '';
+      }
+      const btnLabel = confirmBtn.querySelector('.pp-btn-label');
+      if (btnLabel) btnLabel.textContent = cnt > 0 ? `${cnt}개월 구매하기` : '구매하기';
+    }
+
+    function renderMonths() {
+      grid.innerHTML = '';
+      const months = getLockedMonths();
+      months.forEach(g => {
+        const key = `${g.y}-${g.m}`;
+        const isSelected = selected.has(key);
+        const pcount = monthPageCount(g);
+        const price = pcount * PRICE_PER_PAGE;
+
+        const card = document.createElement('div');
+        card.className = 'pp-lp-month-card' + (isSelected ? ' selected' : '');
+
+        const paper = document.createElement('div');
+        paper.className = 'pp-lp-month-paper';
+
+        const chk = document.createElement('div');
+        chk.className = 'pp-lp-month-chk';
+        chk.innerHTML = CHECKMARK;
+        paper.appendChild(chk);
+
+        const name = document.createElement('div');
+        name.className = 'pp-lp-month-name';
+        name.textContent = `${g.m + 1}월`;
+        paper.appendChild(name);
+
+        const year = document.createElement('div');
+        year.className = 'pp-lp-month-year';
+        year.textContent = `${g.y}년`;
+        paper.appendChild(year);
+
+        const pages = document.createElement('div');
+        pages.className = 'pp-lp-month-pages';
+        pages.textContent = `${pcount}페이지`;
+        paper.appendChild(pages);
+
+        const priceEl = document.createElement('div');
+        priceEl.className = 'pp-lp-month-price';
+        priceEl.textContent = '₩' + price.toLocaleString('ko-KR');
+        paper.appendChild(priceEl);
+
+        card.appendChild(paper);
+        card.addEventListener('click', () => {
+          if (selected.has(key)) selected.delete(key); else selected.add(key);
+          card.classList.toggle('selected', selected.has(key));
+          updateFooter();
+        });
+        grid.appendChild(card);
+      });
+      updateFooter();
+    }
+
+    function renderOwnedSection() {
+      const ownedSection = document.getElementById('ppLpOwnedSection');
+      const ownedMonths  = document.getElementById('ppLpOwnedMonths');
+      if (!ownedSection || !ownedMonths) return;
+      const all = window.dayPages || [];
+      const map = new Map();
+      all.forEach(p => {
+        const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
+        if (!map.has(key)) map.set(key, { y: p.date.getFullYear(), m: p.date.getMonth(), pages: [] });
+        map.get(key).pages.push(p);
+      });
+      const owned = [...map.values()].filter(g => g.pages.every(p => !p.locked));
+      ownedMonths.innerHTML = '';
+      owned.forEach(g => {
+        const chip = document.createElement('div');
+        chip.className = 'pp-owned-month-chip';
+        chip.innerHTML = `<svg viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9.5 10.5,2.5" stroke="#2e7d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${g.y}년 ${g.m + 1}월`;
+        ownedMonths.appendChild(chip);
+      });
+      ownedSection.style.display = owned.length > 0 ? '' : 'none';
+    }
+
+    function open() {
+      selected.clear();
+      renderOwnedSection();
+      renderMonths();
+      panel.classList.add('show');
+    }
+    function close() { panel.classList.remove('show'); }
+
+    backBtn.addEventListener('click', close);
+
+    selectRow.addEventListener('click', () => {
+      const months = getLockedMonths();
+      if (selected.size === months.length) selected.clear();
+      else months.forEach(g => selected.add(`${g.y}-${g.m}`));
+      renderMonths();
     });
 
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closePopup();
+    confirmBtn.addEventListener('click', () => {
+      if (confirmBtn.disabled) return;
+      const months = getLockedMonths().filter(g => selected.has(`${g.y}-${g.m}`));
+      const totalPages = months.reduce((s, g) => s + monthPageCount(g), 0);
+      alert(`${months.length}개월 (${totalPages}페이지)를 구매합니다.`);
+      close();
     });
 
-    document.getElementById('lockUpgradePremium').addEventListener('click', () => {
-      alert('프리미엄 구독 페이지로 이동합니다.');
-      closePopup();
+    function openMonthPickerForUnlock() {
+      if (typeof window.openPeriodPicker !== 'function') return;
+      // 잠긴 달만 추출 + 달별 잠긴 페이지 수 계산 (이미 구매된 날은 제외)
+      const all = window.dayPages || [];
+      const map = new Map();
+      all.forEach(p => {
+        const key = `${p.date.getFullYear()}-${p.date.getMonth()}`;
+        if (!map.has(key)) map.set(key, { y: p.date.getFullYear(), m: p.date.getMonth(), hasLocked: false, lockedCount: 0 });
+        if (p.locked) { map.get(key).hasLocked = true; map.get(key).lockedCount++; }
+      });
+      const lockedMonthList = [...map.values()].filter(g => g.hasLocked).map(g => ({ y: g.y, m: g.m }));
+      // 각 잠긴 달의 실제 구매 대상 장수 (이미 이용한 날 제외)
+      const paidDaysMap = {};
+      map.forEach((g, key) => { if (g.hasLocked) paidDaysMap[`${g.y}-${g.m}`] = g.lockedCount; });
+      window.openPeriodPicker({
+        noteName: '텐미닛 플래너',
+        disableOwned: false,
+        monthList: lockedMonthList,
+        paidDaysMap,
+        sectionTitle: '잠긴 월 선택',
+        onConfirm: ({ months }) => {
+          if (!months || months.length === 0) return;
+          months.forEach(({ year, month, startDate, endDate }) => {
+            if (typeof window.addPurchasedMonth === 'function') window.addPurchasedMonth(year, month);
+            // 잠긴 페이지 해제
+            const s = new Date(startDate); s.setHours(0,0,0,0);
+            const e = new Date(endDate); e.setHours(0,0,0,0);
+            (window.dayPages || []).forEach(p => {
+              const t = new Date(p.date); t.setHours(0,0,0,0);
+              if (t >= s && t <= e) p.locked = false;
+            });
+          });
+          if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
+        }
+      });
+    }
+
+    const upgradeOverlay = document.getElementById('lockUpgradeOverlay');
+    function openUpgradePopup() { if (upgradeOverlay) upgradeOverlay.classList.add('show'); }
+    function closeUpgradePopup() { if (upgradeOverlay) upgradeOverlay.classList.remove('show'); }
+
+    if (upgradeOverlay) {
+      upgradeOverlay.addEventListener('click', (e) => { if (e.target === upgradeOverlay) closeUpgradePopup(); });
+    }
+    const premiumBtn = document.getElementById('lockUpgradePremium');
+    if (premiumBtn) premiumBtn.addEventListener('click', () => { alert('프리미엄 구독 페이지로 이동합니다.'); closeUpgradePopup(); });
+    const purchaseBtn = document.getElementById('lockUpgradePurchase');
+    if (purchaseBtn) purchaseBtn.addEventListener('click', () => { closeUpgradePopup(); openMonthPickerForUnlock(); });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#plannerLockBadge')) {
+        e.stopPropagation();
+        openUpgradePopup();
+        return;
+      }
+      if (window._currentPageLocked && (e.target.closest('.planner-body') || e.target.closest('.planner-header'))) {
+        openUpgradePopup();
+      }
     });
 
-    document.getElementById('lockUpgradePurchase').addEventListener('click', () => {
-      closePopup();
-      if (typeof window.openPagePurchase === 'function') window.openPagePurchase();
-    });
-
-    window.showLockUpgradePopup = openPopup;
-    window.hideLockUpgradePopup = closePopup;
+    window.openLockPurchase = open;
+    window.closeLockPurchase = close;
   })();
 
   // 페이지 구매 팝업
@@ -10234,22 +10532,24 @@
 
   // 데모: 구독 만료 시나리오 — 잠긴 페이지 샘플 추가
   (function setupLockedPagesDemo() {
-    // 5월 1일 ~ 5월 20일: 구매한 페이지 (접근 가능)
-    // 5월 21일 ~ 5월 31일 + 6월 전체: 잠긴 페이지
-    const cutoff = new Date(2026, 4, 31); // 5월 31일
-    cutoff.setHours(0,0,0,0);
+    // 프리미엄 만료일: 2026-06-06
+    // 5월 1일 ~ 6월 6일: 프리미엄 이용 기간 (잠금 해제, 구매된 것으로 처리)
+    // 6월 7일 ~ 6월 30일: 프리미엄 만료 후 잠긴 페이지 (구매 필요)
+    const premiumExpiry = new Date(2026, 5, 6); // 6월 6일
+    premiumExpiry.setHours(0,0,0,0);
 
     const dates = [];
-    // 5월 1일 ~ 5월 31일
-    for (let d = 1; d <= 31; d++) dates.push(new Date(2026, 4, d));
-    // 6월 1일 ~ 6월 30일
-    for (let d = 1; d <= 30; d++) dates.push(new Date(2026, 5, d));
+    for (let d = 1; d <= 31; d++) dates.push(new Date(2026, 4, d)); // 5월
+    for (let d = 1; d <= 30; d++) dates.push(new Date(2026, 5, d)); // 6월
 
     window.dayPages = [];
     dates.forEach(date => {
       date.setHours(0,0,0,0);
-      window.dayPages.push({ date, locked: date > cutoff });
+      window.dayPages.push({ date, locked: date > premiumExpiry });
     });
+
+    // 5월은 구매한 상태로 표시
+    if (typeof window.addPurchasedMonth === 'function') window.addPurchasedMonth(2026, 4);
 
     if (typeof window.renderDayPageList === 'function') window.renderDayPageList();
   })();
@@ -10265,5 +10565,10 @@
     });
   });
 </script>
+
+  <button class="planner-lock-badge" id="plannerLockBadge">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    잠긴 페이지
+  </button>
 </body>
 </html>
